@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 239631139}
   - component: {fileID: 239631142}
   - component: {fileID: 239631141}
+  - component: {fileID: 239631143}
   m_Layer: 0
   m_Name: Water2
   m_TagString: Water
@@ -205,6 +206,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 239631138}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!65 &239631143
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 239631138}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 10, y: 2.220446e-16, z: 10}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &323510138
 GameObject:
   m_ObjectHideFlags: 0
@@ -333,7 +347,7 @@ GameObject:
   - component: {fileID: 430628386}
   - component: {fileID: 430628385}
   m_Layer: 0
-  m_Name: Cube (1)
+  m_Name: CubeNonRigid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -431,7 +445,7 @@ GameObject:
   - component: {fileID: 505764723}
   - component: {fileID: 505764722}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: CubeRigid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -524,7 +538,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 505764721}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.77, y: 1, z: 4.96}
+  m_LocalPosition: {x: 2.77, y: 0.5, z: 4.96}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -542,6 +556,7 @@ GameObject:
   - component: {fileID: 724701214}
   - component: {fileID: 724701217}
   - component: {fileID: 724701216}
+  - component: {fileID: 724701218}
   m_Layer: 0
   m_Name: Water1
   m_TagString: Water
@@ -614,6 +629,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 724701213}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!65 &724701218
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 724701213}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 10, y: 2.220446e-16, z: 10}
+  m_Center: {x: 0, y: 0.000000029802322, z: -0.0000009536743}
 --- !u!1 &734022059
 GameObject:
   m_ObjectHideFlags: 0
