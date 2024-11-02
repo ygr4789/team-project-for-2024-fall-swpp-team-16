@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace _12.Tests.PlayerDev
@@ -25,7 +26,7 @@ namespace _12.Tests.PlayerDev
         private Vector3 _controllerVelocity;
 
         // Start is called before the first frame update
-        void Start()
+        private void Start()
         {
             characterController = GetComponent<CharacterController>();
             playerTransform = transform.Find("Player");
@@ -33,7 +34,7 @@ namespace _12.Tests.PlayerDev
         }
 
         // Update is called once per frame
-        void Update()
+        private void Update()
         {
             // stops the y velocity when player is on the ground and the velocity has reached 0
             if (characterController.isGrounded && _controllerVelocity.y < 0)
@@ -51,11 +52,12 @@ namespace _12.Tests.PlayerDev
             
 
             // set player's forward same as moving direction
-            var currentVelocity = movement.magnitude;
+            float currentVelocity = movement.magnitude;
+            playerAnimator.SetBool("Moving", currentVelocity > 0);
             if (currentVelocity > 0)
             {
-                var targetAngle = Mathf.Atan2(moveX, moveZ) * Mathf.Rad2Deg - 90;
-                var angle = Mathf.SmoothDampAngle(playerTransform.eulerAngles.y, targetAngle, ref currentVelocity, _smoothTime);
+                float targetAngle = Mathf.Atan2(moveX, moveZ) * Mathf.Rad2Deg - 90;
+                float angle = Mathf.SmoothDampAngle(playerTransform.eulerAngles.y, targetAngle, ref currentVelocity, _smoothTime);
                 playerTransform.rotation = Quaternion.Euler(0, angle, 0);
             }
                 
