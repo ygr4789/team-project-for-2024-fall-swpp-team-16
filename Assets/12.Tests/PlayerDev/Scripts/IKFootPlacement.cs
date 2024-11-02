@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using _12.Tests.PlayerDev;
 using UnityEditor.IMGUI.Controls;
 using UnityEditor.ShaderGraph;
 using UnityEngine;
@@ -37,7 +38,7 @@ public class IKFootPlacement : MonoBehaviour
         playerAnimator.SetIKPositionWeight(AvatarIKGoal.RightFoot, rightFootIKWeight);
         playerAnimator.SetIKRotationWeight(AvatarIKGoal.RightFoot, rightFootIKWeight);
         
-        float detectDistance = 1.0f;
+        float detectDistance = 2.0f;
         
         // Raising the origin so that it can be detected even when the foot is buried
         Ray leftRay = new Ray(playerAnimator.GetIKPosition(AvatarIKGoal.LeftFoot) + Vector3.up, Vector3.down);
