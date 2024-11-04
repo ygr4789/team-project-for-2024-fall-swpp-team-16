@@ -17,9 +17,10 @@ public class GameManager : MonoBehaviour
     
     // DontDestroyOnLoad Managers
     public static SoundManager sm;
+    public static EffectManager em;
     
     // Other Managers
-    public static EffectManager em;
+    public static PlayManager pm;
 
     public Transform Player;
     
@@ -44,6 +45,7 @@ public class GameManager : MonoBehaviour
             
             sm = GetComponentInChildren<SoundManager>();
             em = GetComponentInChildren<EffectManager>();
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else if (gm != this)
         {
@@ -54,7 +56,7 @@ public class GameManager : MonoBehaviour
     // Called every time when some scene is loaded
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        em = FindObjectOfType<EffectManager>();
+        pm = FindObjectOfType<PlayManager>();
     }
 
     // Start is called before the first frame update
