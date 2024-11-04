@@ -4,17 +4,27 @@ using UnityEngine;
 
 public class WaterController : MonoBehaviour
 {
-    public bool isHeightChanging = false;
-    public bool isRising = false; // true if height of water is rising, false if height of water is lowering
-    
-    public float waterLevelTarget = 1.0f; // Target height of water
+    // Configurations
+    public float waterLevelMax = 100.0f; // Maximum height of water
+    public float waterLevelMin = 0.0f; // Minimum height of water
+    public float waterLevelTargetUnit = 1.0f; // Target height of water
     public float riseSpeed = 0.1f; // Speed at which water rises per second
     
-    private Vector3 initialPosition;
+    // Internal variables (But made public for debugging)
+    public float initialPositionY;
+    public bool isHeightChanging = false;
+    public bool isRising = false; // true if height of water is rising, false if height of water is lowering
+    public float waterLevelTarget; // Target height of water
 
     void Start()
     {
-        TriggerIncreaseWaterLevel(49); // ERASE ME: this is for test
+        initialPositionY = transform.position.y;
+        waterLevelTarget = initialPositionY;
+        
+        // ERASE ME: below three lines of codes are for test
+        Invoke("TriggerStepIncreaseWaterLevel", 0.0f);; // increase water level
+        Invoke("TriggerStepIncreaseWaterLevel", 4.0f); // trigger increase water level 4 seconds later
+        Invoke("TriggerStepDecreaseWaterLevel", 8.0f); // trigger decrease water level 8 seconds later
     }
 
     void Update()
@@ -32,15 +42,36 @@ public class WaterController : MonoBehaviour
             else
             {
                 float direction = isRising ? 1 : -1;
-                IncreaseWaterLevel(direction * riseSpeed * Time.deltaTime);
+                ChangeWaterLevel(direction * riseSpeed * Time.deltaTime);
             }
         }
     }
     
-    public void TriggerIncreaseWaterLevel(float _waterLevelTarget)
+    public void TriggerStepIncreaseWaterLevel()
+    {
+        waterLevelTarget += waterLevelTargetUnit;
+        if (waterLevelTarget > waterLevelMax)
+        {
+            Debug.Log("Water level is already at the maximum height.");
+            return;
+        }
+        TriggerChangeWaterLevel();
+    }
+    
+    public void TriggerStepDecreaseWaterLevel()
+    {
+        waterLevelTarget -= waterLevelTargetUnit;
+        if (waterLevelTarget < waterLevelMin)
+        {
+            Debug.Log("Water level is already at the minimum height.");
+            return;
+        }
+        TriggerChangeWaterLevel();
+    }
+    
+    private void TriggerChangeWaterLevel()
     {
         isHeightChanging = true;
-        waterLevelTarget = _waterLevelTarget;
         if (waterLevelTarget > transform.position.y)
         {
             isRising = true;
@@ -51,7 +82,7 @@ public class WaterController : MonoBehaviour
         }
     }
     
-    void IncreaseWaterLevel(float amount)
+    private void ChangeWaterLevel(float amount)
     {
         transform.position = new Vector3(transform.position.x, transform.position.y + amount, transform.position.z);
     }
