@@ -91,14 +91,14 @@ public class RockControl : MonoBehaviour
         }
     }
 
-    public void AccelerateToPlayer(float acceleration)
+    public void AccelerateToPlayer(float acceleration = 10f)
     {
         if (_player is null) return;
         var directionToPlayer = (_player.transform.position - transform.position).normalized;
         Accelerate(directionToPlayer, acceleration);
     }
 
-    public void AccelerateAwayFromPlayer(float acceleration)
+    public void AccelerateAwayFromPlayer(float acceleration = 10f)
     {
         if (_player is null) return;
         var directionAwayFromPlayer = (transform.position - _player.transform.position).normalized;
