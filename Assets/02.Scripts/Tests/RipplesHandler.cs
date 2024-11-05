@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class RipplesHandler : MonoBehaviour
 {
+    [SerializeField] private float ripplesHeightRatio = 0.5f;
     void Update()
     {
         // 각 키가 눌린 상태에서 파티클을 재생
@@ -35,6 +36,6 @@ public class RipplesHandler : MonoBehaviour
 
     private void TriggerParticleEffect(ColorType colorType)
     {
-        GameManager.em.TriggerRipples(transform, colorType, transform.localScale);
+        GameManager.em.TriggerRipples(transform, colorType, transform.localScale, ripplesHeightRatio);
     }
 }

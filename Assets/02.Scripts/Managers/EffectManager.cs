@@ -6,11 +6,11 @@ public class EffectManager : MonoBehaviour
     [SerializeField] private ParticleSystem ripplesEffectPrefab;
     [SerializeField] private float colorSwitchInterval = 0.5f;
     private float colorSwitchTimer;
-    private float defaultSize = 6;
+    private float defaultSize = 7;
     private float targetScaleMultiplier = 1.5f;
     
     
-    public void TriggerRipples(Transform target, ColorType colorType, Vector3 targetScale)
+    public void TriggerRipples(Transform target, ColorType colorType, Vector3 targetScale, float heightRatio = 0.5f)
     {
         Color color = GameManager.colors[(int)colorType];
         
@@ -23,7 +23,10 @@ public class EffectManager : MonoBehaviour
             {
                 totalBounds.Encapsulate(renderer.bounds);
             }
-            newEffect.transform.position = totalBounds.center;
+
+            // 높이 비율(heightRatio)을 이용해 y축 위치를 조정합니다.
+            float effectYPosition = totalBounds.min.y + totalBounds.size.y * heightRatio;
+            newEffect.transform.position = new Vector3(totalBounds.center.x, effectYPosition, totalBounds.center.z);
             newEffect.transform.SetParent(target, true);
 
             GameManager.pm.activeRipplesEffects[target] = newEffect;
@@ -42,6 +45,7 @@ public class EffectManager : MonoBehaviour
         if (!activeEffect.isPlaying)
             activeEffect.Play();
     }
+
 
     public void RemoveColorFromRipples(Transform target, ColorType colorType)
     {

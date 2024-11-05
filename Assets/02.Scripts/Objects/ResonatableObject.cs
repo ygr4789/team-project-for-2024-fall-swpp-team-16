@@ -7,6 +7,7 @@ public class ResonatableObject : MonoBehaviour
     [SerializeField] private PitchType[] properties;
     private bool isPlayingRipples = false;
     [SerializeField] private int colliderNum = 0;
+    [SerializeField] private float ripplesHeightRatio = 0.5f;
 
     public void OnEnterRadius()
     {
@@ -35,6 +36,6 @@ public class ResonatableObject : MonoBehaviour
     private void TriggerRepplesEffect(PitchType pitchType)
     {
         Debug.Log("Ripple: Triggered!");
-        GameManager.em.TriggerRipples(transform, (ColorType)(int)pitchType, transform.localScale);
+        GameManager.em.TriggerRipples(transform, (ColorType)(int)pitchType, transform.localScale, ripplesHeightRatio);
     }
 }
