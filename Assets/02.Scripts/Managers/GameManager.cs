@@ -29,8 +29,10 @@ public class GameManager : MonoBehaviour
         new Color(1f, 0.5f, 0f),  // Orange
         Color.yellow,
         Color.green,
+        Color.cyan,
         Color.blue,
-        new Color(0.29f, 0f, 0.51f),  // Indigo
+        //new Color(0.3f, 0.5f, 1f),  // Brightened Blue
+        //new Color(0.4f, 0f, 0.7f),  // Brightened Indigo
         new Color(0.56f, 0f, 1f)      // Violet
     };
     
