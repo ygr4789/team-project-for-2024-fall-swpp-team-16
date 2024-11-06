@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class RipplesHandler : MonoBehaviour
 {
+    [SerializeField] private float ripplesHeightRatio = 0.5f;
     void Update()
     {
         // 각 키가 눌린 상태에서 파티클을 재생
@@ -16,25 +17,25 @@ public class RipplesHandler : MonoBehaviour
         if (Input.GetKey(KeyCode.Alpha7)) TriggerParticleEffect(ColorType.Violet);
 
         // 키가 떼어질 때 해당 색상을 제거
-        if (Input.GetKeyUp(KeyCode.Alpha1)) GameManager.em.RemoveColorFromRipples(ColorType.Red);
-        if (Input.GetKeyUp(KeyCode.Alpha2)) GameManager.em.RemoveColorFromRipples(ColorType.Orange);
-        if (Input.GetKeyUp(KeyCode.Alpha3)) GameManager.em.RemoveColorFromRipples(ColorType.Yellow);
-        if (Input.GetKeyUp(KeyCode.Alpha4)) GameManager.em.RemoveColorFromRipples(ColorType.Green);
-        if (Input.GetKeyUp(KeyCode.Alpha5)) GameManager.em.RemoveColorFromRipples(ColorType.Blue);
-        if (Input.GetKeyUp(KeyCode.Alpha6)) GameManager.em.RemoveColorFromRipples(ColorType.Indigo);
-        if (Input.GetKeyUp(KeyCode.Alpha7)) GameManager.em.RemoveColorFromRipples(ColorType.Violet);
+        if (Input.GetKeyUp(KeyCode.Alpha1)) GameManager.em.RemoveColorFromRipples(transform, ColorType.Red);
+        if (Input.GetKeyUp(KeyCode.Alpha2)) GameManager.em.RemoveColorFromRipples(transform, ColorType.Orange);
+        if (Input.GetKeyUp(KeyCode.Alpha3)) GameManager.em.RemoveColorFromRipples(transform, ColorType.Yellow);
+        if (Input.GetKeyUp(KeyCode.Alpha4)) GameManager.em.RemoveColorFromRipples(transform, ColorType.Green);
+        if (Input.GetKeyUp(KeyCode.Alpha5)) GameManager.em.RemoveColorFromRipples(transform, ColorType.Blue);
+        if (Input.GetKeyUp(KeyCode.Alpha6)) GameManager.em.RemoveColorFromRipples(transform, ColorType.Indigo);
+        if (Input.GetKeyUp(KeyCode.Alpha7)) GameManager.em.RemoveColorFromRipples(transform, ColorType.Violet);
 
         // 모든 키 입력이 없을 때 파티클을 멈춤
         if (!Input.GetKey(KeyCode.Alpha1) && !Input.GetKey(KeyCode.Alpha2) && !Input.GetKey(KeyCode.Alpha3) &&
             !Input.GetKey(KeyCode.Alpha4) && !Input.GetKey(KeyCode.Alpha5) && !Input.GetKey(KeyCode.Alpha6) && 
             !Input.GetKey(KeyCode.Alpha7))
         {
-            GameManager.em.StopRipples();
+            GameManager.em.StopRipples(transform);
         }
     }
 
     private void TriggerParticleEffect(ColorType colorType)
     {
-        GameManager.em.TriggerRipples(transform.position, transform, colorType, transform.localScale);
+        GameManager.em.TriggerRipples(transform, colorType, transform.localScale, ripplesHeightRatio);
     }
 }

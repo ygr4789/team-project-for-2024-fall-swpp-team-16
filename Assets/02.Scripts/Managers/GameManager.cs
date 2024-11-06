@@ -17,9 +17,10 @@ public class GameManager : MonoBehaviour
     
     // DontDestroyOnLoad Managers
     public static SoundManager sm;
+    public static EffectManager em;
     
     // Other Managers
-    public static EffectManager em;
+    public static PlayManager pm;
 
     public Transform Player;
     
@@ -28,8 +29,10 @@ public class GameManager : MonoBehaviour
         new Color(1f, 0.5f, 0f),  // Orange
         Color.yellow,
         Color.green,
+        Color.cyan,
         Color.blue,
-        new Color(0.29f, 0f, 0.51f),  // Indigo
+        //new Color(0.3f, 0.5f, 1f),  // Brightened Blue
+        //new Color(0.4f, 0f, 0.7f),  // Brightened Indigo
         new Color(0.56f, 0f, 1f)      // Violet
     };
     
@@ -44,6 +47,7 @@ public class GameManager : MonoBehaviour
             
             sm = GetComponentInChildren<SoundManager>();
             em = GetComponentInChildren<EffectManager>();
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else if (gm != this)
         {
@@ -54,7 +58,7 @@ public class GameManager : MonoBehaviour
     // Called every time when some scene is loaded
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        em = FindObjectOfType<EffectManager>();
+        pm = FindObjectOfType<PlayManager>();
     }
 
     // Start is called before the first frame update
