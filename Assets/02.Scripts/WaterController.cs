@@ -24,9 +24,9 @@ public class WaterController : MonoBehaviour
         waterLevelTarget = initialPositionY;
         
         // ERASE ME: below three lines of codes are for test
-        Invoke("TriggerStepIncreaseWaterLevel", 0.0f);; // increase water level
-        Invoke("TriggerStepIncreaseWaterLevel", 4.0f); // trigger increase water level 4 seconds later
-        Invoke("TriggerStepDecreaseWaterLevel", 8.0f); // trigger decrease water level 8 seconds later
+        Invoke("TriggerStepIncreaseWaterLevel", 2.0f);; // increase water level
+        Invoke("TriggerStepIncreaseWaterLevel", 6.0f); // trigger increase water level 4 seconds later
+        Invoke("TriggerStepDecreaseWaterLevel", 10.0f); // trigger decrease water level 8 seconds later
     }
 
     void Update()
@@ -53,26 +53,34 @@ public class WaterController : MonoBehaviour
         }
     }
     
-    public void TriggerStepIncreaseWaterLevel()
+    public bool TriggerStepIncreaseWaterLevel()
     {
-        waterLevelTarget += waterLevelTargetUnit;
-        if (waterLevelTarget > waterLevelMax)
+        if (isHeightChanging) return false; // If already changing, return false
+
+        if (waterLevelTarget+waterLevelTargetUnit > waterLevelMax)
         {
             Debug.Log("Water level is already at the maximum height.");
-            return;
+            waterLevelTarget = waterLevelMax; // Adjust to max if exceeded
+            return false;
         }
+        waterLevelTarget += waterLevelTargetUnit;
         TriggerChangeWaterLevel();
+        return true; // Successfully initiated height change
     }
     
-    public void TriggerStepDecreaseWaterLevel()
+    public bool TriggerStepDecreaseWaterLevel()
     {
-        waterLevelTarget -= waterLevelTargetUnit;
-        if (waterLevelTarget < waterLevelMin)
+        if (isHeightChanging) return false; // If already changing, return false
+
+        if (waterLevelTarget-waterLevelTargetUnit < waterLevelMin)
         {
             Debug.Log("Water level is already at the minimum height.");
-            return;
+            waterLevelTarget = waterLevelMin; // Adjust to min if exceeded
+            return false;
         }
+        waterLevelTarget -= waterLevelTargetUnit;
         TriggerChangeWaterLevel();
+        return true; // Successfully initiated height change
     }
     
     private void TriggerChangeWaterLevel()
