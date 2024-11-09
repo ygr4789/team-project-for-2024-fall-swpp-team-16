@@ -12,7 +12,7 @@ public class ScoreController : MonoBehaviour
 
     public void Inspect()
     {
-        InventoryManager.im.AddScore(gameObject);
+        GameManager.im.AddScore(this.gameObject);
         gameObject.SetActive(false);
     }
 }

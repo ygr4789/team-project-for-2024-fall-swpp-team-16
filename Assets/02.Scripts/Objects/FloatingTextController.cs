@@ -8,6 +8,7 @@ public class FloatingTextController : MonoBehaviour
     public GameObject target;
     public Vector3 offset = new Vector3(0, 3, 0);
     public string inspectGuideText = "Press E to inspect";
+    public float inspectMaxDistance = 3;
     
     void Start()
     {
@@ -29,7 +30,13 @@ public class FloatingTextController : MonoBehaviour
         // if E is pressed, trigger the inspect function of the target object
         if (Input.GetKeyDown(KeyCode.E))
         {
-            target.SendMessage("Inspect");
+            // if distance between player and target is less than 3, trigger inspect
+            Transform playerTransform = GameManager.pm.playerTransform;
+            if (Vector3.Distance(target.transform.position, playerTransform.position) <
+                inspectMaxDistance)
+            {
+                target.SendMessage("Inspect");
+            }
         }
     }
     

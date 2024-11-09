@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class InventoryManager : MonoBehaviour
 {
-    public static InventoryManager im;
-    
     public Dictionary<GameObject, bool> scoreMap = new Dictionary<GameObject, bool>();
     
     public void AddScore(GameObject target)

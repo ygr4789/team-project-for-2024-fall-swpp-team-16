@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     // DontDestroyOnLoad Managers
     public static SoundManager sm;
     public static EffectManager em;
+    public static InventoryManager im;
     
     // Other Managers
     public static PlayManager pm;
@@ -47,6 +48,7 @@ public class GameManager : MonoBehaviour
             
             sm = GetComponentInChildren<SoundManager>();
             em = GetComponentInChildren<EffectManager>();
+            im = GetComponentInChildren<InventoryManager>();
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else if (gm != this)
