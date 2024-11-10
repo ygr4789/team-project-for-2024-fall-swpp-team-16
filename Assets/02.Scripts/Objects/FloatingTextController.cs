@@ -36,6 +36,7 @@ public class FloatingTextController : MonoBehaviour
                 inspectMaxDistance)
             {
                 target.SendMessage("Inspect");
+                Hide();
             }
         }
     }
