@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TreeManager : MonoBehaviour
+public class TreeController : MonoBehaviour
 {
     
     [SerializeField] private int durability = 3;

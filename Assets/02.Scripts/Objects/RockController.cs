@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class RockControl : MonoBehaviour
+public class RockController : MonoBehaviour
 {
     public float maxSpeed = 10f;
     public float defaultAcceleration = 10f;
