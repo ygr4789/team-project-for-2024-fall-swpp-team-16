@@ -1,13 +1,24 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ResonatableObject : MonoBehaviour
 {
-    [SerializeField] private PitchType[] properties;
+    [HideInInspector] public PitchType[] properties = {};
     private bool isPlayingRipples = false;
-    [SerializeField] private int colliderNum = 0;
-    [SerializeField] private float ripplesHeightRatio = 0.5f;
+    private int colliderNum = 0;
+    private float ripplesHeightRatio = 0.5f;
+
+    [HideInInspector] public delegate void Resonate(PitchType pitch);
+    [HideInInspector] public Resonate resonate;
+
+    public void Start()
+    {
+        SphereCollider collider = gameObject.AddComponent<SphereCollider>();
+        collider.isTrigger = true;
+        collider.radius = 0.1f;
+    }
 
     public void OnEnterRadius()
     {

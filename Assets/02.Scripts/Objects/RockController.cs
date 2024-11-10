@@ -14,6 +14,22 @@ public class RockController : MonoBehaviour
     private GameObject _player; // Reference to the player object
     public float hoverHeight = 1.0f; // Height above ground to maintain
     public LayerMask groundLayer; // Layer mask to specify ground layer
+    
+    private void Awake()
+    {
+        ResonatableObject resontable = gameObject.AddComponent<ResonatableObject>();
+        resontable.properties = new[] { PitchType.Mi, PitchType.Fa };
+        resontable.resonate += RockResonate;
+    }
+
+    private void RockResonate(PitchType pitch)
+    {
+        switch (pitch)
+        {
+            case PitchType.Mi: { AccelerateToPlayer(); break; }
+            case PitchType.Fa: { AccelerateAwayFromPlayer(); break; }
+        }
+    }
 
     void Start()
     {

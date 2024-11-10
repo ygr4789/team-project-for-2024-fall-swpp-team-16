@@ -24,6 +24,21 @@ public class AnimalController : MonoBehaviour
     private int currentPathIndex = 0;
     private bool isRushing = false;
     private float rushTimer = 0f;
+    
+    private void Awake()
+    {
+        ResonatableObject resontable = gameObject.AddComponent<ResonatableObject>();
+        resontable.properties = new[] { PitchType.Do };
+        resontable.resonate += AnimalResonate;
+    }
+
+    private void AnimalResonate(PitchType pitch)
+    {
+        switch (pitch)
+        {
+            case PitchType.Do: { TriggerRush(); break; }
+        }
+    }
 
     void Start()
     {

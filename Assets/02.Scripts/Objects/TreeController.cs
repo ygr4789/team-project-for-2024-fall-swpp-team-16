@@ -16,6 +16,22 @@ public class TreeController : MonoBehaviour
     private IEnumerator movingCoroutine = null;
     private bool isCollapsed = false;
 
+    private void Awake()
+    {
+        ResonatableObject resontable = gameObject.AddComponent<ResonatableObject>();
+        resontable.properties = new[] { PitchType.So, PitchType.La };
+        resontable.resonate += TreeResonate;
+    }
+
+    private void TreeResonate(PitchType pitch)
+    {
+        switch (pitch)
+        {
+            case PitchType.So: { Grow(); break; }
+            case PitchType.La: { Shrink(); break; }
+        }
+    }
+
     private void Start()
     {
         if (treePrefab == null) Debug.LogError("TreePrefab is null");
