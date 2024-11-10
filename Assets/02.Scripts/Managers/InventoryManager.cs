@@ -4,9 +4,20 @@ using UnityEngine;
 
 public class InventoryManager : MonoBehaviour
 {
-    public Dictionary<GameObject, bool> scoreMap = new Dictionary<GameObject, bool>();
+	public List<GameObject> scores = new List<GameObject>(); // list of scores to collect
+    public Dictionary<GameObject, bool> scoreMap = new Dictionary<GameObject, bool>(); // map of scores and their collection status
     public GameObject inventoryUI;
     public GameObject inventoryIconUI;
+
+	void Start()
+    {
+        // initialize scoreMap
+        foreach (var score in scores)
+        {
+            scoreMap[score] = false;
+			Debug.Log("Score: " + score.name);
+        }
+    }
     
     void Update()
     {
@@ -27,17 +38,20 @@ public class InventoryManager : MonoBehaviour
     public void AddScore(GameObject target)
     {
         Debug.Assert(target.tag == "Score", "Target must have the tag 'Score'");
-        if (!scoreMap.ContainsKey(target))
+        if (scoreMap.ContainsKey(target))
         {
             scoreMap[target] = true;
         }
+		else {
+	        Debug.Log("Score is not in the list: " + target.name);
+		}
     }
     
     public bool HasAllScores()
     {
-        foreach (var score in scoreMap.Values)
+        foreach (var hasTheScore in scoreMap.Values)
         {
-            if (!score)
+            if (!hasTheScore)
             {
                 return false;
             }
