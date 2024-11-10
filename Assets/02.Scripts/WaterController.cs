@@ -8,13 +8,15 @@ public class WaterController : MonoBehaviour
     public float waterLevelMax = 100.0f; // Maximum height of water
     public float waterLevelMin = 0.0f; // Minimum height of water
     public float waterLevelTargetUnit = 1.0f; // Target height of water
-    public float riseSpeed = 0.1f; // Speed at which water rises per second
+    public float timeToReachTarget = 2.0f; // 목표에 도달할 시간
     
     // Internal variables (But made public for debugging)
     public float initialPositionY;
     public bool isHeightChanging = false;
-    public bool isRising = false; // true if height of water is rising, false if height of water is lowering
     public float waterLevelTarget; // Target height of water
+    
+    private float elapsedTime = 0.0f;
+    private float startHeight; // 현재 높이를 저장할 변수
 
     void Start()
     {
@@ -22,78 +24,69 @@ public class WaterController : MonoBehaviour
         waterLevelTarget = initialPositionY;
         
         // ERASE ME: below three lines of codes are for test
-        Invoke("TriggerStepIncreaseWaterLevel", 0.0f);; // increase water level
-        Invoke("TriggerStepIncreaseWaterLevel", 4.0f); // trigger increase water level 4 seconds later
-        Invoke("TriggerStepDecreaseWaterLevel", 8.0f); // trigger decrease water level 8 seconds later
+        Invoke("TriggerStepIncreaseWaterLevel", 2.0f);; // increase water level
+        Invoke("TriggerStepIncreaseWaterLevel", 6.0f); // trigger increase water level 4 seconds later
+        Invoke("TriggerStepDecreaseWaterLevel", 10.0f); // trigger decrease water level 8 seconds later
     }
 
     void Update()
     {
         if (isHeightChanging)
         {
-            if (isRising && transform.position.y >= waterLevelTarget)
-            {                    
-                isHeightChanging = false;    
-            }
-            else if (!isRising && transform.position.y <= waterLevelTarget)
+            // 경과 시간 갱신
+            elapsedTime += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsedTime / timeToReachTarget); // 진행률 계산
+
+            // 부드러운 가속/감속을 적용하여 높이 변경
+            float smoothStepValue = Mathf.SmoothStep(0, 1, t);
+            float newY = Mathf.LerpUnclamped(startHeight, waterLevelTarget, smoothStepValue);
+
+            transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+
+            // 목표에 도달했으면 높이 변경 중지 및 초기화
+            if (t >= 1.0f)
             {
+                transform.position = new Vector3(transform.position.x, waterLevelTarget, transform.position.z);
                 isHeightChanging = false;
-            }
-            else
-            {
-                float direction = isRising ? 1 : -1;
-                ChangeWaterLevel(direction * riseSpeed * Time.deltaTime);
+                elapsedTime = 0.0f; // 초기화
             }
         }
     }
     
-    public void TriggerStepIncreaseWaterLevel()
+    public bool TriggerStepIncreaseWaterLevel()
     {
-        waterLevelTarget += waterLevelTargetUnit;
-        if (waterLevelTarget > waterLevelMax)
+        if (isHeightChanging) return false; // If already changing, return false
+
+        if (waterLevelTarget+waterLevelTargetUnit > waterLevelMax)
         {
             Debug.Log("Water level is already at the maximum height.");
-            return;
+            waterLevelTarget = waterLevelMax; // Adjust to max if exceeded
+            return false;
         }
+        waterLevelTarget += waterLevelTargetUnit;
         TriggerChangeWaterLevel();
+        return true; // Successfully initiated height change
     }
     
-    public void TriggerStepDecreaseWaterLevel()
+    public bool TriggerStepDecreaseWaterLevel()
     {
-        waterLevelTarget -= waterLevelTargetUnit;
-        if (waterLevelTarget < waterLevelMin)
+        if (isHeightChanging) return false; // If already changing, return false
+
+        if (waterLevelTarget-waterLevelTargetUnit < waterLevelMin)
         {
             Debug.Log("Water level is already at the minimum height.");
-            return;
+            waterLevelTarget = waterLevelMin; // Adjust to min if exceeded
+            return false;
         }
+        waterLevelTarget -= waterLevelTargetUnit;
         TriggerChangeWaterLevel();
+        return true; // Successfully initiated height change
     }
     
     private void TriggerChangeWaterLevel()
     {
         isHeightChanging = true;
-        if (waterLevelTarget > transform.position.y)
-        {
-            isRising = true;
-        }
-        else
-        {
-            isRising = false;
-        }
-    }
-    
-    private void ChangeWaterLevel(float amount)
-    {
-        transform.position = new Vector3(transform.position.x, transform.position.y + amount, transform.position.z);
-    }
-    
-    void OnTriggerEnter(Collider other)
-    {
-        
-    }
-
-    void OnTriggerExit(Collider other)
-    {
-        
+        startHeight = transform.position.y; // 현재 높이를 시작 높이로 설정
+        elapsedTime = 0.0f; // 새로운 변화가 시작되므로 경과 시간 초기화
     }
 }
