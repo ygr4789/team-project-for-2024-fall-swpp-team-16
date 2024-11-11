@@ -27,9 +27,9 @@ public class AnimalController : MonoBehaviour
     
     private void Awake()
     {
-        ResonatableObject resontable = gameObject.AddComponent<ResonatableObject>();
-        resontable.properties = new[] { PitchType.Do };
-        resontable.resonate += AnimalResonate;
+        ResonatableObject resonatable = gameObject.AddComponent<ResonatableObject>();
+        resonatable.properties = new[] { PitchType.Do };
+        resonatable.resonate += AnimalResonate;
     }
 
     private void AnimalResonate(PitchType pitch)

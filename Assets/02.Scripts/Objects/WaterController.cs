@@ -20,9 +20,9 @@ public class WaterController : MonoBehaviour
     
     private void Awake()
     {
-        ResonatableObject resontable = gameObject.AddComponent<ResonatableObject>();
-        resontable.properties = new[] { PitchType.So, PitchType.La };
-        resontable.resonate += WaterResonate;
+        ResonatableObject resonatable = gameObject.AddComponent<ResonatableObject>();
+        resonatable.properties = new[] { PitchType.So, PitchType.La };
+        resonatable.resonate += WaterResonate;
     }
 
     private void WaterResonate(PitchType pitch)

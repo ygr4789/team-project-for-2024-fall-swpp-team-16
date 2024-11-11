@@ -18,9 +18,9 @@ public class TreeController : MonoBehaviour
 
     private void Awake()
     {
-        ResonatableObject resontable = gameObject.AddComponent<ResonatableObject>();
-        resontable.properties = new[] { PitchType.So, PitchType.La };
-        resontable.resonate += TreeResonate;
+        ResonatableObject resonatable = gameObject.AddComponent<ResonatableObject>();
+        resonatable.properties = new[] { PitchType.So, PitchType.La };
+        resonatable.resonate += TreeResonate;
     }
 
     private void TreeResonate(PitchType pitch)

@@ -17,17 +17,17 @@ public class RockController : MonoBehaviour
     
     private void Awake()
     {
-        ResonatableObject resontable = gameObject.AddComponent<ResonatableObject>();
-        resontable.properties = new[] { PitchType.Mi, PitchType.Fa };
-        resontable.resonate += RockResonate;
+        ResonatableObject resonatable = gameObject.AddComponent<ResonatableObject>();
+        resonatable.properties = new[] { PitchType.Mi, PitchType.Fa };
+        resonatable.resonate += RockResonate;
     }
 
     private void RockResonate(PitchType pitch)
     {
         switch (pitch)
         {
-            case PitchType.Mi: { AccelerateToPlayer(); break; }
-            case PitchType.Fa: { AccelerateAwayFromPlayer(); break; }
+            case PitchType.Mi: { AccelerateToPlayer(defaultAcceleration); break; }
+            case PitchType.Fa: { AccelerateAwayFromPlayer(defaultAcceleration); break; }
         }
     }
 
@@ -39,16 +39,7 @@ public class RockController : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    { 
-        // for test
-        if (Input.GetKey(KeyCode.L))
-            Accelerate(Vector3.left, defaultAcceleration);
-        if (Input.GetKey(KeyCode.F))
-            AccelerateToPlayer(defaultAcceleration);
-        if (Input.GetKey(KeyCode.G))
-            AccelerateAwayFromPlayer(defaultAcceleration);
-            
-            
+    {
         _currentVelocity -= _currentVelocity.normalized * (defaultDeceleration * Time.deltaTime); // default deceleration
         _currentVelocity = Vector3.ClampMagnitude(_currentVelocity, maxSpeed); // clamp speed
 
@@ -60,8 +51,8 @@ public class RockController : MonoBehaviour
         if (followPlayer && _player) // follow player *not yet implemented
         {
             _offset = transform.position - _player.transform.position;
-            FollowPlayer();
-            Float();
+            // FollowPlayer();
+            // Float();
         }
 
         StickToGround();
@@ -69,7 +60,9 @@ public class RockController : MonoBehaviour
 
     private void Accelerate(Vector3 direction, float acceleration)
     {
-        _currentVelocity += direction.normalized * (acceleration * Time.deltaTime);
+        // _currentVelocity += direction.normalized * (acceleration * Time.deltaTime);
+        // pseudo-impulse (need to be changed)
+        _currentVelocity += direction.normalized * (acceleration);
         _currentVelocity = Vector3.ClampMagnitude(_currentVelocity, maxSpeed); // Ensure speed stays within limits
     }
 
