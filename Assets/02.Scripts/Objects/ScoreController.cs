@@ -14,6 +14,6 @@ public class ScoreController : MonoBehaviour
     {
         GameManager.im.AddScore(this.gameObject);
         gameObject.SetActive(false);
-        // TODO: play sound effect
+        GameManager.sm.PlaySound("picking-score");
     }
 }

@@ -29,6 +29,7 @@ public class DoorController : MonoBehaviour
 
 	private void OpenDoor()
     {
+		GameManager.sm.PlaySound("opening-door");
        	// opening door animation
     }
 }
