@@ -30,17 +30,19 @@ public class IKFootPlacement : MonoBehaviour
         
         // IK only works when the foot touches the ground
         bool moving = playerAnimator.GetBool("Moving");
+        bool grounded = playerAnimator.GetBool("Grounded");
         float nTime = playerAnimator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
-        float leftFootIKWeight = moving ? _leftFootIKCurve.Evaluate(nTime) : 1f;
-        float rightFootIKWeight = moving ? _rightFootIKCurve.Evaluate(nTime) : 1f;
+        float leftFootIKWeight = grounded ? 0f : (moving ? _leftFootIKCurve.Evaluate(nTime) : 1f);
+        float rightFootIKWeight = grounded ? 0f : (moving ? _rightFootIKCurve.Evaluate(nTime) : 1f);
         playerAnimator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, leftFootIKWeight);
         playerAnimator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, leftFootIKWeight);
         playerAnimator.SetIKPositionWeight(AvatarIKGoal.RightFoot, rightFootIKWeight);
         playerAnimator.SetIKRotationWeight(AvatarIKGoal.RightFoot, rightFootIKWeight);
         
-        float detectDistance = 2.0f;
+        float detectDistance = 0.5f;
         
         // Raising the origin so that it can be detected even when the foot is buried
+        transform.localPosition = Vector3.zero;
         Ray leftRay = new Ray(playerAnimator.GetIKPosition(AvatarIKGoal.LeftFoot) + Vector3.up, Vector3.down);
         Ray rightRay = new Ray(playerAnimator.GetIKPosition(AvatarIKGoal.RightFoot) + Vector3.up, Vector3.down);
         bool leftIntersected = Physics.Raycast(leftRay, out RaycastHit leftHit, _distanceToGround + detectDistance + 1f,
@@ -48,7 +50,7 @@ public class IKFootPlacement : MonoBehaviour
         bool rightIntersected = Physics.Raycast(rightRay, out RaycastHit rightHit, _distanceToGround + detectDistance + 1f,
             _raycastLayerMask);
         
-        if (leftIntersected && rightIntersected)
+        if (leftIntersected && rightIntersected && grounded)
         {
             // Staying low on slopes where it's hard to reach your feet
             float lowestHeight = Mathf.Min(leftHit.point.y, rightHit.point.y);
@@ -65,7 +67,6 @@ public class IKFootPlacement : MonoBehaviour
             // if (rightHit.transform.tag == "Walkable")
             Vector3 rightFootPosition = rightHit.point;
             rightFootPosition.y += _distanceToGround;
-        
             playerAnimator.SetIKPosition(AvatarIKGoal.RightFoot, rightFootPosition);
             playerAnimator.SetIKRotation(AvatarIKGoal.RightFoot, Quaternion.LookRotation(transform.forward, rightHit.normal));
         }

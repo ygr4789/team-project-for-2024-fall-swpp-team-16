@@ -1,8 +1,25 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 namespace _12.Tests.PlayerDev
 {
+    public class PlayerInput
+    {
+        public float moveX;
+        public float moveZ;
+        public bool jump;
+        public bool run;
+        
+        public void Clear()
+        {
+            moveX = 0f;
+            moveZ = 0f;
+            jump = false;
+            run = false;
+        } 
+    }
+    
     public class PlayerMovement : MonoBehaviour
     {
         [Range(1f, 20f)]
@@ -24,10 +41,24 @@ namespace _12.Tests.PlayerDev
         private Transform playerTransform;
         private Animator playerAnimator;
         private Vector3 _controllerVelocity;
+        
+        private PlayerInput input;
+        
+        private IEnumerator jumpCheckGroundAvoider; 
+        private IEnumerator JumpCheckGroundAvoider()
+        {
+            yield return new WaitForFixedUpdate();
+            playerAnimator.SetBool("Jump", false);
+        }
+        
+        private int runLayer = 1;
+        private float runLayerWeight = 0f;
+        private float runTransitionSpeed = 3f;
 
         // Start is called before the first frame update
         private void Start()
         {
+            input = new PlayerInput();
             characterController = GetComponent<CharacterController>();
             playerTransform = transform.Find("Player");
             playerAnimator = playerTransform.GetComponent<Animator>();
@@ -36,18 +67,31 @@ namespace _12.Tests.PlayerDev
         // Update is called once per frame
         private void Update()
         {
+            GetInputs();
+            ControlPlayer();
+        }
+
+        private void GetInputs()
+        {
+            input.Clear();
+            
+            // get the movement input
+            input.moveX = Input.GetAxis("Horizontal");
+            input.moveZ = Input.GetAxis("Vertical");
+            input.jump = Input.GetButton("Jump");
+            input.run = Input.GetKey(KeyCode.LeftShift);
+        }
+
+        private void ControlPlayer()
+        {
             // stops the y velocity when player is on the ground and the velocity has reached 0
             if (characterController.isGrounded && _controllerVelocity.y < 0)
             {
                 _controllerVelocity.y = 0;
             }
 
-            // get the movement input
-            float moveX = Input.GetAxis("Horizontal");
-            float moveZ = Input.GetAxis("Vertical");
-
             // moves the controller in the desired direction on the x- and z-axis
-            Vector3 movement = transform.right * moveX + transform.forward * moveZ;
+            Vector3 movement = transform.right * input.moveX + transform.forward * input.moveZ;
             movement = PassableComponent(movement);
             characterController.Move(movement * (_movementSpeed * Time.deltaTime));
 
@@ -56,7 +100,7 @@ namespace _12.Tests.PlayerDev
             playerAnimator.SetBool("Moving", currentVelocity > 0);
             if (currentVelocity > 0)
             {
-                float targetAngle = Mathf.Atan2(moveX, moveZ) * Mathf.Rad2Deg - 90;
+                float targetAngle = Mathf.Atan2(input.moveX, input.moveZ) * Mathf.Rad2Deg - 90;
                 float angle = Mathf.SmoothDampAngle(playerTransform.eulerAngles.y, targetAngle, ref currentVelocity, _smoothTime);
                 playerTransform.rotation = Quaternion.Euler(0, angle, 0);
             }
@@ -67,18 +111,36 @@ namespace _12.Tests.PlayerDev
             // moves the controller on the y-axis
             characterController.Move(_controllerVelocity * Time.deltaTime);
             
+            if(characterController.isGrounded) playerAnimator.SetBool("Grounded", true);
 
             // the controller is able to jump when on the ground
-            if (Input.GetButton("Jump") && characterController.isGrounded)
+            if (input.jump && characterController.isGrounded)
             {
+                playerAnimator.SetBool("Jump", true);
+                playerAnimator.SetBool("Grounded", false);
                 _controllerVelocity.y = Mathf.Sqrt(_jumpHeight * -2f * _gravity);
+                
+                if(jumpCheckGroundAvoider != null)
+                {
+                    StopCoroutine(jumpCheckGroundAvoider);
+                }
+                jumpCheckGroundAvoider = JumpCheckGroundAvoider();
+                StartCoroutine(jumpCheckGroundAvoider);
             }
 
             // the controller is able to run
-            if (Input.GetKey(KeyCode.LeftShift))
+            if (input.run)
             {
                 characterController.Move(movement * (Time.deltaTime * _runMultiplier));
+
+                if(playerAnimator.GetBool("Grounded"))
+                {
+                    runLayerWeight = Mathf.MoveTowards(runLayerWeight, 1f, Time.deltaTime * runTransitionSpeed);
+                }
+            }else{
+                runLayerWeight = Mathf.MoveTowards(runLayerWeight, 0f, Time.deltaTime * runTransitionSpeed);
             }
+            playerAnimator.SetLayerWeight(runLayer, runLayerWeight);
         }
 
         // Convert the direction of movement to avoid entering a impassible area
