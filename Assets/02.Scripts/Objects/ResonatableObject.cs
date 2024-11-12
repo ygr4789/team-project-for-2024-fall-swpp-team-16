@@ -15,9 +15,6 @@ public class ResonatableObject : MonoBehaviour
 
     public void Start()
     {
-        SphereCollider collider = gameObject.AddComponent<SphereCollider>();
-        collider.isTrigger = true;
-        collider.radius = 0.1f;
     }
 
     public void OnEnterRadius()
@@ -28,7 +25,7 @@ public class ResonatableObject : MonoBehaviour
             foreach (PitchType pitch in properties)
             {
                 isPlayingRipples = true;
-                TriggerRepplesEffect(pitch);
+                TriggerRipplesEffect(pitch);
             }
         }
     }
@@ -44,10 +41,10 @@ public class ResonatableObject : MonoBehaviour
         }
     }
     
-    private void TriggerRepplesEffect(PitchType pitchType)
+    private void TriggerRipplesEffect(PitchType pitchType)
     {
         Debug.Log("Ripple: Triggered!");
-        Color color = GameParameters.pitchColors[(int)pitchType];
+        Color color = GameParameters.PitchColors[(int)pitchType];
         GameManager.em.TriggerRipples(transform, color, transform.localScale, ripplesHeightRatio);
     }
 }

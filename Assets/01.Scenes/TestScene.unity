@@ -2509,7 +2509,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   durability: 3
-  currentLevel: 0
   treePrefab: {fileID: 169280678}
   minHeight: -3
   maxHeight: 3

@@ -7,7 +7,6 @@ public class TreeController : MonoBehaviour
 {
     
     [SerializeField] private int durability = 3;
-    [SerializeField] private int currentLevel = 0;
     // Prefabs must contain mesh component
     [SerializeField] private GameObject treePrefab;
     
@@ -17,7 +16,7 @@ public class TreeController : MonoBehaviour
     private readonly float heightChangeSmoothTime = 0.6f;
     private float heightChangeSpeed = 1f;
     private float targetHeight;
-    private Vector3 currentSpeed = Vector3.zero;
+    private Vector3 currentVelocity = Vector3.zero;
     
     private bool isCollapsed = false;
 
@@ -51,7 +50,7 @@ public class TreeController : MonoBehaviour
         // Debug.Log((currentPosition, targetPosition));
         if (currentPosition != targetPosition)
         {
-            treePrefab.transform.localPosition = Vector3.SmoothDamp(currentPosition, targetPosition, ref currentSpeed, heightChangeSmoothTime);
+            treePrefab.transform.localPosition = Vector3.SmoothDamp(currentPosition, targetPosition, ref currentVelocity, heightChangeSmoothTime);
         }
     }
 

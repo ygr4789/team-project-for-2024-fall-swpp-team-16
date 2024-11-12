@@ -11,8 +11,8 @@ public class RipplesHandler : MonoBehaviour
         // 각 pitch에 대해 파티클 처리
         foreach (PitchType pitch in Enum.GetValues(typeof(PitchType)))
         {
-            Color color = GameParameters.pitchColors[(int)pitch];
-            KeyCode key = GameParameters.pitchKeys[(int)pitch];
+            Color color = GameParameters.PitchColors[(int)pitch];
+            KeyCode key = GameParameters.PitchKeys[(int)pitch];
             // 각 키가 눌린 상태에서 파티클을 재생
             if (Input.GetKey(key)) TriggerParticleEffect(color);
             // 키가 떼어질 때 해당 색상을 제거
@@ -23,7 +23,7 @@ public class RipplesHandler : MonoBehaviour
         bool noPitchInput = true;
         foreach (PitchType pitch in Enum.GetValues(typeof(PitchType)))
         {
-            KeyCode key = GameParameters.pitchKeys[(int)pitch];
+            KeyCode key = GameParameters.PitchKeys[(int)pitch];
             if (Input.GetKey(key)) noPitchInput = false;
         }
         if (noPitchInput) GameManager.em.StopRipples(transform);

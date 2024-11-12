@@ -1,19 +1,25 @@
+using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class RockController : MonoBehaviour
 {
-    public float maxSpeed = 10f;
-    public float defaultAcceleration = 10f;
-    public float defaultDeceleration = 5f;
-    private Vector3 _currentVelocity = Vector3.zero;
+    public bool isRolling; // Flag to check if the rock is rolling
 
     private const string PlayerTag = "Player"; // Tag of the player to follow
-    public bool followPlayer; // Flag to start following the player
-    public bool isRolling; // Flag to check if the rock is rolling
-    private Vector3 _offset; // Relative position offset to the player
     private GameObject _player; // Reference to the player object
-    public float hoverHeight = 1.0f; // Height above ground to maintain
-    public LayerMask groundLayer; // Layer mask to specify ground layer
+    
+    [Range(0f, 2f)]
+    [SerializeField] private float groundToCenterHeight = 1f; // Height above ground to maintain
+    [Range(0f, 0.1f)]
+    [SerializeField] private float approachDistance = 3f; // The distance at which the object stops approaching the player
+    [SerializeField] private LayerMask groundLayer; // Layer mask to specify ground layer
+    
+    [Range(0f, 10f)]
+    public float moveSpeed = 3f;
+    private readonly float _moveSmoothTime = 0.6f;
+    private Vector3 _currentVelocity = Vector3.zero;
+    private Vector3 _targetPosition;
     
     private void Awake()
     {
@@ -26,63 +32,40 @@ public class RockController : MonoBehaviour
     {
         switch (pitch)
         {
-            case PitchType.Mi: { AccelerateToPlayer(defaultAcceleration); break; }
-            case PitchType.Fa: { AccelerateAwayFromPlayer(defaultAcceleration); break; }
+            case PitchType.Mi: { MoveToPlayer(); break; }
+            case PitchType.Fa: { MoveAwayFromPlayer(); break; }
         }
     }
 
     void Start()
     {
         _player = GameObject.FindGameObjectWithTag(PlayerTag);
+        _targetPosition = transform.position;
         StickToGround();
     }
 
     // Update is called once per frame
     void Update()
     {
-        _currentVelocity -= _currentVelocity.normalized * (defaultDeceleration * Time.deltaTime); // default deceleration
-        _currentVelocity = Vector3.ClampMagnitude(_currentVelocity, maxSpeed); // clamp speed
+        HandleCollision();
 
-        if (_currentVelocity.magnitude > 0f) // rock moving motion
+        Vector3 currentPosition = transform.position;
+        transform.position = Vector3.SmoothDamp(currentPosition, _targetPosition, ref _currentVelocity, _moveSmoothTime);
+        
+        if (isRolling) // rotate rock if it is rolling
         {
-            RollRock(_currentVelocity); // update rock's position and rotation
-        }
-
-        if (followPlayer && _player) // follow player *not yet implemented
-        {
-            _offset = transform.position - _player.transform.position;
-            // FollowPlayer();
-            // Float();
+            RollRock(_currentVelocity);
         }
 
         StickToGround();
-    }
-
-    private void Accelerate(Vector3 direction, float acceleration)
-    {
-        _currentVelocity += direction.normalized * (acceleration * Time.deltaTime);
-        _currentVelocity = Vector3.ClampMagnitude(_currentVelocity, maxSpeed); // Ensure speed stays within limits
     }
 
     private void RollRock(Vector3 velocity)
     {
         // Move and rotate the rock
         Vector3 direction = velocity.normalized;
-        transform.position += velocity * Time.deltaTime;
-        if (isRolling)
-            transform.Rotate(Vector3.Cross(Vector3.up, direction), velocity.magnitude * Time.deltaTime * 36, Space.World);
-    }
-
-    private void Float()
-    {
-        float floatSpeed = 2f;
-        float floatHeight = Mathf.Sin(Time.time * floatSpeed) * 0.5f + 2f;
-        transform.position = new Vector3(transform.position.x, _player.transform.position.y + floatHeight, transform.position.z);
-    }
-
-    private void FollowPlayer()
-    {
-        transform.position = _player.transform.position + _offset;
+        float angle = (velocity.magnitude / groundToCenterHeight) * Time.deltaTime * Mathf.Rad2Deg;
+        transform.Rotate(Vector3.Cross(Vector3.up, direction), angle, Space.World);
     }
 
     private void StickToGround()
@@ -91,24 +74,58 @@ public class RockController : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, groundLayer))
         {
             float groundHeight = hit.point.y;
-            if (!Mathf.Approximately(transform.position.y, groundHeight + hoverHeight))
+            if (!Mathf.Approximately(transform.position.y, groundHeight + groundToCenterHeight))
             {
-                transform.position = new Vector3(transform.position.x, groundHeight + hoverHeight, transform.position.z);
+                transform.position = new Vector3(transform.position.x, groundHeight + groundToCenterHeight, transform.position.z);
+                _targetPosition.y = transform.position.y;
             }
         }
     }
 
-    private void AccelerateToPlayer(float acceleration = 10f)
+    private void MoveToPlayer()
     {
         if (_player is null) return;
+        if (Vector3.Distance(_player.transform.position, _targetPosition) < approachDistance) return;
         var directionToPlayer = (_player.transform.position - transform.position).normalized;
-        Accelerate(directionToPlayer, acceleration);
+        _targetPosition += directionToPlayer * (moveSpeed * Time.deltaTime);
     }
 
-    private void AccelerateAwayFromPlayer(float acceleration = 10f)
+    private void MoveAwayFromPlayer()
     {
         if (_player is null) return;
         var directionAwayFromPlayer = (transform.position - _player.transform.position).normalized;
-        Accelerate(directionAwayFromPlayer, acceleration);
+        _targetPosition += directionAwayFromPlayer * (moveSpeed * Time.deltaTime);
+    }
+    
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log(collision.contacts);
+    }
+    
+    private void HandleCollision()
+    {
+        Vector3 moveDirection = _currentVelocity.normalized;
+        float checkDistance = 10f;
+        // Inspection resolution
+        int numStep = 10;
+
+        for (int i = -numStep; i <= numStep; i++)
+        {
+            float checkAngle = 90f * i / numStep;
+            Vector3 checkDirection = Quaternion.AngleAxis(checkAngle, Vector3.up) * moveDirection;
+            Ray outRay = new Ray(transform.position, checkDirection);
+            if (Physics.Raycast(outRay, out RaycastHit hit, checkDistance, groundLayer))
+            {
+                Ray inRay = new Ray(hit.point, -checkDirection);
+                float hitDistance = hit.distance;
+                Physics.Raycast(inRay, out hit, hitDistance, groundLayer);
+                
+                if (hit.transform != transform)
+                {
+                    _currentVelocity = Vector3.zero;
+                    _targetPosition = transform.position;
+                }
+            }
+        }
     }
 }

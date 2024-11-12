@@ -13,9 +13,9 @@ public enum PitchType
     Ti = 6
 }
 
-public class GameParameters
+public static class GameParameters
 {
-    public static readonly Color[] pitchColors = {
+    public static readonly Color[] PitchColors = {
         new Color(1f, 0f, 0f), // Red
         new Color(1f, 0.5f, 0f),  // Orange
         new Color(1f, 1f, 0f), // Yellow
@@ -25,7 +25,7 @@ public class GameParameters
         new Color(0.56f, 0f, 1f) // Violet
     };
 
-    public static readonly KeyCode[] pitchKeys =
+    public static readonly KeyCode[] PitchKeys =
     {
         KeyCode.Alpha1,
         KeyCode.Alpha2,

@@ -42,7 +42,7 @@ public class PlayManager : MonoBehaviour
         if (resonatable is null) return;
         foreach (PitchType pitch in Enum.GetValues(typeof(PitchType)))
         {
-            KeyCode key = GameParameters.pitchKeys[(int)pitch];
+            KeyCode key = GameParameters.PitchKeys[(int)pitch];
             if (Input.GetKey(key)) resonatable.resonate(pitch);
         }
     }
