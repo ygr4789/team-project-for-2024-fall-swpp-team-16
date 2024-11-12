@@ -10,10 +10,8 @@ public class EffectManager : MonoBehaviour
     private float targetScaleMultiplier = 1.5f;
     
     
-    public void TriggerRipples(Transform target, ColorType colorType, Vector3 targetScale, float heightRatio = 0.5f)
+    public void TriggerRipples(Transform target, Color color, Vector3 targetScale, float heightRatio = 0.5f)
     {
-        Color color = GameManager.colors[(int)colorType];
-        
         if (!GameManager.pm.activeRipplesEffects.ContainsKey(target))
         {
             ParticleSystem newEffect = Instantiate(ripplesEffectPrefab, target.position, Quaternion.identity);
@@ -47,11 +45,10 @@ public class EffectManager : MonoBehaviour
     }
 
 
-    public void RemoveColorFromRipples(Transform target, ColorType colorType)
+    public void RemoveColorFromRipples(Transform target, Color color)
     {
         if (GameManager.pm.activeRipplesColors.ContainsKey(target))
         {
-            Color color = GameManager.colors[(int)colorType];
             GameManager.pm.activeRipplesColors[target].Remove(color);
         }
     }

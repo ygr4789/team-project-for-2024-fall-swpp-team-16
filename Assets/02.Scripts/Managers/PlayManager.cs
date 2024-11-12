@@ -20,7 +20,7 @@ public class PlayManager : MonoBehaviour
         currentTarget = null;
     }
 
-    public void HandleTargetSwitch()
+    private void HandleTargetSwitch()
     {
         if (Input.GetKeyDown(KeyCode.Tab))
         {
@@ -40,14 +40,11 @@ public class PlayManager : MonoBehaviour
         if (currentTarget is null) return;
         ResonatableObject resonatable = currentTarget.GetComponent<ResonatableObject>();
         if (resonatable is null) return;
-
-        if (Input.GetKeyDown(KeyCode.Alpha1)) resonatable.resonate(PitchType.Do);
-        if (Input.GetKeyDown(KeyCode.Alpha2)) resonatable.resonate(PitchType.Re);
-        if (Input.GetKeyDown(KeyCode.Alpha3)) resonatable.resonate(PitchType.Mi);
-        if (Input.GetKeyDown(KeyCode.Alpha4)) resonatable.resonate(PitchType.Fa);
-        if (Input.GetKeyDown(KeyCode.Alpha5)) resonatable.resonate(PitchType.So);
-        if (Input.GetKeyDown(KeyCode.Alpha6)) resonatable.resonate(PitchType.La);
-        if (Input.GetKeyDown(KeyCode.Alpha7)) resonatable.resonate(PitchType.Ti);
+        foreach (PitchType pitch in Enum.GetValues(typeof(PitchType)))
+        {
+            KeyCode key = GameParameters.pitchKeys[(int)pitch];
+            if (Input.GetKey(key)) resonatable.resonate(pitch);
+        }
     }
 
     private void SetCurrentTarget(Transform newTarget)

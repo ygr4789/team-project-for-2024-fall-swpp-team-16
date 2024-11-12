@@ -47,6 +47,7 @@ public class ResonatableObject : MonoBehaviour
     private void TriggerRepplesEffect(PitchType pitchType)
     {
         Debug.Log("Ripple: Triggered!");
-        GameManager.em.TriggerRipples(transform, (ColorType)(int)pitchType, transform.localScale, ripplesHeightRatio);
+        Color color = GameParameters.pitchColors[(int)pitchType];
+        GameManager.em.TriggerRipples(transform, color, transform.localScale, ripplesHeightRatio);
     }
 }
