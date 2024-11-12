@@ -60,9 +60,7 @@ public class RockController : MonoBehaviour
 
     private void Accelerate(Vector3 direction, float acceleration)
     {
-        // _currentVelocity += direction.normalized * (acceleration * Time.deltaTime);
-        // pseudo-impulse (need to be changed)
-        _currentVelocity += direction.normalized * (acceleration);
+        _currentVelocity += direction.normalized * (acceleration * Time.deltaTime);
         _currentVelocity = Vector3.ClampMagnitude(_currentVelocity, maxSpeed); // Ensure speed stays within limits
     }
 
@@ -100,14 +98,14 @@ public class RockController : MonoBehaviour
         }
     }
 
-    public void AccelerateToPlayer(float acceleration = 10f)
+    private void AccelerateToPlayer(float acceleration = 10f)
     {
         if (_player is null) return;
         var directionToPlayer = (_player.transform.position - transform.position).normalized;
         Accelerate(directionToPlayer, acceleration);
     }
 
-    public void AccelerateAwayFromPlayer(float acceleration = 10f)
+    private void AccelerateAwayFromPlayer(float acceleration = 10f)
     {
         if (_player is null) return;
         var directionAwayFromPlayer = (transform.position - _player.transform.position).normalized;

@@ -18,22 +18,6 @@ public class WaterController : MonoBehaviour
     private float elapsedTime = 0.0f;
     private float startHeight; // 현재 높이를 저장할 변수
     
-    private void Awake()
-    {
-        ResonatableObject resonatable = gameObject.AddComponent<ResonatableObject>();
-        resonatable.properties = new[] { PitchType.So, PitchType.La };
-        resonatable.resonate += WaterResonate;
-    }
-
-    private void WaterResonate(PitchType pitch)
-    {
-        switch (pitch)
-        {
-            case PitchType.So: { TriggerStepIncreaseWaterLevel(); break; }
-            case PitchType.La: { TriggerStepDecreaseWaterLevel(); break; }
-        }
-    }
-
     void Start()
     {
         initialPositionY = transform.position.y;

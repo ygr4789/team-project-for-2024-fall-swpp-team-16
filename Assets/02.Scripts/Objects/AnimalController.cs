@@ -57,63 +57,63 @@ public class AnimalController : MonoBehaviour
     }
 
     /*
-void Update()
-{
-    if (Input.GetKey(KeyCode.Alpha4))
+    void Update()
+    {
+        if (Input.GetKey(KeyCode.Alpha4))
+        {
+            if (currentState != AnimalState.Rush)
+            {
+                TriggerRush();
+            }
+    
+            // Move forward while rushing
+            transform.Translate(Vector3.forward * rushSpeed * Time.deltaTime);
+        }
+        else if (isRushing)
+        {
+            // Maintain the Rush state without resetting until the duration ends
+            return;
+        }
+        else
+        {
+            // Reset to base state when not rushing
+            animator.SetBool("isRushing", false);
+            currentState = baseState;
+    
+            if (rushParticleEffect != null)
+            {
+                rushParticleEffect.Stop();
+            }
+        }
+    }
+    
+    public void TriggerRush()
     {
         if (currentState != AnimalState.Rush)
         {
-            TriggerRush();
+            Debug.Log("TriggerRush called.");
+            
+            // Change state to Rush
+            currentState = AnimalState.Rush;
+            isRushing = true;
+            rushTimer = 0f;
+    
+            // Stop other behaviors to prevent conflicts
+            StopAllCoroutines();
+    
+            // Play particle effect if available
+            if (rushParticleEffect != null)
+            {
+                rushParticleEffect.Play();
+            }
+    
+            // Set animator parameter
+            animator.SetBool("isRushing", true);
+    
+            // Start coroutine to manage rush duration
+            StartCoroutine(RushCoroutine());
         }
-
-        // Move forward while rushing
-        transform.Translate(Vector3.forward * rushSpeed * Time.deltaTime);
     }
-    else if (isRushing)
-    {
-        // Maintain the Rush state without resetting until the duration ends
-        return;
-    }
-    else
-    {
-        // Reset to base state when not rushing
-        animator.SetBool("isRushing", false);
-        currentState = baseState;
-
-        if (rushParticleEffect != null)
-        {
-            rushParticleEffect.Stop();
-        }
-    }
-}
-
-public void TriggerRush()
-{
-    if (currentState != AnimalState.Rush)
-    {
-        Debug.Log("TriggerRush called.");
-        
-        // Change state to Rush
-        currentState = AnimalState.Rush;
-        isRushing = true;
-        rushTimer = 0f;
-
-        // Stop other behaviors to prevent conflicts
-        StopAllCoroutines();
-
-        // Play particle effect if available
-        if (rushParticleEffect != null)
-        {
-            rushParticleEffect.Play();
-        }
-
-        // Set animator parameter
-        animator.SetBool("isRushing", true);
-
-        // Start coroutine to manage rush duration
-        StartCoroutine(RushCoroutine());
-    }
-}
 
     void StopRush()
     {
@@ -142,86 +142,86 @@ public void TriggerRush()
     } */
 
     void Update()
-{
-    if (Input.GetKey(KeyCode.Alpha4)) // Change to KeyCode.Alpha1 if needed
     {
-        if (currentState != AnimalState.Rush)
+        if (Input.GetKey(KeyCode.Alpha4)) // Change to KeyCode.Alpha1 if needed
         {
-            TriggerRush();
-        }
-
-        // Move forward while rushing
-        transform.Translate(Vector3.forward * rushSpeed * Time.deltaTime);
-    }
-    else
-    {
-        if (isRushing)
-        {
-            StopRush(); // Stop rushing when the key is released
+            if (currentState != AnimalState.Rush)
+            {
+                TriggerRush();
+            }
+    
+            // Move forward while rushing
+            transform.Translate(Vector3.forward * rushSpeed * Time.deltaTime);
         }
         else
         {
-            // Reset to base state when not rushing
-            animator.SetBool("isRushing", false);
-            currentState = baseState;
-
-            if (rushParticleEffect != null)
+            if (isRushing)
             {
-                rushParticleEffect.Stop();
+                StopRush(); // Stop rushing when the key is released
+            }
+            else
+            {
+                // Reset to base state when not rushing
+                animator.SetBool("isRushing", false);
+                currentState = baseState;
+    
+                if (rushParticleEffect != null)
+                {
+                    rushParticleEffect.Stop();
+                }
             }
         }
     }
-}
-
-public void TriggerRush()
-{
-    if (currentState != AnimalState.Rush)
+    
+    public void TriggerRush()
     {
-        Debug.Log("TriggerRush called.");
-
-        // Change state to Rush
-        currentState = AnimalState.Rush;
-        isRushing = true;
-
-        // Stop other behaviors to prevent conflicts
-        StopAllCoroutines();
-
-        // Play particle effect if available
+        if (currentState != AnimalState.Rush)
+        {
+            Debug.Log("TriggerRush called.");
+    
+            // Change state to Rush
+            currentState = AnimalState.Rush;
+            isRushing = true;
+    
+            // Stop other behaviors to prevent conflicts
+            StopAllCoroutines();
+    
+            // Play particle effect if available
+            if (rushParticleEffect != null)
+            {
+                rushParticleEffect.Play();
+            }
+    
+            // Set animator parameter
+            animator.SetBool("isRushing", true);
+        }
+    }
+    
+    void StopRush()
+    {
+        isRushing = false;
+    
+        // Stop particle effect if playing
         if (rushParticleEffect != null)
         {
-            rushParticleEffect.Play();
+            rushParticleEffect.Stop();
         }
-
-        // Set animator parameter
-        animator.SetBool("isRushing", true);
+    
+        // Reset animator parameter
+        animator.SetBool("isRushing", false);
+    
+        // Return to the previous behavior
+        if (pathPoints != null && pathPoints.Length > 0)
+        {
+            currentState = AnimalState.FollowPath;
+            StartCoroutine(FollowPathBehavior());
+        }
+        else
+        {
+            currentState = AnimalState.Idle;
+            StartCoroutine(IdleBehavior());
+        }
     }
-}
-
-void StopRush()
-{
-    isRushing = false;
-
-    // Stop particle effect if playing
-    if (rushParticleEffect != null)
-    {
-        rushParticleEffect.Stop();
-    }
-
-    // Reset animator parameter
-    animator.SetBool("isRushing", false);
-
-    // Return to the previous behavior
-    if (pathPoints != null && pathPoints.Length > 0)
-    {
-        currentState = AnimalState.FollowPath;
-        StartCoroutine(FollowPathBehavior());
-    }
-    else
-    {
-        currentState = AnimalState.Idle;
-        StartCoroutine(IdleBehavior());
-    }
-}
 
 
     IEnumerator IdleBehavior()

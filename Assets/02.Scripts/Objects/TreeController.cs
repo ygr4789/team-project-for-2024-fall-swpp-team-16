@@ -11,9 +11,14 @@ public class TreeController : MonoBehaviour
     // Prefabs must contain mesh component
     [SerializeField] private GameObject treePrefab;
     
-    private readonly float[] heightByLevel = { -1f, -0.5f, -0.1f };
-    private readonly float growSmoothTime = 0.5f;
-    private IEnumerator movingCoroutine = null;
+    [SerializeField] private float minHeight = -3f;
+    [SerializeField] private float maxHeight = 3f;
+    
+    private readonly float heightChangeSmoothTime = 0.6f;
+    private float heightChangeSpeed = 1f;
+    private float targetHeight;
+    private Vector3 currentSpeed = Vector3.zero;
+    
     private bool isCollapsed = false;
 
     private void Awake()
@@ -27,27 +32,39 @@ public class TreeController : MonoBehaviour
     {
         switch (pitch)
         {
-            case PitchType.So: { Grow(); break; }
-            case PitchType.La: { Shrink(); break; }
+            case PitchType.So: { SmoothIncreaseHeight(); break; }
+            case PitchType.La: { SmoothDecreaseHeight(); break; }
         }
     }
 
     private void Start()
     {
-        if (treePrefab == null) Debug.LogError("TreePrefab is null");
-        treePrefab.transform.localPosition = new Vector3(0f, heightByLevel[currentLevel], 0f);
+        targetHeight = Mathf.Clamp(treePrefab.transform.localPosition.y, minHeight, maxHeight);
+        treePrefab.transform.localPosition = new Vector3(0f, targetHeight, 0f);
     }
 
-    public void Grow()
+    private void Update()
     {
-        if (isCollapsed || currentLevel >= heightByLevel.Length - 1) return;
-        SetLevel(currentLevel + 1);
+        if (isCollapsed) return;
+        Vector3 currentPosition = treePrefab.transform.localPosition;
+        Vector3 targetPosition = new Vector3(0f, targetHeight, 0f);
+        // Debug.Log((currentPosition, targetPosition));
+        if (currentPosition != targetPosition)
+        {
+            treePrefab.transform.localPosition = Vector3.SmoothDamp(currentPosition, targetPosition, ref currentSpeed, heightChangeSmoothTime);
+        }
     }
 
-    public void Shrink()
+    public void SmoothIncreaseHeight()
     {
-        if (isCollapsed || currentLevel <= 0) return;
-        SetLevel(currentLevel - 1);
+        targetHeight += heightChangeSpeed * Time.deltaTime;
+        targetHeight = Mathf.Clamp(targetHeight, minHeight, maxHeight);
+    }
+
+    public void SmoothDecreaseHeight()
+    {
+        targetHeight -= heightChangeSpeed * Time.deltaTime;
+        targetHeight = Mathf.Clamp(targetHeight, minHeight, maxHeight);
     }
     public void Damage()
     {
@@ -60,26 +77,5 @@ public class TreeController : MonoBehaviour
         if (isCollapsed) return;
         Cutter.Cut(treePrefab, transform.position + Vector3.up * 0.1f, Vector3.up);
         isCollapsed = true;
-    }
-
-    private void SetLevel(int level)
-    {
-        currentLevel = level;
-        if(movingCoroutine != null) StopCoroutine(movingCoroutine);
-        movingCoroutine = MoveOverTime(treePrefab, new Vector3(0f, heightByLevel[currentLevel], 0f), growSmoothTime);
-        StartCoroutine(movingCoroutine);
-    }
-    
-    private IEnumerator MoveOverTime (GameObject objectToMove, Vector3 end, float smoothTime)
-    {
-        float elapsedTime = 0;
-        Vector3 startingPos = objectToMove.transform.localPosition;
-        while (elapsedTime < smoothTime)
-        {
-            objectToMove.transform.localPosition = Vector3.Lerp(startingPos, end, (elapsedTime / smoothTime));
-            elapsedTime += Time.deltaTime;
-            yield return new WaitForEndOfFrame();
-        }
-        objectToMove.transform.localPosition = end;
     }
 }
