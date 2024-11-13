@@ -14,10 +14,13 @@ public class IKFootPlacement : MonoBehaviour
     // Layers to cast IK to (including Walkables, but excluding the Player itself)
     [SerializeField] private LayerMask _raycastLayerMask;
     
-    [SerializeField] private AnimationCurve _leftFootIKCurve;
-    [SerializeField] private AnimationCurve _rightFootIKCurve;
+    [SerializeField] private AnimationCurve _leftFootWalkIKCurve;
+    [SerializeField] private AnimationCurve _rightFootWalkIKCurve;
+    [SerializeField] private AnimationCurve _leftFootRunIKCurve;
+    [SerializeField] private AnimationCurve _rightFootRunIKCurve;
     
     private Animator playerAnimator;
+    private int runLayer = 1;
     
     private void Start()
     {
@@ -31,9 +34,14 @@ public class IKFootPlacement : MonoBehaviour
         // IK only works when the foot touches the ground
         bool moving = playerAnimator.GetBool("Moving");
         bool grounded = playerAnimator.GetBool("Grounded");
+        
         float nTime = playerAnimator.GetCurrentAnimatorStateInfo(layerIndex).normalizedTime;
-        float leftFootIKWeight = grounded ? 0f : (moving ? _leftFootIKCurve.Evaluate(nTime) : 1f);
-        float rightFootIKWeight = grounded ? 0f : (moving ? _rightFootIKCurve.Evaluate(nTime) : 1f);
+        float runWeight = playerAnimator.GetLayerWeight(runLayer);
+        float leftMovingWeight = Mathf.Lerp(_leftFootWalkIKCurve.Evaluate(nTime), _leftFootRunIKCurve.Evaluate(nTime), runWeight);
+        float rightMovingWeight = Mathf.Lerp(_rightFootWalkIKCurve.Evaluate(nTime), _rightFootRunIKCurve.Evaluate(nTime), runWeight);
+        
+        float leftFootIKWeight = grounded ? (moving ? leftMovingWeight : 1f) : 0f;
+        float rightFootIKWeight = grounded ? (moving ? rightMovingWeight : 1f) : 0f;
         playerAnimator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, leftFootIKWeight);
         playerAnimator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, leftFootIKWeight);
         playerAnimator.SetIKPositionWeight(AvatarIKGoal.RightFoot, rightFootIKWeight);
@@ -63,12 +71,14 @@ public class IKFootPlacement : MonoBehaviour
             leftFootPosition.y += _distanceToGround;
             playerAnimator.SetIKPosition(AvatarIKGoal.LeftFoot, leftFootPosition);
             playerAnimator.SetIKRotation(AvatarIKGoal.LeftFoot, Quaternion.LookRotation(transform.forward, leftHit.normal));
+            Debug.DrawRay(leftFootPosition, leftHit.normal, Color.green);
             
             // if (rightHit.transform.tag == "Walkable")
             Vector3 rightFootPosition = rightHit.point;
             rightFootPosition.y += _distanceToGround;
             playerAnimator.SetIKPosition(AvatarIKGoal.RightFoot, rightFootPosition);
             playerAnimator.SetIKRotation(AvatarIKGoal.RightFoot, Quaternion.LookRotation(transform.forward, rightHit.normal));
+            Debug.DrawRay(rightFootPosition, rightHit.normal, Color.green);
         }
     }
 }
