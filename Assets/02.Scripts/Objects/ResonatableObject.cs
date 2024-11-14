@@ -1,13 +1,21 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ResonatableObject : MonoBehaviour
 {
-    [SerializeField] private PitchType[] properties;
+    [HideInInspector] public PitchType[] properties = {};
     private bool isPlayingRipples = false;
-    [SerializeField] private int colliderNum = 0;
-    [SerializeField] private float ripplesHeightRatio = 0.5f;
+    private int colliderNum = 0;
+    private float ripplesHeightRatio = 0.5f;
+
+    [HideInInspector] public delegate void Resonate(PitchType pitch);
+    [HideInInspector] public Resonate resonate;
+
+    public void Start()
+    {
+    }
 
     public void OnEnterRadius()
     {
@@ -17,7 +25,7 @@ public class ResonatableObject : MonoBehaviour
             foreach (PitchType pitch in properties)
             {
                 isPlayingRipples = true;
-                TriggerRepplesEffect(pitch);
+                TriggerRipplesEffect(pitch);
             }
         }
     }
@@ -33,9 +41,10 @@ public class ResonatableObject : MonoBehaviour
         }
     }
     
-    private void TriggerRepplesEffect(PitchType pitchType)
+    private void TriggerRipplesEffect(PitchType pitchType)
     {
         Debug.Log("Ripple: Triggered!");
-        GameManager.em.TriggerRipples(transform, (ColorType)(int)pitchType, transform.localScale, ripplesHeightRatio);
+        Color color = GameParameters.PitchColors[(int)pitchType];
+        GameManager.em.TriggerRipples(transform, color, transform.localScale, ripplesHeightRatio);
     }
 }

@@ -20,7 +20,7 @@ public class PlayManager : MonoBehaviour
         currentTarget = null;
     }
 
-    public void HandleTargetSwitch()
+    private void HandleTargetSwitch()
     {
         if (Input.GetKeyDown(KeyCode.Tab))
         {
@@ -29,16 +29,27 @@ public class PlayManager : MonoBehaviour
 
             if (targets.Count == 0) return;
 
-            int currentIndex = currentTarget != null ? targets.IndexOf(currentTarget) : -1;
+            int currentIndex = currentTarget is not null ? targets.IndexOf(currentTarget) : -1;
             int nextIndex = (currentIndex + 1) % targets.Count;
 
             SetCurrentTarget(targets[nextIndex]);
         }
     }
+    private void HandleResonance()
+    {
+        if (currentTarget is null) return;
+        ResonatableObject resonatable = currentTarget.GetComponent<ResonatableObject>();
+        if (resonatable is null) return;
+        foreach (PitchType pitch in Enum.GetValues(typeof(PitchType)))
+        {
+            KeyCode key = GameParameters.PitchKeys[(int)pitch];
+            if (Input.GetKey(key)) resonatable.resonate(pitch);
+        }
+    }
 
     private void SetCurrentTarget(Transform newTarget)
     {
-        if (currentTarget != null && activeRipplesEffects.ContainsKey(currentTarget))
+        if (currentTarget is not null && activeRipplesEffects.ContainsKey(currentTarget))
         {
             var mainModule = activeRipplesEffects[currentTarget].main;
             mainModule.startSize = defaultSize;
@@ -46,15 +57,17 @@ public class PlayManager : MonoBehaviour
 
         currentTarget = newTarget;
 
-        if (currentTarget != null && activeRipplesEffects.ContainsKey(currentTarget))
+        if (currentTarget is not null && activeRipplesEffects.ContainsKey(currentTarget))
         {
             var mainModule = activeRipplesEffects[currentTarget].main;
             mainModule.startSize = defaultSize * targetScaleMultiplier;
         }
     }
 
+
     private void Update()
     {
         HandleTargetSwitch();
+        HandleResonance();
     }
 }

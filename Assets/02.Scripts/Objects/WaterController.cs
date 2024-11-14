@@ -17,16 +17,11 @@ public class WaterController : MonoBehaviour
     
     private float elapsedTime = 0.0f;
     private float startHeight; // 현재 높이를 저장할 변수
-
+    
     void Start()
     {
         initialPositionY = transform.position.y;
         waterLevelTarget = initialPositionY;
-        
-        // ERASE ME: below three lines of codes are for test
-        Invoke("TriggerStepIncreaseWaterLevel", 2.0f);; // increase water level
-        Invoke("TriggerStepIncreaseWaterLevel", 6.0f); // trigger increase water level 4 seconds later
-        Invoke("TriggerStepDecreaseWaterLevel", 10.0f); // trigger decrease water level 8 seconds later
     }
 
     void Update()

@@ -5,11 +5,6 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public enum PitchType
-{ Do, Re, Mi, Fa, So, La, Ti }
-public enum ColorType
-{ Red, Orange, Yellow, Green, Blue, Indigo, Violet }
-
 public class GameManager : MonoBehaviour
 {
     // GameManager itself (Singleton)
@@ -23,19 +18,6 @@ public class GameManager : MonoBehaviour
     public static PlayManager pm;
 
     public Transform Player;
-    
-    public static readonly Color[] colors = {
-        Color.red,
-        new Color(1f, 0.5f, 0f),  // Orange
-        Color.yellow,
-        Color.green,
-        Color.cyan,
-        Color.blue,
-        //new Color(0.3f, 0.5f, 1f),  // Brightened Blue
-        //new Color(0.4f, 0f, 0.7f),  // Brightened Indigo
-        new Color(0.56f, 0f, 1f)      // Violet
-    };
-    
     
     // Singleton pattern & Find SoundManager
     private void Awake()
