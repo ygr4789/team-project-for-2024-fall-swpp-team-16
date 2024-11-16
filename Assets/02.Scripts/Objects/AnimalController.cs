@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEditor.IMGUI.Controls;
 
 public enum AnimalState
 {
@@ -24,6 +25,9 @@ public class AnimalController : MonoBehaviour
     private int currentPathIndex = 0;
     private bool isRushing = false;
     private float rushTimer = 0f;
+    [Range(0f, 2f)]
+    [SerializeField] private float groundToCenterHeight;
+    [SerializeField] private LayerMask groundLayer;
     
     private void Awake()
     {
@@ -36,7 +40,7 @@ public class AnimalController : MonoBehaviour
     {
         switch (pitch)
         {
-            case PitchType.Do: { TriggerRush(); break; }
+            case PitchType.Do: { isRushing = true; break; }
         }
     }
 
@@ -143,8 +147,11 @@ public class AnimalController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.Alpha4)) // Change to KeyCode.Alpha1 if needed
+        if (CollidingFront()) { return; }
+        if (isRushing) // Change to KeyCode.Alpha1 if needed
         {
+            isRushing = false;
+            
             if (currentState != AnimalState.Rush)
             {
                 TriggerRush();
@@ -155,22 +162,52 @@ public class AnimalController : MonoBehaviour
         }
         else
         {
-            if (isRushing)
+            if (currentState == AnimalState.Rush)
             {
                 StopRush(); // Stop rushing when the key is released
             }
-            else
-            {
-                // Reset to base state when not rushing
-                animator.SetBool("isRushing", false);
-                currentState = baseState;
+        }
+        
+        StickToGround();
+    }
     
-                if (rushParticleEffect != null)
+    private void StickToGround()
+    {
+        Ray ray = new Ray(transform.position + Vector3.up * 0.3f, Vector3.down);
+        Debug.DrawRay(transform.position+ Vector3.up * 0.3f, Vector3.down, Color.green);
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, groundLayer))
+        {
+            float groundHeight = hit.point.y;
+            transform.position = new Vector3(transform.position.x, groundHeight, transform.position.z);
+        }
+    }
+    
+    private bool CollidingFront()
+    {
+        Vector3 moveDirection = transform.forward;
+        float checkDistance = 10f;
+        // Inspection resolution
+        int numStep = 10;
+
+        for (int i = -numStep; i <= numStep; i++)
+        {
+            float checkAngle = 90f * i / numStep;
+            Vector3 checkDirection = Quaternion.AngleAxis(checkAngle, Vector3.up) * moveDirection;
+            Ray outRay = new Ray(transform.position, checkDirection);
+            if (Physics.Raycast(outRay, out RaycastHit hit, checkDistance, groundLayer))
+            {
+                Ray inRay = new Ray(hit.point, -checkDirection);
+                float hitDistance = hit.distance;
+                Physics.Raycast(inRay, out hit, hitDistance, groundLayer);
+                
+                if (hit.transform != transform)
                 {
-                    rushParticleEffect.Stop();
+                    return true;
                 }
             }
         }
+
+        return false;
     }
     
     public void TriggerRush()
@@ -181,13 +218,12 @@ public class AnimalController : MonoBehaviour
     
             // Change state to Rush
             currentState = AnimalState.Rush;
-            isRushing = true;
     
             // Stop other behaviors to prevent conflicts
             StopAllCoroutines();
     
             // Play particle effect if available
-            if (rushParticleEffect != null)
+            if (rushParticleEffect)
             {
                 rushParticleEffect.Play();
             }
@@ -202,7 +238,7 @@ public class AnimalController : MonoBehaviour
         isRushing = false;
     
         // Stop particle effect if playing
-        if (rushParticleEffect != null)
+        if (rushParticleEffect)
         {
             rushParticleEffect.Stop();
         }
