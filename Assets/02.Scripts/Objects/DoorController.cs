@@ -43,28 +43,29 @@ public class DoorController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Alpha6)) playedNotes.Add(6);
             if (Input.GetKeyDown(KeyCode.Alpha7)) playedNotes.Add(7);
             if (Input.GetKeyDown(KeyCode.Alpha8)) playedNotes.Add(8);
-
-            if (playedNotes.Count == answerNotes.Length)
+            
+            if (CheckNotes())
             {
-                if (CheckNotes())
+                if (playedNotes.Count == answerNotes.Length)
                 {
+                    Debug.Log("Correct notes played. Door is opening.");
                     OpenDoor();
                     playedNotes.Clear();
                     scoreUIPanel.SetActive(false);
                 }
-                else
-                {
-                    Debug.Log("Incorrect notes played. Try again.");
-                    GameManager.sm.PlaySound("wrong-answer");
-                    playedNotes.Clear();
-                }
+            }
+            else
+            {
+                Debug.Log("Incorrect notes played. Try again.");
+                GameManager.sm.PlaySound("wrong-answer");
+                playedNotes.Clear();
             }
         }
     }
 
     private bool CheckNotes()
     {
-        for (int i = 0; i < answerNotes.Length; i++)
+        for (int i = 0; i < playedNotes.Count; i++)
         {
             if (playedNotes[i] != answerNotes[i])
             {
