@@ -8,6 +8,7 @@ public class InventoryManager : MonoBehaviour
     public Dictionary<GameObject, bool> scoreMap = new Dictionary<GameObject, bool>(); // map of scores and their collection status
     public GameObject inventoryUI;
     public GameObject inventoryIconUI;
+    public TMPro.TextMeshProUGUI scoreText;
 
 	void Start()
     {
@@ -21,18 +22,39 @@ public class InventoryManager : MonoBehaviour
     
     void Update()
     {
-        // press "I" to toggle inventory UI
-        if (Input.GetKeyDown(KeyCode.I))
+        // press "I" to toggle inventory UI <- This is not necessary
+        // if (Input.GetKeyDown(KeyCode.I))
+        // {
+        //     // toggle inventory UI
+        //     if (inventoryUI)
+        //     {
+        //         inventoryUI.SetActive(!inventoryUI.activeSelf);
+        //     }
+        // }
+        
+        
+        
+        // update inventory UI text
+        if (scoreText != null)
         {
-            // toggle inventory UI
-            if (inventoryUI)
+            // count collected scores
+            int collectedScores = 0;
+            foreach (var hasTheScore in scoreMap.Values)
             {
-                inventoryUI.SetActive(!inventoryUI.activeSelf);
+                if (hasTheScore) collectedScores++;
+            }
+            scoreText.text = $"{collectedScores}/{scores.Count}";
+            
+            // change text color to yellow if all scores are collected
+            if (HasAllScores())
+            {
+                scoreText.color = Color.yellow;
+            }
+            else
+            {
+                scoreText.color = Color.white;
             }
         }
-        
-        // Inventory Icon UI Glows when all scores are collected
-        // unimplemented //
     }
     
     public void AddScore(GameObject target)
