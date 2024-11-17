@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class DoorController : MonoBehaviour
 {
@@ -8,6 +9,9 @@ public class DoorController : MonoBehaviour
     public int[] answerNotes; // Array to store notes for this door
     private List<int> playedNotes = new List<int>(); // List to store played notes
     public GameObject doorWing; // Reference to the door object
+    
+    public GameObject rippleEffectPrefab; // Reference to the ripple effect prefab
+    public GameObject[] coloredNotes; // Array to store note prefabs
 
     void Start()
     {
@@ -21,6 +25,7 @@ public class DoorController : MonoBehaviour
         {
             // Activate the Score UI to display it
             scoreUIPanel.SetActive(true);
+            ClearColoredNotes();
 			
 			Debug.Log("Play the music to open the door");
         }
@@ -32,34 +37,80 @@ public class DoorController : MonoBehaviour
 
     void Update()
     {
-        // if the score UI is active
+        // Playing notes
         if (scoreUIPanel.activeSelf)
         {
-            if (Input.GetKeyDown(KeyCode.Alpha1)) playedNotes.Add(1);
-            if (Input.GetKeyDown(KeyCode.Alpha2)) playedNotes.Add(2);
-            if (Input.GetKeyDown(KeyCode.Alpha3)) playedNotes.Add(3);
-            if (Input.GetKeyDown(KeyCode.Alpha4)) playedNotes.Add(4);
-            if (Input.GetKeyDown(KeyCode.Alpha5)) playedNotes.Add(5);
-            if (Input.GetKeyDown(KeyCode.Alpha6)) playedNotes.Add(6);
-            if (Input.GetKeyDown(KeyCode.Alpha7)) playedNotes.Add(7);
-            if (Input.GetKeyDown(KeyCode.Alpha8)) playedNotes.Add(8);
-            
-            if (CheckNotes())
+            for (int i = 1; i <= 8; i++)
             {
-                if (playedNotes.Count == answerNotes.Length)
+                if (Input.GetKeyDown(KeyCode.Alpha1 + (i - 1)))
                 {
-                    Debug.Log("Correct notes played. Door is opening.");
-                    OpenDoor();
-                    playedNotes.Clear();
-                    scoreUIPanel.SetActive(false);
+                    playedNotes.Add(i);
+
+                    if (CheckNotes())
+                    {
+                        // 색 음표 생성
+                        SpawnColoredNote(i);
+                        
+                        // 정답이라면 잠깐의 딜레이 후 문 열기
+                        if (playedNotes.Count == answerNotes.Length)
+                        {
+                            Debug.Log("Correct notes played. Door is opening.");
+                            StartCoroutine(OpenDoor());
+                            playedNotes.Clear();
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("Incorrect notes played. Try again.");
+                        GameManager.sm.PlaySound("wrong-answer");
+                        playedNotes.Clear();
+                        ClearColoredNotes();
+                    }
                 }
             }
-            else
-            {
-                Debug.Log("Incorrect notes played. Try again.");
-                GameManager.sm.PlaySound("wrong-answer");
-                playedNotes.Clear();
-            }
+        }
+    }
+    
+    private void SpawnColoredNote(int note)
+    {
+        // 색 음표 생성 (색 음표 배열이 있고 그게 뿅 하는 효과와 함께 나타남)
+        GameObject notePrefab = coloredNotes[playedNotes.Count - 1];
+        notePrefab.SetActive(true);
+        
+        // Create the small effect at the note's position
+        GameObject spawnNoteEffect = Instantiate(rippleEffectPrefab, notePrefab.transform.position + new Vector3(0, 0, -1), Quaternion.identity);
+        spawnNoteEffect.transform.SetParent(notePrefab.transform);
+        spawnNoteEffect.transform.localScale = Vector3.one * 20; // Ensure the correct initial scale
+        // Destroy the particle effect after a certain duration
+        Destroy(spawnNoteEffect, 1.0f);
+        
+        // Start the scaling animation for both the note and the small effect
+        StartCoroutine(ScaleEffect(notePrefab.transform));
+    }
+    
+    private IEnumerator ScaleEffect(Transform targetTransform, bool isEffect = false)
+    {
+        float duration = 0.15f; // Duration of the scaling effect
+        Vector3 initialScale = Vector3.zero; // Start as a small dot
+        Vector3 finalScale = Vector3.one; // Final size
+
+        float time = 0;
+        while (time < duration)
+        {
+            targetTransform.localScale = Vector3.Lerp(initialScale, finalScale, time / duration);
+            time += Time.deltaTime;
+            yield return null;
+        }
+
+        targetTransform.localScale = finalScale;
+    }
+    
+    private void ClearColoredNotes()
+    {
+        // 색 음표 제거
+        foreach (GameObject notePrefab in coloredNotes)
+        {
+            notePrefab.SetActive(false);
         }
     }
 
@@ -74,17 +125,23 @@ public class DoorController : MonoBehaviour
         }
         return true;
     }        
-
-	private void OpenDoor()
+    
+	private IEnumerator OpenDoor()
     {
+        // delay
+        yield return new WaitForSeconds(1.5f);
+        
+        // UI off
+        scoreUIPanel.SetActive(false);
+        
+       	// opening door sound & animation
 		GameManager.sm.PlaySound("opening-door");
-       	// opening door animation
         StartCoroutine(OpenDoorAnimation(doorWing));
     }
     
     private IEnumerator OpenDoorAnimation(GameObject door)
     {
-        float duration = 1.5f; // animation duration
+        float duration = 1f; // animation duration
         float startRotation = door.transform.eulerAngles.y;
         float endRotation = startRotation + 90;
         float time = 0;
