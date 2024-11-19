@@ -138,8 +138,6 @@ MonoBehaviour:
   lowerHeight: 0.1
   lowerDuration: 1
   raiseDuration: 1
-  isLowering: 0
-  isRaising: 0
 --- !u!1 &4864642534834948506
 GameObject:
   m_ObjectHideFlags: 0

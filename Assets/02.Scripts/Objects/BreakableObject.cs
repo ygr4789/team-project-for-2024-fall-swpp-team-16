@@ -8,10 +8,12 @@ public class BreakableObject : MonoBehaviour
     private int durability = 1;
     [SerializeField] private ParticleSystem particleEffect; // 재생할 ParticleSystem
     [SerializeField] private GameObject models;
+    private BoxCollider bc;
 
     private void Start()
     {
-        Invoke("Damage", 2f);
+        bc = GetComponent<BoxCollider>();
+        Invoke("Damage", 5f);
     }
 
     public void Damage()
@@ -41,6 +43,7 @@ public class BreakableObject : MonoBehaviour
         yield return new WaitForSeconds(halfDuration);
         
         models.SetActive(false);
+        bc.enabled = false;
         
         // 파티클이 재생 중일 때까지 대기
         while (particle.isPlaying)
