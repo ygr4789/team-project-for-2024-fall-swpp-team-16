@@ -41,6 +41,7 @@ namespace _12.Tests.PlayerDev
         private Transform playerTransform;
         private Animator playerAnimator;
         private Vector3 _controllerVelocity;
+        private Vector3 _lastStablePosition;
         
         private PlayerInput input;
         
@@ -90,9 +91,10 @@ namespace _12.Tests.PlayerDev
                 _controllerVelocity.y = 0;
             }
 
+            CheckStable();
+            
             // moves the controller in the desired direction on the x- and z-axis
             Vector3 movement = transform.right * input.moveX + transform.forward * input.moveZ;
-            movement = PassableComponent(movement);
             characterController.Move(movement * (_movementSpeed * Time.deltaTime));
 
             // set player's forward same as moving direction
@@ -111,7 +113,7 @@ namespace _12.Tests.PlayerDev
             // moves the controller on the y-axis
             characterController.Move(_controllerVelocity * Time.deltaTime);
             
-            if(characterController.isGrounded) playerAnimator.SetBool("Grounded", true);
+            if (characterController.isGrounded) playerAnimator.SetBool("Grounded", true);
 
             // the controller is able to jump when on the ground
             if (input.jump && characterController.isGrounded)
@@ -144,50 +146,41 @@ namespace _12.Tests.PlayerDev
         }
 
         // Convert the direction of movement to avoid entering a impassible area
-        private Vector3 PassableComponent(Vector3 movement)
+        private void CheckStable()
         {
-            if (movement.magnitude == 0) return movement;
-            Vector3 moveDirection = movement.normalized;
+            Debug.DrawRay(_lastStablePosition, Vector3.up, Color.blue);
+            if (!characterController.isGrounded) return;
+            
             // Restricted distance for impassable areas
-            float checkDistance = characterController.radius * 2f;
+            float checkDistance = characterController.radius * 10f;
             // Inspection resolution
-            int numStep = 10;
-
-            // Stop if impassable to the move direction
-            if (!CheckPassable(transform.position + moveDirection * checkDistance)) return Vector3.zero;
+            int numStep = 20;
             
-            // Scans a semicircular area in front of the player
-            Vector3 leftPassibleDirection = movement;
-            Vector3 rightPassibleDirection = movement;
-            
-            for (int i = 1; i < numStep; i++)
+            for (int i = 0; i < numStep; i++)
             {
-                float checkAngle = 90f * i / numStep;
-                Vector3 checkDirection = Quaternion.AngleAxis(checkAngle, Vector3.up) * moveDirection;
-                if (!CheckPassable(transform.position + checkDirection * checkDistance)) break;
-                leftPassibleDirection = checkDirection;
-            }
-            for (int i = 1; i < numStep; i++)
-            {
-                float checkAngle = -90f * i / numStep;
-                Vector3 checkDirection = Quaternion.AngleAxis(checkAngle, Vector3.up) * moveDirection;
-                if (!CheckPassable(transform.position + checkDirection * checkDistance)) break;
-                rightPassibleDirection = checkDirection;
+                float checkAngle = 360f * i / numStep;
+                Vector3 checkDirection = Quaternion.AngleAxis(checkAngle, Vector3.up) * Vector3.forward;
+                if (!CheckPassable(transform.position + checkDirection * checkDistance)) return;
             }
 
-            // Adjust the direction to bias it toward passable areas
-            Vector3 newDirection = (leftPassibleDirection + rightPassibleDirection).normalized;
-            return Vector3.Project(movement, newDirection);
+            _lastStablePosition = transform.position + Vector3.up * 1f;
         }
 
         // Check if a location is passable
         private bool CheckPassable(Vector3 position)
         {
             // Subject to modification based on development
-            // Can also be used for slope limiting
-            Ray ray = new Ray(position + Vector3.up * 0.5f, Vector3.down);
+            Ray ray = new Ray(position + Vector3.up * 1f, Vector3.down);
             if (!Physics.Raycast(ray, out RaycastHit hit)) return false;
             return !hit.transform.CompareTag("Water");
+        }
+
+        private void OnControllerColliderHit(ControllerColliderHit hit)
+        {
+            if (hit.gameObject.CompareTag("Water"))
+            {
+                transform.position = _lastStablePosition;
+            }
         }
     }
 }
