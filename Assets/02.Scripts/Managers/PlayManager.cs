@@ -13,7 +13,7 @@ public class PlayManager : MonoBehaviour
     public Transform currentTarget;
 
     private float defaultSize = 6;
-    private float targetScaleMultiplier = 1.5f;
+    private float targetScaleMultiplier = 1.2f;
 
     private void Start()
     {
