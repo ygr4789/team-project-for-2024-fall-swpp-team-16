@@ -13,7 +13,7 @@ public class BreakableObject : MonoBehaviour
     private void Start()
     {
         bc = GetComponent<BoxCollider>();
-        Invoke("Damage", 5f);
+        // Test: Invoke("Damage", 5f);
     }
 
     public void Damage()
