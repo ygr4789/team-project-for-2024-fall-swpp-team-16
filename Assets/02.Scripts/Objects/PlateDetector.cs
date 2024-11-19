@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class PlateDetector : MonoBehaviour
 {
-    [SerializeField] private float rayLength = 1f; // Ray의 길이
-    [SerializeField] private float stayDuration = 0.5f; // 객체가 머물러야 하는 시간
-    [SerializeField] private LayerMask detectionLayer; // 감지할 Layer
-    [SerializeField] private int gridResolution = 5; // Ray 발사 지점의 격자 해상도 (숫자가 클수록 촘촘)
+    [SerializeField] private float rayLength = 1f; // Ray 길이
+    [SerializeField] private float stayDuration = 0.5f; // 감지 최소 시간
+    [SerializeField] private LayerMask detectionLayer; // 감지 Layer
+    [SerializeField] private int gridResolution = 5; // Ray 촘촘함 정도
     
-    private float stayTime = 0f; // Plate 위에서 객체가 머문 시간
+    private float stayTime = 0f; // Plate 위에서 머문 시간
     [SerializeField] private bool isPressed = false; // Press 상태 플래그
     private Bounds plateBounds; // Plate의 Bounds 정보
 
@@ -19,8 +19,8 @@ public class PlateDetector : MonoBehaviour
     [SerializeField] private float raiseDuration = 1f; // Plate가 원래 높이로 복귀하는 데 걸리는 시간
     
     private Vector3 originalPosition; // Plate의 원래 위치
-    [SerializeField] private bool isLowering = false; // Plate가 낮아지고 있는지 여부
-    [SerializeField] private bool isRaising = false; // Plate가 원래 높이로 복귀 중인지 여부
+    private bool isLowering = false; // Plate가 낮아지고 있는지 여부
+    private bool isRaising = false; // Plate가 원래 높이로 복귀 중인지 여부
     private float raiseTimer = 0f; // RaisePlate 타이머
     
     void Start()
