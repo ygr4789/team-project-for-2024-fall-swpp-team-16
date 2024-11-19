@@ -2317,6 +2317,17 @@ MonoBehaviour:
     m_PreInfinity: 3
     m_PostInfinity: 3
     m_RotationOrder: 4
+--- !u!114 &814143091 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1163785650, guid: 0196358b63005e647bb23c6d3234c56e, type: 3}
+  m_PrefabInstance: {fileID: 1163785645}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a0271c3f63f45449bcd054863ccbe11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &861917735
 GameObject:
   m_ObjectHideFlags: 0
@@ -2556,6 +2567,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerTransform: {fileID: 0}
   currentTarget: {fileID: 0}
+  plateController: {fileID: 1560174525}
+  pileWood: {fileID: 814143091}
 --- !u!4 &1225285721
 Transform:
   m_ObjectHideFlags: 0
@@ -3007,6 +3020,17 @@ MonoBehaviour:
   - {fileID: 1570656463}
   - {fileID: 247935743}
   - {fileID: 71823608}
+--- !u!114 &1560174525 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1507197933, guid: c75e6bb76e6d47844a1a27d085695a53, type: 3}
+  m_PrefabInstance: {fileID: 5711627887230516502}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbedc91ab60c8fa4bac491804d98fe1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1570656463
 GameObject:
   m_ObjectHideFlags: 0
@@ -3397,7 +3421,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1948551172}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -12.72, y: 0.67, z: 5.43}
+  m_LocalPosition: {x: -10.65, y: 0.67, z: 11.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

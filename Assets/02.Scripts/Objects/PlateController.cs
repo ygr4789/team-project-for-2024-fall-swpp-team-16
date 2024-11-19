@@ -128,6 +128,7 @@ public class PlateController : MonoBehaviour
             if (!isPressed && stayTime >= stayDuration)
             {
                 isPressed = true; // 한 번만 실행
+                NotifyObservers(true);
                 TriggerPressEffect();
             }
         }
@@ -135,8 +136,11 @@ public class PlateController : MonoBehaviour
         {
             // 객체가 감지되지 않으면 초기화
             stayTime = 0f;
-            TriggerUnpressEffect(); // 높이 복구 시작
-            isPressed = false;
+            if (isPressed){
+                isPressed = false;
+                NotifyObservers(false);
+                TriggerUnpressEffect(); // 높이 복구 시작
+            }
         }
     }
     

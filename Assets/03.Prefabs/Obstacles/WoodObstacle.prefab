@@ -972,7 +972,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 104829970813648393, guid: d3015b7eea383f64d8b81f965cc466e7, type: 3}
       propertyPath: m_Name
-      value: msVFX_Stylized Smoke 1
+      value: Particle
       objectReference: {fileID: 0}
     - target: {fileID: 107540711077034587, guid: d3015b7eea383f64d8b81f965cc466e7, type: 3}
       propertyPath: m_RootOrder

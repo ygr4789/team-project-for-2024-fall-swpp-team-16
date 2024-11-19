@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1507197938}
   - component: {fileID: 1507197933}
   m_Layer: 2
-  m_Name: polySurface326.001
+  m_Name: PressurePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -185,7 +185,7 @@ GameObject:
   - component: {fileID: 5297725154336135220}
   - component: {fileID: 5711627887401411032}
   m_Layer: 0
-  m_Name: polySurface326.004
+  m_Name: Decorator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -322,7 +322,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 985483039366664255, guid: f91edac4d13fc4343ba96bb6a843ad05, type: 3}
       propertyPath: m_Name
-      value: msVFX_Stylized Smoke 2
+      value: Particle
       objectReference: {fileID: 0}
     - target: {fileID: 1110556030845387871, guid: f91edac4d13fc4343ba96bb6a843ad05, type: 3}
       propertyPath: playOnAwake
