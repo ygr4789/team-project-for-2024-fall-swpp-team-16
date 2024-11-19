@@ -1,27 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlateController : MonoBehaviour
 {
+    [Header("Detection Settings")]
     [SerializeField] private float rayLength = 1f; // Ray 길이
     [SerializeField] private float stayDuration = 0.5f; // 감지 최소 시간
     [SerializeField] private LayerMask detectionLayer; // 감지 Layer
     [SerializeField] private int gridResolution = 5; // Ray 촘촘함 정도
-    
     private float stayTime = 0f; // Plate 위에서 머문 시간
-    [SerializeField] private bool isPressed = false; // Press 상태 플래그
     private Bounds plateBounds; // Plate의 Bounds 정보
 
+    [Header("Flag")]
+    [SerializeField] private bool isPressed = false; // Press 상태 플래그
+    private bool isLowering = false; // Plate가 낮아지고 있는지 여부
+    private bool isRaising = false; // Plate가 원래 높이로 복귀 중인지 여부
+    
+    [Header("Fine-tuning")]
     [SerializeField] private ParticleSystem particleEffect; // 재생할 ParticleSystem
     [SerializeField] private float lowerHeight = 0.5f; // Plate가 낮아질 높이
     [SerializeField] private float lowerDuration = 1f; // Plate가 낮아지는 데 걸리는 시간
     [SerializeField] private float raiseDuration = 1f; // Plate가 원래 높이로 복귀하는 데 걸리는 시간
     
+    // internal variables
     private Vector3 originalPosition; // Plate의 원래 위치
-    private bool isLowering = false; // Plate가 낮아지고 있는지 여부
-    private bool isRaising = false; // Plate가 원래 높이로 복귀 중인지 여부
     private float raiseTimer = 0f; // RaisePlate 타이머
+    
+    // observer pattern    
+    private List<IPlateObserver> observers = new List<IPlateObserver>();
+    
+    
     
     void Start()
     {
@@ -34,6 +44,37 @@ public class PlateController : MonoBehaviour
         {
             Debug.LogError("No Collider found on Plate.");
         }
+    }
+    
+    public void RegisterObserver(IPlateObserver observer)
+    {
+        if (!observers.Contains(observer))
+        {
+            observers.Add(observer);
+        }
+    }
+
+    public void UnregisterObserver(IPlateObserver observer)
+    {
+        if (observers.Contains(observer))
+        {
+            observers.Remove(observer);
+        }
+    }
+
+    private void NotifyObservers(bool isPressed)
+    {
+        foreach (var observer in observers)
+        {
+            observer.OnPlateStateChanged(isPressed);
+        }
+    }
+    
+    public float GetPressProgress()
+    {
+        Debug.Log(Mathf.Clamp01((originalPosition.y - transform.position.y) / lowerHeight));
+        // Plate가 얼마나 눌렸는지를 반환 (0 = 완전히 올라감, 1 = 완전히 눌림)
+        return Mathf.Clamp01((originalPosition.y - transform.position.y) / lowerHeight);
     }
 
     void Update()
@@ -137,6 +178,7 @@ public class PlateController : MonoBehaviour
 
         if (transform.position == originalPosition)
         {
+            transform.position = originalPosition;
             isRaising = false; // 복구 완료
             raiseTimer = 0f;
         }
