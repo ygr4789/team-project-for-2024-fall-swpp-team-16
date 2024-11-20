@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,8 +28,7 @@ public class EffectManager : MonoBehaviour
             newEffect.transform.position = new Vector3(totalBounds.center.x, effectYPosition, totalBounds.center.z);
             newEffect.transform.SetParent(target, true);
 
-            GameManager.pm.activeRipplesEffects[target] = newEffect;
-            GameManager.pm.activeRipplesColors[target] = new List<Color>();
+            GameManager.pm.RegisterTarget(target, newEffect); // PlayManager에 등록
         }
 
         if (!GameManager.pm.activeRipplesColors[target].Contains(color))
@@ -57,21 +57,24 @@ public class EffectManager : MonoBehaviour
 
     public void StopRipples(Transform target)
     {
-        if (GameManager.pm.activeRipplesEffects.ContainsKey(target) && GameManager.pm.activeRipplesEffects[target].isPlaying)
+        if (GameManager.pm.activeRipplesEffects.ContainsKey(target))
         {
-            GameManager.pm.activeRipplesEffects[target].Stop();
-        }
-
-        if (GameManager.pm.activeRipplesColors.ContainsKey(target))
-        {
-            GameManager.pm.activeRipplesColors[target].Clear();
-        }
-        
-        if (target == GameManager.pm.currentTarget)
-        {
-            GameManager.pm.currentTarget = null;
+            ParticleSystem effect = GameManager.pm.activeRipplesEffects[target];
+            if (effect.isPlaying)
+            {
+                effect.Stop();
+                GameManager.pm.UnregisterTarget(target); // PlayManager에서 타겟 제거
+                StartCoroutine(DestroyAfterDuration(effect, target)); // 파티클 삭제 예약
+            }
         }
     }
+    
+    private IEnumerator DestroyAfterDuration(ParticleSystem effect, Transform target)
+    {
+        yield return new WaitForSeconds(effect.main.duration); // duration만큼 대기
+        Destroy(effect.gameObject); // 파티클 오브젝트 제거
+    }
+
 
     private void makeRipples()
     {

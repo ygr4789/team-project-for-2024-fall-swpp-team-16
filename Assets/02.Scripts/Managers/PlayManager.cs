@@ -20,6 +20,12 @@ public class PlayManager : MonoBehaviour
         currentTarget = null;
     }
 
+    private void Update()
+    {
+        HandleTargetSwitch();
+        HandleResonance();
+    }
+    
     private void HandleTargetSwitch()
     {
         if (Input.GetKeyDown(KeyCode.Tab))
@@ -63,11 +69,31 @@ public class PlayManager : MonoBehaviour
             mainModule.startSize = defaultSize * targetScaleMultiplier;
         }
     }
-
-
-    private void Update()
+    
+    
+    // 타겟을 등록하는 메서드
+    public void RegisterTarget(Transform target, ParticleSystem effect)
     {
-        HandleTargetSwitch();
-        HandleResonance();
+        if (!activeRipplesEffects.ContainsKey(target))
+        {
+            activeRipplesEffects[target] = effect;
+            activeRipplesColors[target] = new List<Color>();
+        }
+    }
+
+    // 타겟을 제거하는 메서드
+    public void UnregisterTarget(Transform target)
+    {
+        if (activeRipplesEffects.ContainsKey(target))
+        {
+            activeRipplesEffects.Remove(target);
+            activeRipplesColors.Remove(target);
+        }
+        
+        // 현재 타겟과 동일한 경우 초기화
+        if (currentTarget == target)
+        {
+            currentTarget = null;
+        }
     }
 }
