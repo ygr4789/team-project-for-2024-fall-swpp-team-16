@@ -29,10 +29,6 @@ namespace Collections.Shaders.CircleTransition
             Invoke("OpenBlackScreen", 2f); // ERASE THIS LINE AFTER TESTING
         }
 
-        private void Update()
-        {
-        }
-
         public void OpenBlackScreen()
         {
             DrawBlackScreen();
