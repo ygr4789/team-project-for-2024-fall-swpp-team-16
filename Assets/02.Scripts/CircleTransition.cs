@@ -12,10 +12,16 @@ namespace Collections.Shaders.CircleTransition
         private Image _blackScreen;
 
         private Vector2 _playerCanvasPos;
-    
+
+        // Shader property IDs
         private static readonly int RADIUS = Shader.PropertyToID("_Radius");
         private static readonly int CENTER_X = Shader.PropertyToID("_CenterX");
         private static readonly int CENTER_Y = Shader.PropertyToID("_CenterY");
+
+        // Parameters for transitions
+        public float transitionDuration = 2f;
+        public float defaultStartRadius = 1f;
+        public float defaultEndRadius = 0f;
 
         private void Awake()
         {
@@ -25,36 +31,49 @@ namespace Collections.Shaders.CircleTransition
 
         private void Start()
         {
-            CloseBlackScreen(); // ERASE THIS LINE AFTER TESTING
-            Invoke("OpenBlackScreen", 2f); // ERASE THIS LINE AFTER TESTING
+            CloseBlackScreenDefault(); // ERASE THIS LINE AFTER TESTING
+            Invoke(nameof(OpenBlackScreenDefault), 2f); // ERASE THIS LINE AFTER TESTING
         }
 
-        public void OpenBlackScreen()
+		public void OpenBlackScreenDefault()
         {
-            DrawBlackScreen();
-            StartCoroutine(Transition(2, 0, 1));
+            OpenBlackScreen();
         }
 
-        public void CloseBlackScreen()
+        public void CloseBlackScreenDefault()
+        {
+            CloseBlackScreen();
+        }
+
+        public void OpenBlackScreen(float duration = -1, float startRadius = -1, float endRadius = -1)
         {
             DrawBlackScreen();
-            StartCoroutine(Transition(2, 1, 0));
+            StartCoroutine(Transition(
+                duration > 0 ? duration : transitionDuration,
+                startRadius > 0 ? startRadius : defaultStartRadius,
+                endRadius >= 0 ? endRadius : defaultEndRadius));
+        }
+
+        public void CloseBlackScreen(float duration = -1, float startRadius = -1, float endRadius = -1)
+        {
+            DrawBlackScreen();
+            StartCoroutine(Transition(
+                duration > 0 ? duration : transitionDuration,
+                startRadius > 0 ? startRadius : defaultEndRadius,
+                endRadius >= 0 ? endRadius : defaultStartRadius));
         }
 
         private void DrawBlackScreen()
         {
             var screenWidth = Screen.width;
             var screenHeight = Screen.height;
-            // Need a target
+
             var playerScreenPos = Camera.main.WorldToScreenPoint(player.position);
 
-            // To Draw to Image to Full Screen, we get the Canvas Rect size
             var canvasRect = _canvas.GetComponent<RectTransform>().rect;
             var canvasWidth = canvasRect.width;
             var canvasHeight = canvasRect.height;
 
-            // But because the Black Screen is now square (different to Screen). So we much added the different of width/height to it
-            // Now we convert Screen Pos to Canvas Pos
             _playerCanvasPos = new Vector2
             {
                 x = (playerScreenPos.x / screenWidth) * canvasWidth,
@@ -64,28 +83,22 @@ namespace Collections.Shaders.CircleTransition
             var squareValue = 0f;
             if (canvasWidth > canvasHeight)
             {
-                // Landscape
                 squareValue = canvasWidth;
                 _playerCanvasPos.y += (canvasWidth - canvasHeight) * 0.5f;
             }
             else
             {
-                // Portrait            
                 squareValue = canvasHeight;
                 _playerCanvasPos.x += (canvasHeight - canvasWidth) * 0.5f;
             }
 
             _playerCanvasPos /= squareValue;
-        
+
             var mat = _blackScreen.material;
             mat.SetFloat(CENTER_X, _playerCanvasPos.x);
             mat.SetFloat(CENTER_Y, _playerCanvasPos.y);
 
             _blackScreen.rectTransform.sizeDelta = new Vector2(squareValue, squareValue);
-
-            // Now we want the circle to follow the player position
-            // So First, we must get the player world position, convert it to screen position, and normalize it (0 -> 1)
-            // And input into the shader
         }
 
         private IEnumerator Transition(float duration, float beginRadius, float endRadius)
