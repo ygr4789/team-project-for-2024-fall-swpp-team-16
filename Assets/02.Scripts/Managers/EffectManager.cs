@@ -40,8 +40,10 @@ public class EffectManager : MonoBehaviour
         var mainModule = activeEffect.main;
         mainModule.startSize = Mathf.Max(targetScale.x, targetScale.y, targetScale.z) * defaultSize;
 
-        if (!activeEffect.isPlaying)
-            activeEffect.Play();
+        /*if (!activeEffect.isPlaying)
+        {*/
+        activeEffect.Play();
+        //}
     }
 
 
