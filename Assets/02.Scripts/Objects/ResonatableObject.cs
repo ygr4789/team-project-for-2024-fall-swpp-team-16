@@ -6,8 +6,8 @@ using UnityEngine;
 public class ResonatableObject : MonoBehaviour
 {
     [HideInInspector] public PitchType[] properties = {};
-    [SerializeField]  private bool isPlayingRipples = false;
-    [SerializeField]  public int colliderNum = 0;
+    private bool isPlayingRipples = false;
+    public int colliderNum = 0;
     private float ripplesHeightRatio = 0.5f;
 
     [HideInInspector] public delegate void Resonate(PitchType pitch);
