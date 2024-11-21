@@ -11,7 +11,7 @@ public class EffectManager : MonoBehaviour
     private float targetScaleMultiplier = 1.5f;
     
     
-    public void TriggerRipples(Transform target, Color color, Vector3 targetScale, float heightRatio = 0.5f)
+    public void TriggerRipples(Transform target, Color color, Vector3 targetScale, float heightRatio = 0.5f, bool isPlayer = false)
     {
         if (!GameManager.pm.activeRipplesEffects.ContainsKey(target))
         {
@@ -40,10 +40,10 @@ public class EffectManager : MonoBehaviour
         var mainModule = activeEffect.main;
         mainModule.startSize = Mathf.Max(targetScale.x, targetScale.y, targetScale.z) * defaultSize;
 
-        /*if (!activeEffect.isPlaying)
-        {*/
-        activeEffect.Play();
-        //}
+        if (!isPlayer || !activeEffect.isPlaying)
+        {
+            activeEffect.Play();
+        }
     }
 
 

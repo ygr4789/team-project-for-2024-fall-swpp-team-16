@@ -31,6 +31,6 @@ public class RipplesHandler : MonoBehaviour
 
     private void TriggerParticleEffect(Color color)
     {
-        GameManager.em.TriggerRipples(transform, color, transform.localScale, ripplesHeightRatio);
+        GameManager.em.TriggerRipples(transform, color, transform.localScale, ripplesHeightRatio, true);
     }
 }
