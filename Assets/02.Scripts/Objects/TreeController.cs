@@ -25,6 +25,7 @@ public class TreeController : MonoBehaviour
         ResonatableObject resonatable = gameObject.AddComponent<ResonatableObject>();
         resonatable.properties = new[] { PitchType.So, PitchType.La };
         resonatable.resonate += TreeResonate;
+        resonatable.ripplesHeightRatio = 0.2f;
     }
 
     private void TreeResonate(PitchType pitch)
@@ -52,6 +53,7 @@ public class TreeController : MonoBehaviour
         {
             treePrefab.transform.localPosition = Vector3.SmoothDamp(currentPosition, targetPosition, ref currentVelocity, heightChangeSmoothTime);
         }
+        GameManager.em.UpdateRipplePosition(transform, transform.position + Vector3.up * 0.5f);
     }
 
     public void SmoothIncreaseHeight()

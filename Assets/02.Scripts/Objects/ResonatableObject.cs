@@ -8,7 +8,7 @@ public class ResonatableObject : MonoBehaviour
     [HideInInspector] public PitchType[] properties = {};
     private bool isPlayingRipples = false;
     public int colliderNum = 0;
-    private float ripplesHeightRatio = 0.5f;
+    public float ripplesHeightRatio = 0.5f;
 
     [HideInInspector] public delegate void Resonate(PitchType pitch);
     [HideInInspector] public Resonate resonate;

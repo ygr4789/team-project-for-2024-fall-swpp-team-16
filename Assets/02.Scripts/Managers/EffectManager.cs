@@ -8,7 +8,6 @@ public class EffectManager : MonoBehaviour
     [SerializeField] private float colorSwitchInterval = 0.5f;
     private float colorSwitchTimer;
     private float defaultSize = 7;
-    private float targetScaleMultiplier = 1.5f;
     
     
     public void TriggerRipples(Transform target, Color color, Vector3 targetScale, float heightRatio = 0.5f, bool isPlayer = false)
@@ -46,6 +45,14 @@ public class EffectManager : MonoBehaviour
         }
     }
 
+    public void UpdateRipplePosition(Transform target, Vector3 newPosition)
+    {
+        if (GameManager.pm.activeRipplesEffects.ContainsKey(target))
+        {
+            ParticleSystem effect = GameManager.pm.activeRipplesEffects[target];
+            effect.transform.position = newPosition;
+        }
+    }
 
     public void RemoveColorFromRipples(Transform target, Color color)
     {
