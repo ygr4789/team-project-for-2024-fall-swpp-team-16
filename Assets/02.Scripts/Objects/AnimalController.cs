@@ -76,7 +76,7 @@ public class AnimalController : MonoBehaviour
             }
     
             // Move forward while rushing
-            transform.Translate(Vector3.forward * (rushSpeed * Time.deltaTime));
+            if (!CollidingFront()) transform.Translate(Vector3.forward * (rushSpeed * Time.deltaTime));
             StickToGround();
         }
         else
@@ -100,14 +100,16 @@ public class AnimalController : MonoBehaviour
         Vector3 groundNormal = Vector3.up * 0.01f;
         foreach (Vector3 footOffset in footOffsets)
         {
-            Vector3 rayOrigin = transform.position + transform.TransformDirection(footOffset) + Vector3.up * colliderOriginHeight;
+            Vector3 rayOrigin = transform.position + transform.TransformDirection(footOffset) + transform.up * colliderOriginHeight;
             Ray ray = new Ray(rayOrigin, Vector3.down);
             Debug.DrawRay(rayOrigin, Vector3.down, Color.green);
+            gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, groundLayer))
             {
                 groundHeight += hit.point.y;
                 groundNormal += hit.normal;
             }
+            gameObject.layer = LayerMask.NameToLayer("Default");
         }
         groundHeight /= footOffsets.Length;
         groundNormal.Normalize();
@@ -126,7 +128,7 @@ public class AnimalController : MonoBehaviour
     private bool CollidingFront()
     {
         Vector3 moveDirection = transform.forward;
-        Vector3 checkOffset = new Vector3(0f, colliderOriginHeight, 0f);
+        Vector3 checkOffset = transform.up * colliderOriginHeight;
         float checkDistance = 10f;
         // Inspection resolution
         int numStep = 10;
@@ -136,7 +138,6 @@ public class AnimalController : MonoBehaviour
             float checkAngle = 90f * i / numStep;
             Vector3 checkDirection = Quaternion.AngleAxis(checkAngle, Vector3.up) * moveDirection;
             Ray outRay = new Ray(transform.position + checkOffset, checkDirection);
-            Debug.DrawRay(transform.position + checkOffset, checkDirection, Color.green);
             if (Physics.Raycast(outRay, out RaycastHit hit, checkDistance, groundLayer))
             {
                 Ray inRay = new Ray(hit.point, -checkDirection);
@@ -157,8 +158,6 @@ public class AnimalController : MonoBehaviour
     {
         if (currentState != AnimalState.Rush)
         {
-            Debug.Log("TriggerRush called.");
-    
             // Change state to Rush
             currentState = AnimalState.Rush;
     
@@ -255,7 +254,6 @@ public class AnimalController : MonoBehaviour
             while (Vector3.Angle(targetDirection, currentDirection) > 0.5f)
             {
                 currentDirection = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
-                Vector3 newPosition = Vector3.RotateTowards(currentDirection, targetDirection, idleSpeed * 3 * Time.deltaTime, 0f);
                 transform.forward = Vector3.RotateTowards(currentDirection, targetDirection, idleSpeed * 3 * Time.deltaTime, 0f);
                 StickToGround();
                 yield return null;
@@ -270,7 +268,7 @@ public class AnimalController : MonoBehaviour
             // Move towards the waypoint
             while (Vector3.Distance(transform.position, targetPosition) > 0.5f)
             {
-                transform.position = Vector3.MoveTowards(transform.position, targetPosition, idleSpeed * Time.deltaTime);
+                if (!CollidingFront()) transform.position = Vector3.MoveTowards(transform.position, targetPosition, idleSpeed * Time.deltaTime);
                 yield return null;
                 StickToGround();
 
