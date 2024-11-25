@@ -40,6 +40,7 @@ namespace _12.Tests.PlayerDev
         private CharacterController characterController;
         private Transform playerTransform;
         private Animator playerAnimator;
+        private Renderer playerMeshRenderer;
         private Vector3 _controllerVelocity;
         private Vector3 _lastStablePosition;
         
@@ -56,13 +57,16 @@ namespace _12.Tests.PlayerDev
         private float runLayerWeight = 0f;
         private float runTransitionSpeed = 3f;
 
+        private bool immune = false;
+
         // Start is called before the first frame update
-        private void Start()
+        private void Awake()
         {
             input = new PlayerInput();
             characterController = GetComponent<CharacterController>();
             playerTransform = transform.Find("Player");
             playerAnimator = playerTransform.GetComponent<Animator>();
+            playerMeshRenderer = playerTransform.GetComponentInChildren<Renderer>();
         }
 
         // Update is called once per frame
@@ -97,6 +101,20 @@ namespace _12.Tests.PlayerDev
             Vector3 movement = transform.right * input.moveX + transform.forward * input.moveZ;
             characterController.Move(movement * (_movementSpeed * Time.deltaTime));
 
+            // the controller is able to run
+            if (input.run)
+            {
+                characterController.Move(movement * (Time.deltaTime * _runMultiplier));
+
+                if(playerAnimator.GetBool("Grounded"))
+                {
+                    runLayerWeight = Mathf.MoveTowards(runLayerWeight, 1f, Time.deltaTime * runTransitionSpeed);
+                }
+            }else{
+                runLayerWeight = Mathf.MoveTowards(runLayerWeight, 0f, Time.deltaTime * runTransitionSpeed);
+            }
+            playerAnimator.SetLayerWeight(runLayer, runLayerWeight);
+            
             // set player's forward same as moving direction
             float currentVelocity = movement.magnitude;
             playerAnimator.SetBool("Moving", currentVelocity > 0);
@@ -129,25 +147,13 @@ namespace _12.Tests.PlayerDev
                 jumpCheckGroundAvoider = JumpCheckGroundAvoider();
                 StartCoroutine(jumpCheckGroundAvoider);
             }
-
-            // the controller is able to run
-            if (input.run)
-            {
-                characterController.Move(movement * (Time.deltaTime * _runMultiplier));
-
-                if(playerAnimator.GetBool("Grounded"))
-                {
-                    runLayerWeight = Mathf.MoveTowards(runLayerWeight, 1f, Time.deltaTime * runTransitionSpeed);
-                }
-            }else{
-                runLayerWeight = Mathf.MoveTowards(runLayerWeight, 0f, Time.deltaTime * runTransitionSpeed);
-            }
-            playerAnimator.SetLayerWeight(runLayer, runLayerWeight);
         }
 
         // Convert the direction of movement to avoid entering a impassible area
         private void CheckStable()
         {
+            if (immune) return;
+            
             Debug.DrawRay(_lastStablePosition, Vector3.up, Color.blue);
             if (!characterController.isGrounded) return;
             
@@ -179,8 +185,52 @@ namespace _12.Tests.PlayerDev
         {
             if (hit.gameObject.CompareTag("Water"))
             {
-                transform.position = _lastStablePosition;
+                RespawnPlayer();
             }
+        }
+
+        public void RespawnPlayer()
+        {
+            if (immune) return;
+            playerMeshRenderer.enabled = false;
+            immune = true;
+            Input.ResetInputAxes();
+            
+            StartCoroutine((new[] {
+                MoveTowardsTarget(),
+                BlinkPlayer(),
+            }).GetEnumerator());
+        }
+
+        private IEnumerator MoveTowardsTarget()
+        {
+            float delayTime = 1f;
+            float elapsedTime = 0f;
+            
+            Vector3 offset = _lastStablePosition - transform.position;
+            offset.y = 0f;
+            float moveSpeed = offset.magnitude / delayTime;
+            while (elapsedTime < delayTime)
+            {
+                elapsedTime += Time.deltaTime;
+                offset = _lastStablePosition - transform.position;
+                offset.y = 0f;
+                characterController.Move(offset.normalized * (moveSpeed * Time.deltaTime));
+                yield return null;
+            }
+        }
+        
+        private IEnumerator BlinkPlayer()
+        {
+            for (int i=0; i<5; i++)
+            {
+                playerMeshRenderer.enabled = false;
+                yield return new WaitForSeconds(0.1f);
+                playerMeshRenderer.enabled = true;
+                yield return new WaitForSeconds(0.1f);
+            }
+
+            immune = false;
         }
     }
 }
