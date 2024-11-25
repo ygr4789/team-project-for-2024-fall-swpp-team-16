@@ -108,7 +108,7 @@ public class WaterController : MonoBehaviour
         Collider[] targets = Physics.OverlapSphere(playerPosition, 3f, waterLayer);
         if (Array.IndexOf(targets, waterCollider) > -1 && sinkHeight < -0.5f)
         {
-            playerMovement.RespawnPlayer();
+            playerMovement.Drown();
         }
     }
 }

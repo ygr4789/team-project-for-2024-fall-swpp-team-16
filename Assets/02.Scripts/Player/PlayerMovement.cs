@@ -10,6 +10,7 @@ namespace _12.Tests.PlayerDev
         public float moveZ;
         public bool jump;
         public bool run;
+        public bool active = true;
         
         public void Clear()
         {
@@ -17,7 +18,7 @@ namespace _12.Tests.PlayerDev
             moveZ = 0f;
             jump = false;
             run = false;
-        } 
+        }
     }
     
     public class PlayerMovement : MonoBehaviour
@@ -52,12 +53,12 @@ namespace _12.Tests.PlayerDev
             yield return new WaitForFixedUpdate();
             playerAnimator.SetBool("Jump", false);
         }
+
+        private bool immune = false;
         
         private int runLayer = 1;
         private float runLayerWeight = 0f;
         private float runTransitionSpeed = 3f;
-
-        private bool immune = false;
 
         // Start is called before the first frame update
         private void Awake()
@@ -79,6 +80,7 @@ namespace _12.Tests.PlayerDev
         private void GetInputs()
         {
             input.Clear();
+            if(!input.active) return;
             
             // get the movement input
             input.moveX = Input.GetAxis("Horizontal");
@@ -152,8 +154,6 @@ namespace _12.Tests.PlayerDev
         // Convert the direction of movement to avoid entering a impassible area
         private void CheckStable()
         {
-            if (immune) return;
-            
             Debug.DrawRay(_lastStablePosition, Vector3.up, Color.blue);
             if (!characterController.isGrounded) return;
             
@@ -169,55 +169,52 @@ namespace _12.Tests.PlayerDev
                 if (!CheckPassable(transform.position + checkDirection * checkDistance)) return;
             }
 
-            _lastStablePosition = transform.position + Vector3.up * 1f;
+            _lastStablePosition = transform.position;
         }
 
         // Check if a location is passable
         private bool CheckPassable(Vector3 position)
         {
             // Subject to modification based on development
-            Ray ray = new Ray(position + Vector3.up * 1f, Vector3.down);
+            Ray ray = new Ray(position + Vector3.up * 1.5f, Vector3.down);
             if (!Physics.Raycast(ray, out RaycastHit hit)) return false;
             return !hit.transform.CompareTag("Water");
         }
 
-        private void OnControllerColliderHit(ControllerColliderHit hit)
+        public void Drown()
         {
-            if (hit.gameObject.CompareTag("Water"))
-            {
-                RespawnPlayer();
-            }
-        }
-
-        public void RespawnPlayer()
-        {
+            // 플레이어가 물에 빠지는 이펙트 발생 필요
             if (immune) return;
-            playerMeshRenderer.enabled = false;
             immune = true;
-            Input.ResetInputAxes();
-            
-            StartCoroutine((new[] {
-                MoveTowardsTarget(),
-                BlinkPlayer(),
-            }).GetEnumerator());
+            StartCoroutine(RespawnPlayer());
         }
-
-        private IEnumerator MoveTowardsTarget()
+        
+        private IEnumerator RespawnPlayer()
+        {
+            playerMeshRenderer.enabled = false;
+            input.active = false;
+            yield return new WaitForSeconds(0.5f);
+            yield return MoveSmooth(transform.position, _lastStablePosition);
+            yield return BlinkPlayer();
+            Input.ResetInputAxes();
+            input.active = true;
+            immune = false;
+        }
+        
+        private IEnumerator MoveSmooth(Vector3 startPos, Vector3 endPos)
         {
             float delayTime = 1f;
             float elapsedTime = 0f;
             
-            Vector3 offset = _lastStablePosition - transform.position;
-            offset.y = 0f;
-            float moveSpeed = offset.magnitude / delayTime;
+            characterController.enabled = false;
             while (elapsedTime < delayTime)
             {
                 elapsedTime += Time.deltaTime;
-                offset = _lastStablePosition - transform.position;
-                offset.y = 0f;
-                characterController.Move(offset.normalized * (moveSpeed * Time.deltaTime));
+                float normalizedTime = elapsedTime / delayTime;
+                transform.position = Vector3.Lerp(startPos, endPos, Mathf.SmoothStep(0f, 1f, normalizedTime));
                 yield return null;
             }
+            characterController.enabled = true;
         }
         
         private IEnumerator BlinkPlayer()
@@ -229,8 +226,6 @@ namespace _12.Tests.PlayerDev
                 playerMeshRenderer.enabled = true;
                 yield return new WaitForSeconds(0.1f);
             }
-
-            immune = false;
         }
     }
 }
