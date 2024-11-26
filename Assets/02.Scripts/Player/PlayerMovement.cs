@@ -97,6 +97,8 @@ namespace _12.Tests.PlayerDev
                 _controllerVelocity.y = 0;
             }
 
+            if (immune) return;
+            
             CheckStable();
             
             // moves the controller in the desired direction on the x- and z-axis
@@ -194,6 +196,8 @@ namespace _12.Tests.PlayerDev
             playerMeshRenderer.enabled = false;
             input.active = false;
             yield return new WaitForSeconds(0.5f);
+            playerAnimator.SetBool("Grounded", true);
+            playerAnimator.SetBool("Moving", false);
             yield return MoveSmooth(transform.position, _lastStablePosition);
             yield return BlinkPlayer();
             Input.ResetInputAxes();

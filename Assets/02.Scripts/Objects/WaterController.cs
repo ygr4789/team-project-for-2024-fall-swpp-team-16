@@ -22,7 +22,6 @@ public class WaterController : MonoBehaviour
     
     private Collider waterCollider;
     private PlayerMovement playerMovement;
-    private bool tmp = false;
 
     void Awake()
     {
@@ -101,7 +100,6 @@ public class WaterController : MonoBehaviour
 
     private void CheckPlayerCollision()
     {
-        if (tmp) return;
         Vector3 playerPosition = GameManager.gm.controller.position;
         float sinkHeight = playerPosition.y - transform.position.y;
         int waterLayer = 1 << LayerMask.NameToLayer("Water");
