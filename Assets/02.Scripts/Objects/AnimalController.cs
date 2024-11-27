@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEditor.IMGUI.Controls;
 
 public enum AnimalState
 {
@@ -25,6 +26,19 @@ public class AnimalController : MonoBehaviour
     private bool isRushing = false;
     private float rushTimer = 0f;
     
+    [Range(0f, 2f)]
+    [SerializeField] private float colliderOriginHeight;
+    
+    [SerializeField] private Vector3 footOffsetLF;
+    [SerializeField] private Vector3 footOffsetRF;
+    [SerializeField] private Vector3 footOffsetLB;
+    [SerializeField] private Vector3 footOffsetRB;
+    [SerializeField] private LayerMask groundLayer;
+    
+    [Tooltip("waiting time before moving to the next waypoint")]
+    [Range(0f, 5f)] 
+    [SerializeField] private float pathWaitTime = 0.3f;
+    
     private void Awake()
     {
         ResonatableObject resonatable = gameObject.AddComponent<ResonatableObject>();
@@ -36,7 +50,7 @@ public class AnimalController : MonoBehaviour
     {
         switch (pitch)
         {
-            case PitchType.Do: { TriggerRush(); break; }
+            case PitchType.Do: { isRushing = true; break; }
         }
     }
 
@@ -56,138 +70,108 @@ public class AnimalController : MonoBehaviour
         }
     }
 
-    /*
     void Update()
     {
-        if (Input.GetKey(KeyCode.Alpha4))
+        if (isRushing)
         {
-            if (currentState != AnimalState.Rush)
-            {
-                TriggerRush();
-            }
-    
-            // Move forward while rushing
-            transform.Translate(Vector3.forward * rushSpeed * Time.deltaTime);
-        }
-        else if (isRushing)
-        {
-            // Maintain the Rush state without resetting until the duration ends
-            return;
-        }
-        else
-        {
-            // Reset to base state when not rushing
-            animator.SetBool("isRushing", false);
-            currentState = baseState;
-    
-            if (rushParticleEffect != null)
-            {
-                rushParticleEffect.Stop();
-            }
-        }
-    }
-    
-    public void TriggerRush()
-    {
-        if (currentState != AnimalState.Rush)
-        {
-            Debug.Log("TriggerRush called.");
+            isRushing = false;
             
-            // Change state to Rush
-            currentState = AnimalState.Rush;
-            isRushing = true;
-            rushTimer = 0f;
-    
-            // Stop other behaviors to prevent conflicts
-            StopAllCoroutines();
-    
-            // Play particle effect if available
-            if (rushParticleEffect != null)
-            {
-                rushParticleEffect.Play();
-            }
-    
-            // Set animator parameter
-            animator.SetBool("isRushing", true);
-    
-            // Start coroutine to manage rush duration
-            StartCoroutine(RushCoroutine());
-        }
-    }
-
-    void StopRush()
-    {
-        isRushing = false;
-
-        // Stop particle effect if playing
-        if (rushParticleEffect != null)
-        {
-            rushParticleEffect.Stop();
-        }
-
-        // Reset animator parameter
-        animator.SetBool("isRushing", false);
-
-        // Return to previous behavior
-        if (pathPoints != null && pathPoints.Length > 0)
-        {
-            currentState = AnimalState.FollowPath;
-            StartCoroutine(FollowPathBehavior());
-        }
-        else
-        {
-            currentState = AnimalState.Idle;
-            StartCoroutine(IdleBehavior());
-        }
-    } */
-
-    void Update()
-    {
-        if (Input.GetKey(KeyCode.Alpha4)) // Change to KeyCode.Alpha1 if needed
-        {
             if (currentState != AnimalState.Rush)
             {
                 TriggerRush();
             }
     
             // Move forward while rushing
-            transform.Translate(Vector3.forward * rushSpeed * Time.deltaTime);
+            if (!CollidingFront()) transform.Translate(Vector3.forward * (rushSpeed * Time.deltaTime));
+            StickToGround();
         }
         else
         {
-            if (isRushing)
+            if (currentState == AnimalState.Rush)
             {
                 StopRush(); // Stop rushing when the key is released
             }
-            else
-            {
-                // Reset to base state when not rushing
-                animator.SetBool("isRushing", false);
-                currentState = baseState;
+        }
+    }
     
-                if (rushParticleEffect != null)
+    private void StickToGround()
+    {
+        Vector3[] footOffsets = new Vector3[4];
+        footOffsets[0] = footOffsetLF;
+        footOffsets[1] = footOffsetRF;
+        footOffsets[2] = footOffsetLB;
+        footOffsets[3] = footOffsetRB;
+
+        float groundHeight = 0f;
+        Vector3 groundNormal = Vector3.up * 0.01f;
+        foreach (Vector3 footOffset in footOffsets)
+        {
+            Vector3 rayOrigin = transform.position + transform.TransformDirection(footOffset) + transform.up * colliderOriginHeight;
+            Ray ray = new Ray(rayOrigin, Vector3.down);
+            Debug.DrawRay(rayOrigin, Vector3.down, Color.green);
+            gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, groundLayer))
+            {
+                groundHeight += hit.point.y;
+                groundNormal += hit.normal;
+            }
+            gameObject.layer = LayerMask.NameToLayer("Default");
+        }
+        groundHeight /= footOffsets.Length;
+        groundNormal.Normalize();
+        Vector3 groundPosition = transform.position;
+        groundPosition.y = groundHeight;
+        transform.position = groundPosition;
+        
+        Vector3 flattenedForward = Vector3.ProjectOnPlane(transform.forward, Vector3.up);
+        float u = -Vector3.Dot(flattenedForward, groundNormal);
+        float f = Vector3.Dot(Vector3.up, groundNormal);
+        Vector3 forward = (flattenedForward * f + Vector3.up * u).normalized;
+        
+        transform.rotation = Quaternion.LookRotation(forward, groundNormal);
+    }
+    
+    private bool CollidingFront()
+    {
+        Vector3 moveDirection = transform.forward;
+        Vector3 checkOffset = transform.up * colliderOriginHeight;
+        float checkDistance = 10f;
+        // Inspection resolution
+        int numStep = 10;
+
+        for (int i = -numStep; i <= numStep; i++)
+        {
+            float checkAngle = 90f * i / numStep;
+            Vector3 checkDirection = Quaternion.AngleAxis(checkAngle, Vector3.up) * moveDirection;
+            Ray outRay = new Ray(transform.position + checkOffset, checkDirection);
+            if (Physics.Raycast(outRay, out RaycastHit hit, checkDistance, groundLayer))
+            {
+                Ray inRay = new Ray(hit.point, -checkDirection);
+                float hitDistance = hit.distance;
+                Physics.Raycast(inRay, out hit, hitDistance, groundLayer);
+                
+                if (hit.transform != transform)
                 {
-                    rushParticleEffect.Stop();
+                    return true;
                 }
             }
         }
+
+        return false;
     }
     
     public void TriggerRush()
     {
         if (currentState != AnimalState.Rush)
         {
-            Debug.Log("TriggerRush called.");
-    
             // Change state to Rush
             currentState = AnimalState.Rush;
-            isRushing = true;
     
             // Stop other behaviors to prevent conflicts
             StopAllCoroutines();
     
             // Play particle effect if available
-            if (rushParticleEffect != null)
+            if (rushParticleEffect)
             {
                 rushParticleEffect.Play();
             }
@@ -202,7 +186,7 @@ public class AnimalController : MonoBehaviour
         isRushing = false;
     
         // Stop particle effect if playing
-        if (rushParticleEffect != null)
+        if (rushParticleEffect)
         {
             rushParticleEffect.Stop();
         }
@@ -271,12 +255,15 @@ public class AnimalController : MonoBehaviour
             targetPosition.y = transform.position.y; // Keep the same height
 
             // Rotate towards the target
-            Quaternion targetRotation = Quaternion.LookRotation(targetPosition - transform.position);
-            while (Quaternion.Angle(transform.rotation, targetRotation) > 0.5f)
+            Vector3 targetDirection = Vector3.ProjectOnPlane(targetPosition - transform.position, Vector3.up).normalized;
+            Vector3 currentDirection = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
+            while (Vector3.Angle(targetDirection, currentDirection) > 0.5f)
             {
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, idleSpeed * 100 * Time.deltaTime);
+                currentDirection = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
+                transform.forward = Vector3.RotateTowards(currentDirection, targetDirection, idleSpeed * 3 * Time.deltaTime, 0f);
+                StickToGround();
                 yield return null;
-
+            
                 if (currentState != AnimalState.FollowPath)
                     yield break;
             }
@@ -287,8 +274,9 @@ public class AnimalController : MonoBehaviour
             // Move towards the waypoint
             while (Vector3.Distance(transform.position, targetPosition) > 0.5f)
             {
-                transform.position = Vector3.MoveTowards(transform.position, targetPosition, idleSpeed * Time.deltaTime);
+                if (!CollidingFront()) transform.position = Vector3.MoveTowards(transform.position, targetPosition, idleSpeed * Time.deltaTime);
                 yield return null;
+                StickToGround();
 
                 if (currentState != AnimalState.FollowPath)
                     yield break;
@@ -301,17 +289,7 @@ public class AnimalController : MonoBehaviour
             currentPathIndex = (currentPathIndex + 1) % pathPoints.Length;
 
             // Wait before moving to the next waypoint
-            yield return new WaitForSeconds(Random.Range(0.01f, 0.5f));
+            yield return new WaitForSeconds(pathWaitTime);
         }
     }
-    /*
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (currentState == AnimalState.Rush && isRushing && collision.gameObject.CompareTag("Trees") ) // 다른 옵젝트와 부딪힘 , 태그 수정 필요
-        {
-            // Stop rushing upon collision
-            StopRush();
-        }
-    }*/
 }
