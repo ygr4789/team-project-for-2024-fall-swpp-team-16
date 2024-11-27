@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class FlotageController : MonoBehaviour
 {
@@ -17,10 +18,11 @@ public class FlotageController : MonoBehaviour
     
     private void Awake()
     {
+        _rigidbody = gameObject.GetComponent<Rigidbody>();
+        Assert.IsNotNull(_rigidbody);
         ResonatableObject resonatable = gameObject.AddComponent<ResonatableObject>();
         resonatable.properties = new[] { PitchType.Mi, PitchType.Fa };
         resonatable.resonate += FlotageResonate;
-        _rigidbody = gameObject.GetComponent<Rigidbody>();
     }
 
     private void FlotageResonate(PitchType pitch)
@@ -40,12 +42,13 @@ public class FlotageController : MonoBehaviour
     void Update()
     {
         FlattenPosition();
-        if (_rigidbody.velocity == Vector3.zero) _rigidbody.isKinematic = true;
+        if (_rigidbody.velocity.magnitude < 0.01f) _rigidbody.isKinematic = true;
     }
 
     // Anchor to the water surface
     private void FlattenPosition()
     {
+        if (Mathf.Approximately(transform.localPosition.y, 0f)) return;
         Vector3 flattenPosition = transform.localPosition;
         flattenPosition.y = 0f;
         transform.localPosition = flattenPosition;
