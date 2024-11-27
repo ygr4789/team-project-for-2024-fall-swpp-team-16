@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,8 +19,17 @@ public class WaterController : MonoBehaviour
     private float elapsedTime = 0.0f;
     private float startHeight; // 현재 높이를 저장할 변수
     
+    private Collider waterCollider;
+    private PlayerMovement playerMovement;
+
+    void Awake()
+    {
+        waterCollider = gameObject.GetComponent<Collider>();
+    }
+
     void Start()
     {
+        playerMovement = GameManager.gm.controller.GetComponent<PlayerMovement>();
         initialPositionY = transform.position.y;
         waterLevelTarget = initialPositionY;
     }
@@ -46,6 +56,8 @@ public class WaterController : MonoBehaviour
                 elapsedTime = 0.0f; // 초기화
             }
         }
+        
+        CheckPlayerCollision();
     }
     
     public bool TriggerStepIncreaseWaterLevel()
@@ -83,5 +95,17 @@ public class WaterController : MonoBehaviour
         isHeightChanging = true;
         startHeight = transform.position.y; // 현재 높이를 시작 높이로 설정
         elapsedTime = 0.0f; // 새로운 변화가 시작되므로 경과 시간 초기화
+    }
+
+    private void CheckPlayerCollision()
+    {
+        Vector3 playerPosition = GameManager.gm.controller.position;
+        float sinkHeight = playerPosition.y - transform.position.y;
+        int waterLayer = 1 << LayerMask.NameToLayer("Water");
+        Collider[] targets = Physics.OverlapSphere(playerPosition, 3f, waterLayer);
+        if (Array.IndexOf(targets, waterCollider) > -1 && sinkHeight < -0.5f)
+        {
+            playerMovement.Drown();
+        }
     }
 }

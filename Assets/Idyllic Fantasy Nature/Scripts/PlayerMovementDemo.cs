@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace IdyllicFantasyNature
 {
-    public class PlayerMovement : MonoBehaviour
+    public class PlayerMovementDemo : MonoBehaviour
     {
         [Range(1f, 20f)]
         [SerializeField] private float _movementSpeed;
