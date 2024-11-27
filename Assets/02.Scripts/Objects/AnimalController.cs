@@ -25,13 +25,19 @@ public class AnimalController : MonoBehaviour
     private int currentPathIndex = 0;
     private bool isRushing = false;
     private float rushTimer = 0f;
+    
     [Range(0f, 2f)]
     [SerializeField] private float colliderOriginHeight;
+    
     [SerializeField] private Vector3 footOffsetLF;
     [SerializeField] private Vector3 footOffsetRF;
     [SerializeField] private Vector3 footOffsetLB;
     [SerializeField] private Vector3 footOffsetRB;
     [SerializeField] private LayerMask groundLayer;
+    
+    [Tooltip("waiting time before moving to the next waypoint")]
+    [Range(0f, 5f)] 
+    [SerializeField] private float pathWaitTime = 0.3f;
     
     private void Awake()
     {
@@ -283,7 +289,7 @@ public class AnimalController : MonoBehaviour
             currentPathIndex = (currentPathIndex + 1) % pathPoints.Length;
 
             // Wait before moving to the next waypoint
-            yield return new WaitForSeconds(Random.Range(0.01f, 0.5f));
+            yield return new WaitForSeconds(pathWaitTime);
         }
     }
 }
