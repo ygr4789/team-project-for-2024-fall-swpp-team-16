@@ -29,20 +29,26 @@ namespace Collections.Shaders.CircleTransition
             _blackScreen = GetComponentInChildren<Image>();
         }
 
-        private void Start()
-        {
-            CloseBlackScreenDefault(); // ERASE THIS LINE AFTER TESTING
-            Invoke(nameof(OpenBlackScreenDefault), 2f); // ERASE THIS LINE AFTER TESTING
-        }
+        private void Start() {}
 
-		public void OpenBlackScreenDefault()
+        // trigger this function when a stage is cleared
+        public void StageClearEffect()
         {
-            OpenBlackScreen();
+            StartCoroutine(OpenBlackScreenCoroutine(2, 2.0f, 1.0f, 0.2f));
+            StartCoroutine(CloseBlackScreenCoroutine(4, 0.3f, 0.2f, 0.4f));
+            StartCoroutine(CloseBlackScreenCoroutine(4.5f, 0.3f, 0.4f, 0.0f));
         }
-
-        public void CloseBlackScreenDefault()
+        
+        private IEnumerator OpenBlackScreenCoroutine(float delay, float duration = -1, float startRadius = -1, float endRadius = -1)
         {
-            CloseBlackScreen();
+            yield return new WaitForSeconds(delay);
+            OpenBlackScreen(duration, startRadius, endRadius);
+        }
+        
+        private IEnumerator CloseBlackScreenCoroutine(float delay, float duration = -1, float startRadius = -1, float endRadius = -1)
+        {
+            yield return new WaitForSeconds(delay);
+            CloseBlackScreen(duration, startRadius, endRadius);
         }
 
         public void OpenBlackScreen(float duration = -1, float startRadius = -1, float endRadius = -1)
