@@ -54,8 +54,7 @@ public class FlotageController : MonoBehaviour
         var directionToPlayer = (_player.transform.position - transform.position).normalized;
         directionToPlayer.y = 0;
         directionToPlayer.Normalize();
-        var movement = directionToPlayer * (moveSpeed * Time.deltaTime);
-        _rigidbody.MovePosition(transform.position + movement);
+        _rigidbody.velocity = directionToPlayer * moveSpeed;
     }
 
     private void MoveAwayFromPlayer()
@@ -64,18 +63,7 @@ public class FlotageController : MonoBehaviour
         var directionAwayFromPlayer = (transform.position - _player.transform.position).normalized;
         directionAwayFromPlayer.y = 0;
         directionAwayFromPlayer.Normalize();
-        var movement = directionAwayFromPlayer * (moveSpeed * Time.deltaTime);
-        _rigidbody.MovePosition(transform.position + movement);
-    }
-    
-    private void OnCollisionEnter(Collision other)
-    {
-        Debug.Log(other.gameObject.name);
-    }
-
-    private void OnCollisionExit(Collision other)
-    {
-        Debug.Log(other.gameObject.name);
+        _rigidbody.velocity = directionAwayFromPlayer * moveSpeed;
     }
 }
 
