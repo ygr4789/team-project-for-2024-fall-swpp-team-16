@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace IdyllicFantasyNature
 {
-    public class CameraMovement : MonoBehaviour
+    public class CameraMovementDemo : MonoBehaviour
     {
         [Range(1f, 10f)]
         [Tooltip("speed of the camera movement")]
