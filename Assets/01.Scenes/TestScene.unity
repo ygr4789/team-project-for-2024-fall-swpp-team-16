@@ -314,7 +314,8 @@ GameObject:
   - component: {fileID: 239631142}
   - component: {fileID: 239631141}
   - component: {fileID: 239631143}
-  m_Layer: 0
+  - component: {fileID: 239631144}
+  m_Layer: 4
   m_Name: Water2
   m_TagString: Water
   m_Icon: {fileID: 0}
@@ -399,6 +400,25 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 10, y: 2.220446e-16, z: 10}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &239631144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 239631138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9815b0355d56743b92c9f55b6d178d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waterLevelMax: 100
+  waterLevelMin: 0
+  waterLevelTargetUnit: 1
+  timeToReachTarget: 2
+  initialPositionY: 0
+  isHeightChanging: 0
+  waterLevelTarget: 0
 --- !u!1 &242581532
 GameObject:
   m_ObjectHideFlags: 0
@@ -1335,7 +1355,8 @@ GameObject:
   - component: {fileID: 724701217}
   - component: {fileID: 724701216}
   - component: {fileID: 724701218}
-  m_Layer: 0
+  - component: {fileID: 724701219}
+  m_Layer: 4
   m_Name: Water1
   m_TagString: Water
   m_Icon: {fileID: 0}
@@ -1420,6 +1441,25 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 10, y: 2.220446e-16, z: 10}
   m_Center: {x: 0, y: 0.000000029802322, z: -0.0000009536743}
+--- !u!114 &724701219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 724701213}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9815b0355d56743b92c9f55b6d178d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waterLevelMax: 100
+  waterLevelMin: 0
+  waterLevelTargetUnit: 1
+  timeToReachTarget: 2
+  initialPositionY: 0
+  isHeightChanging: 0
+  waterLevelTarget: 0
 --- !u!1 &734022059
 GameObject:
   m_ObjectHideFlags: 0
@@ -1636,6 +1676,10 @@ PrefabInstance:
     - target: {fileID: -3636020301794420423, guid: bcf7a95184eee2d4d81e1dcf42322d65, type: 3}
       propertyPath: m_Layer
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3636020301794420423, guid: bcf7a95184eee2d4d81e1dcf42322d65, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -3617562400939787601, guid: bcf7a95184eee2d4d81e1dcf42322d65, type: 3}
       propertyPath: m_Layer
@@ -2114,7 +2158,7 @@ MonoBehaviour:
   _distanceToGround: 0.1
   _raycastLayerMask:
     serializedVersion: 2
-    m_Bits: 51
+    m_Bits: 1
   _leftFootWalkIKCurve:
     serializedVersion: 2
     m_Curve:
@@ -3136,7 +3180,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af010bfc7dd3a6d4bb0cc987b4024e67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Player: {fileID: 0}
+  controller: {fileID: 0}
 --- !u!4 &1611030915
 Transform:
   m_ObjectHideFlags: 0

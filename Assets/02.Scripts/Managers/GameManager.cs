@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
     // Other Managers
     public static PlayManager pm;
 
-    public Transform Player;
+    public Transform controller;
     
     // Singleton pattern & Find SoundManager
     private void Awake()
@@ -35,6 +35,8 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        
+        controller = GameObject.Find("Controller").transform;
     }
     
     // Called every time when some scene is loaded
