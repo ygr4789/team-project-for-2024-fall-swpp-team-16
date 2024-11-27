@@ -24,7 +24,7 @@ public class PlayerMovement : MonoBehaviour
     [Range(1f, 20f)]
     [SerializeField] private float _movementSpeed;
     
-    [Tooltip("run multiplier of the movement speed")]
+    [Tooltip("additional speed multiplier when running")]
     [Range(1f, 20f)]
     [SerializeField] private float _runMultiplier;
     
@@ -52,7 +52,11 @@ public class PlayerMovement : MonoBehaviour
         playerAnimator.SetBool("Jump", false);
     }
 
-    private bool immune = false;
+    private bool immune = false; //
+    private float respawnDelayTime = 0.5f; //
+    private float respawnPositionRestoreTime = 1f; //
+    private int respawnBlinkCount = 5; //
+    private float respawnBlinkTime = 0.1f; //
     
     private int runLayer = 1;
     private float runLayerWeight = 0f;
@@ -196,37 +200,38 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         playerAnimator.SetBool("Grounded", true);
         playerAnimator.SetBool("Moving", false);
-        yield return MoveSmooth(transform.position, _lastStablePosition);
-        yield return BlinkPlayer();
+        yield return MoveSmooth(transform.position, _lastStablePosition, respawnPositionRestoreTime);
+        yield return BlinkPlayer(respawnBlinkCount, respawnBlinkTime);
         Input.ResetInputAxes();
         input.active = true;
         immune = false;
     }
     
-    private IEnumerator MoveSmooth(Vector3 startPos, Vector3 endPos)
+    // Smoothly move from startPos to endPos over finishTime
+    private IEnumerator MoveSmooth(Vector3 startPos, Vector3 endPos, float finishTime)
     {
-        float delayTime = 1f;
         float elapsedTime = 0f;
         
         characterController.enabled = false;
-        while (elapsedTime < delayTime)
+        while (elapsedTime < finishTime)
         {
             elapsedTime += Time.deltaTime;
-            float normalizedTime = elapsedTime / delayTime;
+            float normalizedTime = elapsedTime / finishTime;
             transform.position = Vector3.Lerp(startPos, endPos, Mathf.SmoothStep(0f, 1f, normalizedTime));
             yield return null;
         }
         characterController.enabled = true;
     }
     
-    private IEnumerator BlinkPlayer()
+    // Repeat blinking for the specified time count times
+    private IEnumerator BlinkPlayer(int count, float time)
     {
-        for (int i=0; i<5; i++)
+        for (int i=0; i<count; i++)
         {
             playerMeshRenderer.enabled = false;
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(time);
             playerMeshRenderer.enabled = true;
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(time);
         }
     }
 }
