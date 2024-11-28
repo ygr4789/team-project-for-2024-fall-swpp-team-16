@@ -18,7 +18,7 @@ public class DoorController : MonoBehaviour
         scoreUIPanel.SetActive(false);
     }
 
-    public void Inspect()
+    public void Inspect(GameObject floatingText)
     {
         // if all scores are collected, the user needs to play music
 		if (GameManager.im.HasAllScores())
@@ -28,6 +28,7 @@ public class DoorController : MonoBehaviour
             ClearColoredNotes();
 			
 			Debug.Log("Play the music to open the door");
+            floatingText.SendMessage("Hide");
         }
         else
         {

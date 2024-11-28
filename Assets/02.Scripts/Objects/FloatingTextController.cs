@@ -35,8 +35,7 @@ public class FloatingTextController : MonoBehaviour
             if (Vector3.Distance(target.transform.position, playerTransform.position) <
                 inspectMaxDistance)
             {
-                target.SendMessage("Inspect");
-                Hide(); // TODO: only hide when the target is inspected
+                target.SendMessage("Inspect", gameObject);
             }
         }
     }

@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class ScoreController : MonoBehaviour
 {
-    public void Inspect()
+    public void Inspect(GameObject floatingText)
     {
         GameManager.im.AddScore(this.gameObject);
         gameObject.SetActive(false);
+        floatingText.SendMessage("Hide");
         GameManager.sm.PlaySound("picking-score");
     }
 }
