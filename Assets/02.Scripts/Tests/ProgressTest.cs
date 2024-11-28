@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using System.IO;
 using UnityEngine;
-using UnityEngine.TestTools; // Include this namespace for Play Mode tests
+using UnityEngine.TestTools;
 using System.Collections;
 
 [TestFixture]
@@ -32,11 +32,11 @@ public class StageManagerTests
         }
     }
 
-    [UnityTest] // Use UnityTest for Play Mode tests
+    [UnityTest]
     public IEnumerator TestLoadStages_NoFile_CreatesNewFile()
     {
         stageManager.Awake();
-        yield return null; // Wait a frame if necessary
+        yield return null;
         Assert.IsTrue(File.Exists(testFilePath));
     }
 
