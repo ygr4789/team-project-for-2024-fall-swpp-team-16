@@ -6,7 +6,6 @@ public class InventoryManager : MonoBehaviour
 {
 	public List<GameObject> scores = new List<GameObject>(); // list of scores to collect
     private Dictionary<GameObject, bool> _scoreMap = new Dictionary<GameObject, bool>(); // map of scores and their collection status
-    public GameObject inventoryUI;
     public GameObject inventoryIconUI;
     public TMPro.TextMeshProUGUI scoreText;
     private int _collectedScores = 0;
@@ -30,11 +29,6 @@ public class InventoryManager : MonoBehaviour
             {
                 Debug.LogWarning("Score is null in the scores list!");
             }
-        }
-        
-        if (inventoryUI == null || inventoryIconUI == null)
-        {
-            Debug.LogWarning("Inventory UI or Icon UI is not assigned!");
         }
 
         UpdateInventoryUI();
