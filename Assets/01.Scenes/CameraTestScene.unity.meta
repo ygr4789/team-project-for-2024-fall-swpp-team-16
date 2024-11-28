@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/01.Scenes/InspectTestScene.unity.meta
+guid: fcb159ec39405e147890fb55509a62bc
+========
 guid: 7446b4290d08e4adc824f931f3840cf9
+>>>>>>>> 75d98d69b021bb381044f437b8fcdac0437fb0ce:Assets/01.Scenes/CameraTestScene.unity.meta
 DefaultImporter:
   externalObjects: {}
   userData: 
