@@ -4,12 +4,6 @@ using UnityEngine;
 
 public class ScoreController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     public void Inspect()
     {
         GameManager.im.AddScore(this.gameObject);
