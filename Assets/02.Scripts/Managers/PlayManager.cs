@@ -55,18 +55,18 @@ public class PlayManager : MonoBehaviour
 
     private void SetCurrentTarget(Transform newTarget)
     {
+        if (currentTarget == newTarget) return;
         if (currentTarget is not null && activeRipplesEffects.ContainsKey(currentTarget))
         {
-            var mainModule = activeRipplesEffects[currentTarget].main;
-            mainModule.startSize = defaultSize;
+            Debug.Log($"[Return Size] Target: {currentTarget.name}");
+            GameManager.em.SetRippleSize(currentTarget);
         }
 
         currentTarget = newTarget;
 
         if (currentTarget is not null && activeRipplesEffects.ContainsKey(currentTarget))
         {
-            var mainModule = activeRipplesEffects[currentTarget].main;
-            mainModule.startSize = defaultSize * targetScaleMultiplier;
+            GameManager.em.SetRippleSize(currentTarget, 0.9f, 3.5f, 6f);
         }
     }
     
