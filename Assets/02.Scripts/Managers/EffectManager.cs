@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EffectManager : MonoBehaviour
 {
-    [SerializeField] private ParticleSystem ripplesEffectPrefab;
+    [SerializeField] public ParticleSystem ripplesEffectPrefab;
     [SerializeField] private float colorSwitchInterval = 0.5f;
     private float colorSwitchTimer;
     private float defaultSize = 7;
@@ -119,7 +119,7 @@ public class EffectManager : MonoBehaviour
     
     private IEnumerator DestroyAfterDuration(ParticleSystem effect, Transform target)
     {
-        yield return new WaitForSeconds(effect.main.duration); // duration만큼 대기
+        yield return new WaitForSeconds(effect.main.duration/2); // duration만큼 대기
         Destroy(effect.gameObject); // 파티클 오브젝트 제거
     }
 
