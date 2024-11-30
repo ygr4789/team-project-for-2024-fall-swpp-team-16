@@ -27,23 +27,27 @@ public class SurfaceContactRigidbody : MonoBehaviour
 	public Vector3 Velocity
 	{
 		get => body.velocity;
-		set {
+		set
+		{
 			Vector3 flattenVelocity = value;
 			flattenVelocity.y = 0f;
 			velocity = flattenVelocity;
 		}
 	}
 	
-	private void OnValidate () {
+	private void OnValidate ()
+	{
 		minGroundDotProduct = Mathf.Cos(maxGroundAngle * Mathf.Deg2Rad);
 	}
 
-	private void Awake () {
+	private void Awake ()
+	{
 		body = GetComponent<Rigidbody>();
 		OnValidate();
 	}
 	
-	private void FixedUpdate () {
+	private void FixedUpdate () 
+	{
 		UpdateState();
 		AdjustVelocity();
 		body.velocity = currentVelocity;
@@ -51,13 +55,15 @@ public class SurfaceContactRigidbody : MonoBehaviour
 	}
 
 	// Initialize properties
-	private void ClearState () {
+	private void ClearState () 
+	{
 		groundContactCount = steepContactCount = 0;
 		contactNormal = steepNormal = Vector3.zero;
 	}
 
 	// Calculate all properties
-	private void UpdateState () {
+	private void UpdateState () 
+	{
 		stepsSinceLastGrounded += 1;
 		currentVelocity = body.velocity;
 		if (OnGround || SnapToGround() || CheckSteepContacts()) {
@@ -73,31 +79,27 @@ public class SurfaceContactRigidbody : MonoBehaviour
 
 	// Returns whether surface contact is maintained
 	// If true, removes the directional component velocity away from the surface
-	bool SnapToGround () {
-		if (stepsSinceLastGrounded > 1) {
-			return false;
-		}
-		if (!Physics.Raycast(body.position, Vector3.down, out RaycastHit hit, probeDistance, probeMask)) {
-			return false;
-		}
-		if (hit.normal.y < minGroundDotProduct) {
-			return false;
-		}
+	bool SnapToGround () 
+	{
+		if (stepsSinceLastGrounded > 1) return false;
+		if (!Physics.Raycast(body.position, Vector3.down, out RaycastHit hit, probeDistance, probeMask)) return false;
+		if (hit.normal.y < minGroundDotProduct) return false;
 
 		groundContactCount = 1;
 		contactNormal = hit.normal;
 		float dot = Vector3.Dot(currentVelocity, hit.normal);
-		if (dot > 0f) {
-			currentVelocity = (currentVelocity - hit.normal * dot).normalized * currentVelocity.magnitude;
-		}
+		if (dot > 0f) currentVelocity = (currentVelocity - hit.normal * dot).normalized * currentVelocity.magnitude;
 		return true;
 	}
 
 	// Check if the object is stuck in terrain like crevasses
-	bool CheckSteepContacts () {
-		if (OnSteep) {
+	bool CheckSteepContacts () 
+	{
+		if (OnSteep)
+		{
 			steepNormal.Normalize();
-			if (steepNormal.y >= minGroundDotProduct) {
+			if (steepNormal.y >= minGroundDotProduct)
+			{
 				steepContactCount = 0;
 				groundContactCount = 1;
 				contactNormal = steepNormal;
@@ -108,7 +110,8 @@ public class SurfaceContactRigidbody : MonoBehaviour
 	}
 
 	// Apply velocities projected in the normal plane only for the xz plane
-	private void AdjustVelocity () {
+	private void AdjustVelocity ()
+	{
 		Vector3 xAxis = ProjectOnContactPlane(Vector3.right).normalized;
 		Vector3 zAxis = ProjectOnContactPlane(Vector3.forward).normalized;
 		float currentX = Vector3.Dot(currentVelocity, xAxis);
@@ -116,28 +119,35 @@ public class SurfaceContactRigidbody : MonoBehaviour
 		currentVelocity += xAxis * (velocity.x - currentX) + zAxis * (velocity.z - currentZ);
 	}
 
-	private Vector3 ProjectOnContactPlane (Vector3 vector) {
+	private Vector3 ProjectOnContactPlane (Vector3 vector)
+	{
 		return vector - contactNormal * Vector3.Dot(vector, contactNormal);
 	}
 	
-	private void OnCollisionEnter (Collision collision) {
+	private void OnCollisionEnter (Collision collision)
+	{
 		EvaluateCollision(collision);
 	}
 
-	private void OnCollisionStay (Collision collision) {
+	private void OnCollisionStay (Collision collision)
+	{
 		EvaluateCollision(collision);
 	}
 
 	// Record collision counts and contact normal
-	private void EvaluateCollision (Collision collision) {
+	private void EvaluateCollision (Collision collision)
+	{
 		float minDot = minGroundDotProduct;
-		for (int i = 0; i < collision.contactCount; i++) {
+		for (int i = 0; i < collision.contactCount; i++)
+		{
 			Vector3 normal = collision.GetContact(i).normal;
-			if (normal.y >= minDot) {
+			if (normal.y >= minDot)
+			{
 				groundContactCount += 1;
 				contactNormal += normal;
 			}
-			else if (normal.y > -0.01f) {
+			else if (normal.y > -0.01f)
+			{
 				steepContactCount += 1;
 				steepNormal += normal;
 			}
