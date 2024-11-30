@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class EffectManager : MonoBehaviour
@@ -9,25 +10,27 @@ public class EffectManager : MonoBehaviour
     private float colorSwitchTimer;
     private float defaultSize = 7;
     
-    
     public void TriggerRipples(Transform target, Color color, Vector3 targetScale, Vector3 positionOffset, bool isPlayer = false)
     {
         if (!GameManager.pm.activeRipplesEffects.ContainsKey(target))
         {
             ParticleSystem newEffect = Instantiate(ripplesEffectPrefab, target.position, Quaternion.identity);
-            
-            // Collider를 사용하여 위치 계산
-            Collider collider = target.GetComponent<Collider>();
-            if (collider is not null)
+
+            if (isPlayer)
             {
-                Bounds bounds = collider.bounds;
-                
-                // 기본 위치는 Collider 중심 + 오프셋
-                Vector3 effectPosition = bounds.center + positionOffset;
-                newEffect.transform.position = effectPosition;
-                newEffect.transform.SetParent(target, true);
+                // Collider를 사용하여 위치 계산
+                Collider collider = target.GetComponent<Collider>();
+                if (collider is not null)
+                {
+                    Bounds bounds = collider.bounds;
+
+                    // 기본 위치는 Collider 중심 + 오프셋
+                    Vector3 effectPosition = bounds.center + positionOffset;
+                    newEffect.transform.position = effectPosition;
+                }
             }
 
+            newEffect.transform.SetParent(target, true);
             GameManager.pm.RegisterTarget(target, newEffect); // PlayManager에 등록
         }
 
@@ -43,7 +46,7 @@ public class EffectManager : MonoBehaviour
             var mainModule = activeEffect.main;
             mainModule.startSize = Mathf.Max(targetScale.x, targetScale.y, targetScale.z) * defaultSize;
         }
-        else { SetRippleSize(target); }
+        else { SetRippleSize(target, positionOffset : positionOffset); }
         
         if (!isPlayer || !activeEffect.isPlaying)
         {
@@ -51,12 +54,12 @@ public class EffectManager : MonoBehaviour
         }
     }
     
-    public void SetRippleSize(Transform target, float multiplier = 3.0f, float minParticleSize = 0.1f, float maxParticleSize = 6f)
+    public void SetRippleSize(Transform target, float multiplier = 3.0f, float minParticleSize = 0.1f, float maxParticleSize = 6f, Vector3 positionOffset = default)
     {
         if (!GameManager.pm.activeRipplesEffects.ContainsKey(target)) return;
 
         Collider collider = target.GetComponent<Collider>();
-        if (collider != null)
+        if (collider is not null)
         {
             Bounds bounds = collider.bounds;
 
@@ -87,7 +90,7 @@ public class EffectManager : MonoBehaviour
 
             // 파티클의 위치를 y축 중간 위치로 업데이트
             Vector3 newEffectPosition = new Vector3(bounds.center.x, yMidPosition, bounds.center.z);
-            effect.transform.position = newEffectPosition;
+            effect.transform.position = newEffectPosition + positionOffset;
         }
     }
 

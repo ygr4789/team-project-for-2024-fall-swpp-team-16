@@ -8,7 +8,7 @@ public class ResonatableObject : MonoBehaviour
     [HideInInspector] public PitchType[] properties = {};
     private bool isPlayingRipples = false;
     private int colliderNum = 0;
-    public float ripplesHeightRatio = 0.5f;
+    public Vector3 ripplesPositionOffset = Vector3.zero;
 
     [HideInInspector] public delegate void Resonate(PitchType pitch);
     [HideInInspector] public Resonate resonate;
@@ -40,6 +40,6 @@ public class ResonatableObject : MonoBehaviour
     private void TriggerRipplesEffect(PitchType pitchType)
     {
         Color color = GameParameters.PitchColors[(int)pitchType];
-        GameManager.em.TriggerRipples(transform, color, transform.localScale, Vector3.zero);
+        GameManager.em.TriggerRipples(transform, color, transform.localScale, ripplesPositionOffset);
     }
 }
