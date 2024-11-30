@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EffectManager : MonoBehaviour
 {
-    [SerializeField] public ParticleSystem ripplesEffectPrefab;
+    [SerializeField] private ParticleSystem ripplesEffectPrefab;
     [SerializeField] private float colorSwitchInterval = 0.5f;
     private float colorSwitchTimer;
     private float defaultSize = 7;
