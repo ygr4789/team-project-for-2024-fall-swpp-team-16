@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Water
   - Score
+  - MainCanvas
   layers:
   - Default
   - TransparentFX
