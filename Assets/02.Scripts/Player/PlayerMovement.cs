@@ -46,21 +46,24 @@ public class PlayerMovement : MonoBehaviour
     
     private PlayerInput input;
     
-    private IEnumerator jumpCheckGroundAvoider; 
-    private IEnumerator JumpCheckGroundAvoider()
+    private bool isJumpCooldown = false;
+    private float jumpCooldownTime = 0.1f;
+    private IEnumerator JumpCooldownCounter()
     {
         yield return new WaitForFixedUpdate();
         playerAnimator.SetBool("Jump", false);
+        yield return new WaitForSeconds(jumpCooldownTime);
+        isJumpCooldown = false;
     }
 
     private List<Collider> groundColliders = new();
     private bool isGrounded = true;
     
-    private bool immune = false; //
-    private float respawnDelayTime = 0.5f; //
-    private float respawnPositionRestoreTime = 1f; //
-    private int respawnBlinkCount = 5; //
-    private float respawnBlinkTime = 0.1f; //
+    private bool immune = false;
+    private float respawnDelayTime = 0.5f;
+    private float respawnPositionRestoreTime = 1f;
+    private int respawnBlinkCount = 5;
+    private float respawnBlinkTime = 0.1f;
     
     private int runLayer = 1;
     private float runLayerWeight = 0f;
@@ -107,7 +110,7 @@ public class PlayerMovement : MonoBehaviour
         movement *= _movementSpeed;
 
         // the controller is able to run
-        if (input.run)
+        if (input.run && isGrounded)
         {
             movement *= _runMultiplier;
 
@@ -122,41 +125,34 @@ public class PlayerMovement : MonoBehaviour
         }
         playerAnimator.SetLayerWeight(runLayer, runLayerWeight);
         
-        // player movement is only controllable while being grounded
         float currentVelocity = movement.magnitude;
-        playerAnimator.SetBool("Moving", currentVelocity > 0);
         
-        if (isGrounded)
+        // player movement is only controllable while being grounded
+        playerAnimator.SetBool("Moving", currentVelocity > 0);
+        playerRigidBody.velocity = new Vector3(movement.x, playerRigidBody.velocity.y, movement.z);
+        if (currentVelocity > 0)
         {
-            playerRigidBody.velocity = new Vector3(movement.x, playerRigidBody.velocity.y, movement.z);
-            if (currentVelocity > 0)
-            {
-                // set player's forward same as moving direction
-                float targetAngle = Mathf.Atan2(input.moveX, input.moveZ) * Mathf.Rad2Deg - 90;
-                float angle = Mathf.SmoothDampAngle(playerTransform.eulerAngles.y, targetAngle, ref currentVelocity, _smoothTime);
-                playerTransform.rotation = Quaternion.Euler(0, angle, 0);
-            }
+            // set player's forward same as moving direction
+            float targetAngle = Mathf.Atan2(input.moveX, input.moveZ) * Mathf.Rad2Deg - 90;
+            float angle = Mathf.SmoothDampAngle(playerTransform.eulerAngles.y, targetAngle, ref currentVelocity, _smoothTime);
+            playerTransform.rotation = Quaternion.Euler(0, angle, 0);
         }
-            
-        // moves the controller on the y-axis
-        if (isGrounded) playerAnimator.SetBool("Grounded", true);
 
+        if (isGrounded && !isJumpCooldown)
+        {
+            playerAnimator.SetBool("Grounded", true);
+        }
+        
         // the controller is able to jump when on the ground
-        if (input.jump && isGrounded)
+        if (input.jump && isGrounded && !isJumpCooldown)
         {
             playerAnimator.SetBool("Jump", true);
             playerAnimator.SetBool("Grounded", false);
-            Vector3 jumpVelocity = playerRigidBody.velocity;
+            Vector3 jumpVelocity = Vector3.zero;
             jumpVelocity.y = Mathf.Sqrt(-_jumpHeight * 2f * Physics.gravity.y);
-            // playerRigidBody.AddForce(jumpVelocity, ForceMode.VelocityChange);
-            playerRigidBody.velocity = jumpVelocity;
-            
-            if(jumpCheckGroundAvoider != null)
-            {
-                StopCoroutine(jumpCheckGroundAvoider);
-            }
-            jumpCheckGroundAvoider = JumpCheckGroundAvoider();
-            StartCoroutine(jumpCheckGroundAvoider);
+            playerRigidBody.AddForce(jumpVelocity, ForceMode.VelocityChange);
+            isJumpCooldown = true;
+            StartCoroutine(JumpCooldownCounter());
         }
     }
 
