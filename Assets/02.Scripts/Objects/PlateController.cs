@@ -152,6 +152,14 @@ public class PlateController : MonoBehaviour
         }
         isLowering = true; // 낮추기 시작
         isRaising = false; // 복구 중지
+        
+        // Press 효과음 재생
+        PlayPressSound();
+    }
+    
+    private void PlayPressSound()
+    {
+        GameManager.sm.PlaySound("pressure-plate");
     }
 
     private void TriggerUnpressEffect()
