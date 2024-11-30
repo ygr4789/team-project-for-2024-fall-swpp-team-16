@@ -26,7 +26,7 @@ public class SurfaceContactRigidbody : MonoBehaviour
 
 	public Vector3 Velocity
 	{
-		get => velocity;
+		get => body.velocity;
 		set {
 			Vector3 flattenVelocity = value;
 			flattenVelocity.y = 0f;
