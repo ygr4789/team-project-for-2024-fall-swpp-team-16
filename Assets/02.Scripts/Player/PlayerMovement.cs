@@ -53,7 +53,7 @@ public class PlayerMovement : MonoBehaviour
         playerAnimator.SetBool("Jump", false);
     }
 
-    private List<Collision> groundCollisions = new();
+    private List<Collider> groundColliders = new();
     private bool isGrounded = true;
     
     private bool immune = false; //
@@ -247,28 +247,36 @@ public class PlayerMovement : MonoBehaviour
     {
         if (other.contacts[0].normal.y > 0.7f)
         {
-            groundCollisions.Add(other);
+            groundColliders.Add(other.collider);
             isGrounded = true;
         }
     }
 
     private void OnCollisionStay(Collision other)
     {
+        foreach (var contact in other.contacts)
+        {
+            Debug.DrawRay(contact.point, contact.normal, Color.red);
+        }
+        
         if (other.contacts[0].normal.y < 0.7f)
         {
-            groundCollisions.Remove(other);
-            if (groundCollisions.Count == 0) isGrounded = false;
+            groundColliders.Remove(other.collider);
+            if (groundColliders.Count == 0)
+            {
+                isGrounded = false;
+            }
         }
-        else if (!groundCollisions.Contains(other))
+        else if (!groundColliders.Contains(other.collider))
         {
-            groundCollisions.Add(other);
+            groundColliders.Add(other.collider);
             isGrounded = true;
         }
     }
 
     private void OnCollisionExit(Collision other)
     {
-        groundCollisions.Remove(other);
-        if (groundCollisions.Count == 0) isGrounded = false;
+        groundColliders.Remove(other.collider);
+        if (groundColliders.Count == 0) isGrounded = false;
     }
 }
