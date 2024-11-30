@@ -6,6 +6,7 @@ using UnityEngine;
 public class RipplesHandler : MonoBehaviour
 {
     [SerializeField] private float ripplesHeightRatio = 0.5f;
+    [SerializeField] private Vector3 ripplesPositionOffset = Vector3.zero;
     void Update()
     {
         // 각 pitch에 대해 파티클 처리
@@ -31,6 +32,6 @@ public class RipplesHandler : MonoBehaviour
 
     private void TriggerParticleEffect(Color color)
     {
-        GameManager.em.TriggerRipples(transform, color, transform.localScale, ripplesHeightRatio, true);
+        GameManager.em.TriggerRipples(transform, color, transform.localScale, ripplesPositionOffset, true);
     }
 }

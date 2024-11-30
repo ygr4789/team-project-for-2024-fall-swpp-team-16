@@ -66,7 +66,7 @@ public class PlayManager : MonoBehaviour
 
         if (currentTarget is not null && activeRipplesEffects.ContainsKey(currentTarget))
         {
-            GameManager.em.SetRippleSize(currentTarget, 0.9f, 3.5f, 6f);
+            GameManager.em.SetRippleSize(currentTarget, 4.5f, 3.5f, 6f);
         }
     }
     
