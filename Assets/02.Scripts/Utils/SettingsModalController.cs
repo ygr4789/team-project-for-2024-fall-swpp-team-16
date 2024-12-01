@@ -18,6 +18,14 @@ public class SettingsModalController : MonoBehaviour
         CreateUI();
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ToggleSettings();
+        }
+    }
+
     private void CreateUI()
     {
         // Create Canvas
@@ -163,11 +171,20 @@ public class SettingsModalController : MonoBehaviour
     public void ToggleSettings()
     {
         settingsModal.SetActive(!settingsModal.activeSelf);
+        if (settingsModal.activeSelf)
+        {
+            FindObjectOfType<CameraMovement>().SetCursorVisible();
+        }
+        else
+        {
+            FindObjectOfType<CameraMovement>().SetCursorInvisible();
+        }
     }
 
     public void CloseModal()
     {
         settingsModal.SetActive(false);
+        FindObjectOfType<CameraMovement>().SetCursorInvisible();
     }
 
     public void QuitGame()
