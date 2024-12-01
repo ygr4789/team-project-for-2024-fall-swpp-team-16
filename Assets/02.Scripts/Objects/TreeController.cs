@@ -25,6 +25,7 @@ public class TreeController : MonoBehaviour
         ResonatableObject resonatable = gameObject.AddComponent<ResonatableObject>();
         resonatable.properties = new[] { PitchType.So, PitchType.La };
         resonatable.resonate += TreeResonate;
+        resonatable.ripplesPositionOffset = Vector3.up * 0.5f;
     }
 
     private void TreeResonate(PitchType pitch)
