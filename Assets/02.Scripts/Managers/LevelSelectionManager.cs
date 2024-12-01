@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
 
@@ -8,11 +9,14 @@ public class LevelSelectionManager : MonoBehaviour
 {
     public List<LevelSelectionNoteController> levelNotes; // Assign all notes (UI Images) in the Inspector
     public TMP_Text stageNumberText;
+     public float fadeDuration = 0.1f; // Duration of the fade
+    public Image fadeImage;         // Reference to the UI Image for fading
+
 
     private int currentSelectedIndex = 0;
 
     // Sliding animation properties
-    public float slideDuration = 0.9f;
+    public float slideDuration = 1.5f;
     private RectTransform rectTransform;  // To move the UI panel
     private Vector2 offScreenPosition;
     private Vector2 onScreenPosition;
@@ -20,19 +24,20 @@ public class LevelSelectionManager : MonoBehaviour
     void Awake()
     {
         // Get RectTransform and define positions
-        rectTransform = GetComponent<RectTransform>();
+      /*  rectTransform = GetComponent<RectTransform>();
         onScreenPosition = rectTransform.anchoredPosition; // Current position
         offScreenPosition = new Vector2(onScreenPosition.x, -Screen.height); // Off-screen position
 
         // Start off-screen
-        rectTransform.anchoredPosition = offScreenPosition;
+        rectTransform.anchoredPosition = offScreenPosition; */
     }
 
     void Start()
     {
+         StartCoroutine(FadeOut());
         // Ensure the first unlocked stage is selected at the start
         currentSelectedIndex = FindLastUnlockedIndex();
-        StartCoroutine(SlideIn()); // Slide in the level selection screen
+       // StartCoroutine(SlideIn()); // Slide in the level selection screen
         UpdateSelection();
     }
 
@@ -51,6 +56,26 @@ public class LevelSelectionManager : MonoBehaviour
         {
             ConfirmSelection();
         }
+    }
+     IEnumerator FadeOut()
+    {
+        float elapsedTime = 0f;
+        Color color = fadeImage.color;
+
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            color.a = Mathf.Lerp(1f, 0f, elapsedTime / fadeDuration); // Fade alpha to 0
+            fadeImage.color = color;
+            yield return null;
+        }
+
+        // Ensure it’s fully transparent at the end
+        color.a = 0f;
+        fadeImage.color = color;
+
+        // Optionally deactivate the fade image
+        fadeImage.gameObject.SetActive(false);
     }
 
     void MoveSelection(int direction)
@@ -127,18 +152,24 @@ public class LevelSelectionManager : MonoBehaviour
         return 0; // Default to the first stage if no unlocked stages are found
     }
 
-    IEnumerator SlideIn()
+  /*  IEnumerator SlideIn()
+{
+    float elapsedTime = 0f;
+
+    while (elapsedTime < slideDuration)
     {
-        float elapsedTime = 0f;
+        elapsedTime += Time.deltaTime;
 
-        while (elapsedTime < slideDuration)
-        {
-            elapsedTime += Time.deltaTime;
-            rectTransform.anchoredPosition = Vector2.Lerp(offScreenPosition, onScreenPosition, elapsedTime / slideDuration);
-            yield return null;
-        }
+        // Apply an ease-out effect using Mathf.SmoothStep
+        float t = elapsedTime / slideDuration;
+        t = Mathf.SmoothStep(0f, 1.1f, t);
 
-        // Snap to the final position to ensure precision
-        rectTransform.anchoredPosition = onScreenPosition;
+        rectTransform.anchoredPosition = Vector2.Lerp(offScreenPosition, onScreenPosition, t);
+        yield return null;
     }
+
+    // Snap to the final position to ensure precision
+    rectTransform.anchoredPosition = onScreenPosition;
+}*/
+
 }
