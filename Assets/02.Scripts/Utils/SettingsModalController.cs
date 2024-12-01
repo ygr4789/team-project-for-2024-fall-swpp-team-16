@@ -40,14 +40,16 @@ public class SettingsModalController : MonoBehaviour
 
         // Create Close Button
         GameObject closeButton = CreateButton("CloseButton", "X", new Vector2(180, 130), settingsModal.transform);
-        closeButton.GetComponent<Button>().onClick.AddListener(CloseModal);
+		RectTransform closeButtonRect = closeButton.GetComponent<RectTransform>();
+		closeButtonRect.sizeDelta = new Vector2(50, 50); // Set width to 50, keep height the same        
+		closeButton.GetComponent<Button>().onClick.AddListener(CloseModal);
 
         // Create Quit Button
         GameObject quitButton = CreateButton("QuitButton", "Quit Game", new Vector2(0, -100), settingsModal.transform);
         quitButton.GetComponent<Button>().onClick.AddListener(QuitGame);
 
-        // Create Sound Slider
-        GameObject sliderLabel = CreateText("SoundLabel", "Sound Volume", new Vector2(0, 50), settingsModal.transform);
+		// Create Sound Slider
+        GameObject sliderLabel = CreateText("SoundLabel", "Master Volume", new Vector2(0, 50), settingsModal.transform);
         GameObject sliderObject = new GameObject("SoundSlider", typeof(Slider));
         sliderObject.transform.SetParent(settingsModal.transform, false);
         RectTransform sliderRect = sliderObject.GetComponent<RectTransform>();
@@ -63,6 +65,11 @@ public class SettingsModalController : MonoBehaviour
         soundSlider.maxValue = 1f;
         soundSlider.value = AudioListener.volume;
         soundSlider.onValueChanged.AddListener(AdjustSoundLevel);
+
+		// Modify Text Appearance
+		Text sliderLabelText = sliderLabel.GetComponent<Text>();
+		sliderLabelText.color = Color.white; // Set text color to white
+		sliderLabelText.fontSize = 24; // Increase font size
         
         // Add Background Image for Slider
         Image sliderBackground = sliderObject.AddComponent<Image>();
