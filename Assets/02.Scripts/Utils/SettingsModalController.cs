@@ -37,23 +37,26 @@ public class SettingsModalController : MonoBehaviour
         settingsModal = new GameObject("SettingsModal", typeof(Image));
         settingsModal.transform.SetParent(canvas.transform, false);
         RectTransform modalRect = settingsModal.GetComponent<RectTransform>();
-        modalRect.sizeDelta = new Vector2(400, 300);
+        modalRect.sizeDelta = new Vector2(700, 600);
         settingsModal.GetComponent<Image>().color = new Color(0, 0, 0, 0.8f);
         settingsModal.SetActive(false);
 
         // Close Button
-        GameObject closeButton = CreateButton("CloseButton", "X", new Vector2(180, 130), settingsModal.transform, null);
+        GameObject closeButton = CreateButton("CloseButton", "X", new Vector2(200, 250), settingsModal.transform, null);
         closeButton.GetComponent<Button>().onClick.AddListener(CloseModal);
 
         // Quit Button
-        GameObject quitButton = CreateButton("QuitButton", "Quit Game", new Vector2(0, -100), settingsModal.transform, null);
+        GameObject quitButton = CreateButton("QuitButton", "Quit Game", new Vector2(0, -250), settingsModal.transform, null);
         quitButton.GetComponent<Button>().onClick.AddListener(QuitGame);
 
         // Master Volume Slider
-        CreateSlider("MasterVolumeSlider", "Master Volume", new Vector2(0, 50), settingsModal.transform, AdjustSoundLevel, AudioListener.volume);
-		
+        CreateSlider("MasterVolumeSlider", "Master Volume", new Vector2(0, 100), settingsModal.transform, AdjustSoundLevel, AudioListener.volume);
+
         // BGM Volume Slider
-        CreateSlider("BGMVolumeSlider", "BGM Volume", new Vector2(0, -50), settingsModal.transform, AdjustBgmVolume, GameManager.sm.masterVolumeBgm);
+        CreateSlider("BGMVolumeSlider", "BGM Volume", new Vector2(0, 0), settingsModal.transform, AdjustBgmVolume, GameManager.sm.masterVolumeBgm);
+
+        // SFX Volume Slider
+        CreateSlider("SFXVolumeSlider", "SFX Volume", new Vector2(0, -100), settingsModal.transform, AdjustSfxVolume, GameManager.sm.masterVolumeSfx);
 
         // Settings Button
         GameObject settingsButton = CreateButton("SettingsButton", "Settings", new Vector2(800, 400), canvas.transform, null);
@@ -77,10 +80,16 @@ public class SettingsModalController : MonoBehaviour
         {
             btnImage.sprite = buttonSprite;
         }
+        else
+        {
+            // If no sprite, set a default background color
+            btnImage.color = Color.gray;
 
-        GameObject textObject = CreateText(name + "Text", buttonText, Vector2.zero, button.transform);
-        Text textComponent = textObject.GetComponent<Text>();
-        textComponent.alignment = TextAnchor.MiddleCenter;
+            // Add text directly to button if no sprite
+            GameObject textObject = CreateText(name + "Text", buttonText, Vector2.zero, button.transform);
+            Text textComponent = textObject.GetComponent<Text>();
+            textComponent.alignment = TextAnchor.MiddleCenter;
+        }
 
         return button;
     }
@@ -168,4 +177,9 @@ public class SettingsModalController : MonoBehaviour
     {
         GameManager.sm.SetVolumeBGM(value);
     }
+
+	public void AdjustSfxVolume(float value)
+	{
+    	GameManager.sm.SetVolumeSFX(value);
+	}
 }
