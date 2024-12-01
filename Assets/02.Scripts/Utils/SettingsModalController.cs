@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 public class SettingsModalController : MonoBehaviour
 {
+    public Sprite backgroundSprite = null;
 	public Sprite closeButtonSprite = null;
 	public Sprite quitButtonSprite = null;
 	public Sprite settingsButtonSprite = null;
@@ -38,7 +39,17 @@ public class SettingsModalController : MonoBehaviour
         settingsModal.transform.SetParent(canvas.transform, false);
         RectTransform modalRect = settingsModal.GetComponent<RectTransform>();
         modalRect.sizeDelta = new Vector2(700, 600);
-        settingsModal.GetComponent<Image>().color = new Color(0, 0, 0, 0.8f);
+        
+        Image modalImage = settingsModal.GetComponent<Image>();
+        if (backgroundSprite != null)
+        {
+            modalImage.sprite = backgroundSprite;
+            modalImage.color = Color.white;
+        }
+        else
+        {
+            modalImage.color = Color.black;
+        }
         settingsModal.SetActive(false);
 
         // Close Button
