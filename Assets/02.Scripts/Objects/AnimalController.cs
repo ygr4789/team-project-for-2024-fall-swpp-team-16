@@ -12,34 +12,24 @@ public enum AnimalState
 
 public class AnimalController : MonoBehaviour
 {
-    // Public variables for settings
-    public AnimalState currentState = AnimalState.FollowPath;
-    public float idleSpeed = 2f;
-    public float rushSpeed = 4f;
-    public ParticleSystem rushParticleEffect;
-    public Transform[] pathPoints;
-
-    // Private variables
+    // SerializeFields
+    [SerializeField] private AnimalState currentState = AnimalState.FollowPath;
+    [Range(0f, 5f)]
+    [SerializeField] private float idleSpeed = 2f;
+    [Range(0f, 10f)]
+    [SerializeField] private float rushSpeed = 4f;
+    [SerializeField] private ParticleSystem rushParticleEffect;
+    [SerializeField] private Transform[] pathPoints;
     [SerializeField] private Transform animalModel;
+    [Tooltip("waiting time before moving to the next waypoint")]
+    [Range(0f, 5f)] 
+    [SerializeField] private float pathWaitTime = 0.3f;
+    
     private SurfaceContactRigidbody animalBody;
     private Animator animalAnimator;
     private Vector3 currentForward;
     private int currentPathIndex = 0;
     private bool isRushing = false;
-    private float rushTimer = 0f;
-    
-    [Range(0f, 2f)]
-    [SerializeField] private float colliderOriginHeight;
-    
-    [SerializeField] private Vector3 footOffsetLF;
-    [SerializeField] private Vector3 footOffsetRF;
-    [SerializeField] private Vector3 footOffsetLB;
-    [SerializeField] private Vector3 footOffsetRB;
-    [SerializeField] private LayerMask groundLayer;
-    
-    [Tooltip("waiting time before moving to the next waypoint")]
-    [Range(0f, 5f)] 
-    [SerializeField] private float pathWaitTime = 0.3f;
     
     private void Awake()
     {
@@ -80,6 +70,7 @@ public class AnimalController : MonoBehaviour
     void Update()
     {
         animalModel.forward = currentForward;
+        animalAnimator.SetBool("isMoving", animalBody.Velocity.magnitude > 0.1f);
         
         if (isRushing)
         {
@@ -109,7 +100,7 @@ public class AnimalController : MonoBehaviour
             }
     
             // Set animator parameter
-            animalAnimator.SetBool("isRushing", true);
+            animalAnimator.SetLayerWeight(animalAnimator.GetLayerIndex("Rush"), 1f);
         }
     }
     
@@ -124,7 +115,8 @@ public class AnimalController : MonoBehaviour
         }
     
         // Reset animator parameter
-        animalAnimator.SetBool("isRushing", false);
+        animalAnimator.SetLayerWeight(animalAnimator.GetLayerIndex("Rush"), 0f);
+        animalBody.Velocity = Vector3.zero;
     
         // Return to the previous behavior
         if (pathPoints != null && pathPoints.Length > 0)
@@ -144,10 +136,10 @@ public class AnimalController : MonoBehaviour
     {
         while (currentState == AnimalState.Idle)
         {   
+            yield return new WaitForSeconds(3f);
             animalAnimator.Play("stand_to_sit");
-            yield return new WaitForSeconds(5f);
+            yield return new WaitForSeconds(3f);
             animalAnimator.Play("sit_to_stand");
-            yield return new WaitForSeconds(5f);
         }
     }
 
@@ -161,7 +153,6 @@ public class AnimalController : MonoBehaviour
             // Get the next waypoint
             Vector3 targetPosition = pathPoints[currentPathIndex].position;
 
-            print(currentState);
             // Rotate towards the target
             Vector3 targetDirection = Vector3.ProjectOnPlane(targetPosition - transform.position, Vector3.up).normalized;
             Vector3 currentDirection = Vector3.ProjectOnPlane(currentForward, Vector3.up).normalized;
@@ -173,9 +164,6 @@ public class AnimalController : MonoBehaviour
 
                 if (currentState != AnimalState.FollowPath) yield break;
             }
-
-            // Start walking animation
-            animalAnimator.SetBool("isMoving", true);
 
             // Move towards the waypoint
             float flattenDistance = Vector3.Distance(targetPosition, transform.position);
@@ -195,7 +183,6 @@ public class AnimalController : MonoBehaviour
 
             // Stop walking animation
             animalBody.Velocity = Vector3.zero;
-            animalAnimator.SetBool("isMoving", false);
 
             // Move to the next waypoint
             currentPathIndex = (currentPathIndex + 1) % pathPoints.Length;
