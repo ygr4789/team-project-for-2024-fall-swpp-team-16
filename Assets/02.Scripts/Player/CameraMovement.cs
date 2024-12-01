@@ -13,4 +13,14 @@ public class CameraMovement : MonoBehaviour
     void Update()
     {
     }
+    
+    public void SetCursorVisible()
+    {
+        Cursor.visible = true;
+    }
+    
+    public void SetCursorInvisible()
+    {
+        Cursor.visible = false;
+    }
 }
