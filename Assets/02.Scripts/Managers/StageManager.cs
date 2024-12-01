@@ -24,13 +24,20 @@ public class StageManager : MonoBehaviour
 
         if (File.Exists(filePath))
         {
-            string[] lines = File.ReadAllLines(filePath);
-            foreach (string line in lines)
+            try
             {
-                if (int.TryParse(line, out int stage) && stage > 0 && stage <= totalStages)
+                string[] lines = File.ReadAllLines(filePath);
+                foreach (string line in lines)
                 {
-                    accomplishedStages[stage - 1] = true;
-                }
+                    if (int.TryParse(line, out int stage) && stage > 0 && stage <= totalStages)
+                    {
+                        accomplishedStages[stage - 1] = true;
+                    }
+                }    
+            }
+            catch (IOException e)
+            {
+                Debug.LogError("Error reading progress file: " + e.Message);
             }
         } else
         {
@@ -50,10 +57,17 @@ public class StageManager : MonoBehaviour
 
     private void SaveStages()
     {
-        File.WriteAllLines(filePath, accomplishedStages
-            .Select((accomplished, index) => accomplished ? (index + 1).ToString() : null)
-            .Where(stage => stage != null)
-            .ToArray());
+        try
+        {
+            File.WriteAllLines(filePath, accomplishedStages
+                .Select((accomplished, index) => accomplished ? (index + 1).ToString() : null)
+                .Where(stage => stage != null)
+                .ToArray());    
+        } 
+        catch (IOException e)
+        {
+            Debug.LogError("Error writing progress file: " + e.Message);
+        }
     }
 
     public bool IsStageAccomplished(int stage)
