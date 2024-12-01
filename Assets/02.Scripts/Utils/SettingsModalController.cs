@@ -61,11 +61,11 @@ public class SettingsModalController : MonoBehaviour
         settingsModal.SetActive(false);
 
         // Close Button
-        GameObject closeButton = CreateButton("CloseButton", "X", new Vector2(200, 250), settingsModal.transform, null);
+        GameObject closeButton = CreateButton("CloseButton", "X", new Vector2(200, 250), settingsModal.transform, closeButtonSprite);
         closeButton.GetComponent<Button>().onClick.AddListener(CloseModal);
 
         // Quit Button
-        GameObject quitButton = CreateButton("QuitButton", "Quit Game", new Vector2(0, -250), settingsModal.transform, null);
+        GameObject quitButton = CreateButton("QuitButton", "Quit Game", new Vector2(0, -250), settingsModal.transform, quitButtonSprite);
         quitButton.GetComponent<Button>().onClick.AddListener(QuitGame);
 
         // Master Volume Slider
@@ -78,7 +78,7 @@ public class SettingsModalController : MonoBehaviour
         CreateSlider("SFXVolumeSlider", "SFX Volume", new Vector2(0, -100), settingsModal.transform, AdjustSfxVolume, GameManager.sm.masterVolumeSfx);
 
         // Settings Button
-        GameObject settingsButton = CreateButton("SettingsButton", "Settings", new Vector2(800, 400), canvas.transform, null);
+        GameObject settingsButton = CreateButton("SettingsButton", "Settings", new Vector2(800, 400), canvas.transform, settingsButtonSprite);
         settingsButton.GetComponent<Button>().onClick.AddListener(ToggleSettings);
     }
 
@@ -140,7 +140,7 @@ public class SettingsModalController : MonoBehaviour
         GameObject handleObject = new GameObject("Handle", typeof(Image));
         handleObject.transform.SetParent(sliderObject.transform);
         RectTransform handleRect = handleObject.GetComponent<RectTransform>();
-        handleRect.sizeDelta = new Vector2(20, 40);
+        handleRect.sizeDelta = new Vector2(10, 20);
         handleRect.anchoredPosition = Vector2.zero;
 
         Image handleImage = handleObject.GetComponent<Image>();
