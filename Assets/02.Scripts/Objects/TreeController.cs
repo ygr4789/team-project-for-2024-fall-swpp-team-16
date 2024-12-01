@@ -58,18 +58,34 @@ public class TreeController : MonoBehaviour
         // {
         //     Damage();
         // }
+        // if (Input.GetKeyDown(KeyCode.Minus))
+        // {
+        //     SmoothDecreaseHeight();
+        // } else if (Input.GetKeyDown(KeyCode.Equals))
+        // {
+        //     SmoothIncreaseHeight();
+        // }
     }
 
     public void SmoothIncreaseHeight()
     {
         targetHeight += heightChangeSpeed * Time.deltaTime;
         targetHeight = Mathf.Clamp(targetHeight, minHeight, maxHeight);
+        
+        PlayTreeSound("increase");
     }
 
     public void SmoothDecreaseHeight()
     {
         targetHeight -= heightChangeSpeed * Time.deltaTime;
         targetHeight = Mathf.Clamp(targetHeight, minHeight, maxHeight);
+        
+        PlayTreeSound("decrease");
+    }
+    
+    private void PlayTreeSound(string action)
+    {
+        GameManager.sm.PlaySound("tree-" + action);
     }
     public void Damage()
     {
