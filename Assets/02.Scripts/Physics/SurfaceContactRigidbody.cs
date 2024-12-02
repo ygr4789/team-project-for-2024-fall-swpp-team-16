@@ -1,29 +1,54 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class SurfaceContactRigidbody : MonoBehaviour
 {
-	[Tooltip("Movable terrain slope limits")]
+	[Tooltip("Max acceleration on ground")]
+	[SerializeField, Range(10f, 100f)]
+	private float maxAcceleration = 50f;
+
+	[Tooltip("Max acceleration on air or unclimbable slope")]
+	[SerializeField, Range(0f, 10f)]
+	private float maxAirAcceleration = 5f;
+	
+	[SerializeField, Range(0f, 10f)]
+	private float jumpHeight = 2f;
+
+	[Tooltip("Max climbable slope")]
 	[SerializeField, Range(0, 90)]
-	private float maxGroundAngle = 25f;
+	private float maxGroundAngle = 45f;
+
 	[Tooltip("Ground detection distance")]
 	[SerializeField, Min(0f)]
-	private float probeDistance = 1f;
+	private float probeDistance = 0.5f;
+	
 	[Tooltip("Ground layer mask")]
 	[SerializeField]
 	private LayerMask probeMask = -1;
-	
+
+	private float originHeight; // The height from the lowest point of the collider to the origin of the rigidbody
 	private Rigidbody body;
-	private Vector3 velocity, currentVelocity; // desired velocity, internally calculated velocity
-	private Vector3 contactNormal, steepNormal; // average normal of contacts
-	private int groundContactCount, steepContactCount; // total number of contacts
+
+	private Vector3 velocity; // internally calculated velocity
+	private Vector3 desiredVelocity; // desired velocity (input)
+	private bool desiredJump; // jump (input)
+
+	private Vector3 contactNormal; // average normal of climbable contacts
+	private Vector3 steepNormal; // average normal of positive-y-normal contacts
+
+	private int groundContactCount; // total number of climbable contacts
+	private int steepContactCount; // total number of positive-y-normal contacts
 
 	private bool OnGround => groundContactCount > 0;
-	private bool OnSteep => steepContactCount > 1;
-	private float minGroundDotProduct; // minimum y-component of movable normal
-	private int stepsSinceLastGrounded; // number of frames since last grounded 
+	private bool OnSteep => steepContactCount > 0;
 
+	private float minGroundDotProduct; // minimum y-component of climbable slope normal
+
+	private int stepsSinceLastGrounded; // number of fixed frames since last grounded
+	private int stepsSinceLastJump; // number of fixed frames since last jump
+	
 	public Vector3 Velocity
 	{
 		get => body.velocity;
@@ -31,41 +56,54 @@ public class SurfaceContactRigidbody : MonoBehaviour
 		{
 			Vector3 flattenVelocity = value;
 			flattenVelocity.y = 0f;
-			velocity = flattenVelocity;
+			desiredVelocity = flattenVelocity;
 		}
 	}
-	
-	private void OnValidate ()
+
+	public bool Jump
 	{
+		set => desiredJump = value;
+	}
+	
+	private void OnValidate () {
 		minGroundDotProduct = Mathf.Cos(maxGroundAngle * Mathf.Deg2Rad);
 	}
 
-	private void Awake ()
-	{
+	private void Awake () {
 		body = GetComponent<Rigidbody>();
+		Assert.IsNotNull(body);
+		
+		Collider collider = GetComponent<Collider>();
+		Assert.IsNotNull(collider);
+		originHeight = body.position.y - collider.bounds.min.y;
+		
 		OnValidate();
 	}
-	
-	private void FixedUpdate () 
-	{
+
+	private void FixedUpdate () {
 		UpdateState();
 		AdjustVelocity();
-		body.velocity = currentVelocity;
+
+		if (desiredJump) {
+			desiredJump = false;
+			TriggerJump();
+		}
+		
+		body.AddForce(velocity - body.velocity, ForceMode.VelocityChange);
 		ClearState();
 	}
 
 	// Initialize properties
-	private void ClearState () 
-	{
+	private void ClearState () {
 		groundContactCount = steepContactCount = 0;
 		contactNormal = steepNormal = Vector3.zero;
 	}
 
 	// Calculate all properties
-	private void UpdateState () 
-	{
+	private void UpdateState () {
 		stepsSinceLastGrounded += 1;
-		currentVelocity = body.velocity;
+		stepsSinceLastJump += 1;
+		velocity = body.velocity;
 		if (OnGround || SnapToGround() || CheckSteepContacts()) {
 			stepsSinceLastGrounded = 0;
 			if (groundContactCount > 1) {
@@ -79,27 +117,23 @@ public class SurfaceContactRigidbody : MonoBehaviour
 
 	// Returns whether surface contact is maintained
 	// If true, removes the directional component velocity away from the surface
-	bool SnapToGround () 
-	{
-		if (stepsSinceLastGrounded > 1) return false;
-		if (!Physics.Raycast(body.position, Vector3.down, out RaycastHit hit, probeDistance, probeMask)) return false;
+	private bool SnapToGround () {
+		if (stepsSinceLastGrounded > 1 || stepsSinceLastJump <= 2) return false;
+		if (!Physics.Raycast(body.position, Vector3.down, out var hit, originHeight + probeDistance, probeMask)) return false;
 		if (hit.normal.y < minGroundDotProduct) return false;
 
 		groundContactCount = 1;
 		contactNormal = hit.normal;
-		float dot = Vector3.Dot(currentVelocity, hit.normal);
-		if (dot > 0f) currentVelocity = (currentVelocity - hit.normal * dot).normalized * currentVelocity.magnitude;
+		float dot = Vector3.Dot(velocity, hit.normal);
+		if (dot > 0f) velocity = Vector3.ProjectOnPlane(velocity, hit.normal);
 		return true;
 	}
 
 	// Check if the object is stuck in terrain like crevasses
-	bool CheckSteepContacts () 
-	{
-		if (OnSteep)
-		{
+	private bool CheckSteepContacts () {
+		if (steepContactCount > 1) {
 			steepNormal.Normalize();
-			if (steepNormal.y >= minGroundDotProduct)
-			{
+			if (steepNormal.y >= minGroundDotProduct) {
 				steepContactCount = 0;
 				groundContactCount = 1;
 				contactNormal = steepNormal;
@@ -109,28 +143,38 @@ public class SurfaceContactRigidbody : MonoBehaviour
 		return false;
 	}
 
-	// Apply velocities projected in the normal plane only for the xz plane
-	private void AdjustVelocity ()
-	{
-		Vector3 xAxis = ProjectOnContactPlane(Vector3.right).normalized;
-		Vector3 zAxis = ProjectOnContactPlane(Vector3.forward).normalized;
-		float currentX = Vector3.Dot(currentVelocity, xAxis);
-		float currentZ = Vector3.Dot(currentVelocity, zAxis);
-		currentVelocity += xAxis * (velocity.x - currentX) + zAxis * (velocity.z - currentZ);
+	// Apply velocities projected to the contact normal plane
+	private void AdjustVelocity () {
+		float acceleration = OnGround ? maxAcceleration : maxAirAcceleration;
+		float maxSpeedChange = acceleration * Time.deltaTime;
+
+		Vector3 currentProjectedVelocity = Vector3.ProjectOnPlane(velocity, contactNormal);
+		Vector3 desiredProjectedVelocity = Vector3.ProjectOnPlane(desiredVelocity, contactNormal);
+		desiredProjectedVelocity.Normalize();
+		desiredProjectedVelocity *= desiredVelocity.magnitude;
+		Vector3 newProjectedVelocity = Vector3.MoveTowards(currentProjectedVelocity, desiredProjectedVelocity, maxSpeedChange);
+		
+		velocity += (newProjectedVelocity - currentProjectedVelocity);
 	}
 
-	private Vector3 ProjectOnContactPlane (Vector3 vector)
-	{
-		return vector - contactNormal * Vector3.Dot(vector, contactNormal);
+	// Jump by jumpHeight 
+	private void TriggerJump () {
+		if (!OnGround) return;
+
+		stepsSinceLastJump = 0;
+		Vector3 jumpDirection = Vector3.up;
+		float jumpSpeed = Mathf.Sqrt(-2f * Physics.gravity.y * jumpHeight);
+		float alignedSpeed = Vector3.Dot(velocity, jumpDirection);
+		if (alignedSpeed > 0f) jumpSpeed = Mathf.Max(jumpSpeed - alignedSpeed, 0f);
+		
+		velocity += jumpDirection * jumpSpeed;
 	}
-	
-	private void OnCollisionEnter (Collision collision)
-	{
+
+	private void OnCollisionEnter (Collision collision) {
 		EvaluateCollision(collision);
 	}
 
-	private void OnCollisionStay (Collision collision)
-	{
+	private void OnCollisionStay (Collision collision) {
 		EvaluateCollision(collision);
 	}
 
@@ -138,16 +182,13 @@ public class SurfaceContactRigidbody : MonoBehaviour
 	private void EvaluateCollision (Collision collision)
 	{
 		float minDot = minGroundDotProduct;
-		for (int i = 0; i < collision.contactCount; i++)
-		{
+		for (int i = 0; i < collision.contactCount; i++) {
 			Vector3 normal = collision.GetContact(i).normal;
-			if (normal.y >= minDot)
-			{
+			if (normal.y >= minDot) {
 				groundContactCount += 1;
 				contactNormal += normal;
 			}
-			else if (normal.y > -0.01f)
-			{
+			else if (normal.y > -0.01f) {
 				steepContactCount += 1;
 				steepNormal += normal;
 			}

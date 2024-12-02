@@ -365,7 +365,6 @@ GameObject:
   - component: {fileID: 187936040}
   - component: {fileID: 187936039}
   - component: {fileID: 187936038}
-  - component: {fileID: 187936044}
   - component: {fileID: 187936043}
   m_Layer: 0
   m_Name: Controller
@@ -397,13 +396,16 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 187936036}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cba1bfa9ee93f4d429f7a49ed03c4f96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxGroundAngle: 25
-  probeDistance: 1
+  maxAcceleration: 50
+  maxAirAcceleration: 5
+  jumpHeight: 2
+  maxGroundAngle: 45
+  probeDistance: 0.5
   probeMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -430,7 +432,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 187936036}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: f22e309fcb9cf274281a1f62c953fc30, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.5
@@ -500,33 +502,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 3
---- !u!114 &187936044
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 187936036}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d57040f7537e97418384b1ba8774696, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxSpeed: 10
-  maxAcceleration: 10
-  maxAirAcceleration: 1
-  jumpHeight: 2
-  maxAirJumps: 0
-  maxGroundAngle: 25
-  maxStairsAngle: 50
-  maxSnapSpeed: 100
-  probeDistance: 3
-  probeMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  stairsMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
 --- !u!1 &323510138
 GameObject:
   m_ObjectHideFlags: 0
