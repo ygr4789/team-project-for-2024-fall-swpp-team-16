@@ -5,7 +5,7 @@ using UnityEngine;
 public class TestInputHandler : MonoBehaviour
 {
     private PlayerInput input;
-    private SurfaceContactRigidbody body;
+    private SurfaceContactController body;
 
     [Range(0f, 10f)]
     [SerializeField] private float speed = 3f;
@@ -13,7 +13,7 @@ public class TestInputHandler : MonoBehaviour
     private void Awake()
     {
         input = new PlayerInput();
-        body = GetComponent<SurfaceContactRigidbody>();
+        body = GetComponent<SurfaceContactController>();
     }
 
     private void Update()

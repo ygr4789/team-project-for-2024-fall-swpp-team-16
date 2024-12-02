@@ -25,11 +25,11 @@ public class RockController : MonoBehaviour
 
     private float _radius; // Radius of round rock (only used when isRolling=true)
     private Vector3 _currentVelocity = Vector3.zero;
-    private SurfaceContactRigidbody _rockBody;
+    private SurfaceContactController _rockBody;
     
     private void Awake()
     {
-        _rockBody = GetComponent<SurfaceContactRigidbody>();
+        _rockBody = GetComponent<SurfaceContactController>();
         Assert.IsNotNull(_rockBody);
         
         SphereCollider rockCollider = GetComponent<SphereCollider>();

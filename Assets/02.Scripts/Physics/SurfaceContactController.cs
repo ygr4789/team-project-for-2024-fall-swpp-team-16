@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class SurfaceContactRigidbody : MonoBehaviour
+public class SurfaceContactController : MonoBehaviour
 {
 	[Tooltip("Max acceleration on ground")]
 	[SerializeField, Range(10f, 100f)]
@@ -41,13 +41,11 @@ public class SurfaceContactRigidbody : MonoBehaviour
 	private int groundContactCount; // total number of climbable contacts
 	private int steepContactCount; // total number of positive-y-normal contacts
 
-	private bool OnGround => groundContactCount > 0;
-	private bool OnSteep => steepContactCount > 0;
-
 	private float minGroundDotProduct; // minimum y-component of climbable slope normal
 
 	private int stepsSinceLastGrounded; // number of fixed frames since last grounded
 	private int stepsSinceLastJump; // number of fixed frames since last jump
+	private bool ContactingGround => groundContactCount > 0;
 	
 	public Vector3 Velocity
 	{
@@ -63,6 +61,11 @@ public class SurfaceContactRigidbody : MonoBehaviour
 	public bool Jump
 	{
 		set => desiredJump = value;
+	}
+
+	public bool Grounded
+	{
+		get => stepsSinceLastGrounded == 0;
 	}
 	
 	private void OnValidate () {
@@ -104,7 +107,7 @@ public class SurfaceContactRigidbody : MonoBehaviour
 		stepsSinceLastGrounded += 1;
 		stepsSinceLastJump += 1;
 		velocity = body.velocity;
-		if (OnGround || SnapToGround() || CheckSteepContacts()) {
+		if (ContactingGround || SnapToGround() || CheckSteepContacts()) {
 			stepsSinceLastGrounded = 0;
 			if (groundContactCount > 1) {
 				contactNormal.Normalize();
@@ -145,7 +148,7 @@ public class SurfaceContactRigidbody : MonoBehaviour
 
 	// Apply velocities projected to the contact normal plane
 	private void AdjustVelocity () {
-		float acceleration = OnGround ? maxAcceleration : maxAirAcceleration;
+		float acceleration = ContactingGround ? maxAcceleration : maxAirAcceleration;
 		float maxSpeedChange = acceleration * Time.deltaTime;
 
 		Vector3 currentProjectedVelocity = Vector3.ProjectOnPlane(velocity, contactNormal);
@@ -159,7 +162,7 @@ public class SurfaceContactRigidbody : MonoBehaviour
 
 	// Jump by jumpHeight 
 	private void TriggerJump () {
-		if (!OnGround) return;
+		if (!ContactingGround) return;
 
 		stepsSinceLastJump = 0;
 		Vector3 jumpDirection = Vector3.up;

@@ -25,7 +25,7 @@ public class AnimalController : MonoBehaviour
     [Range(0f, 5f)] 
     [SerializeField] private float pathWaitTime = 0.3f;
     
-    private SurfaceContactRigidbody animalBody;
+    private SurfaceContactController animalBody;
     private Animator animalAnimator;
     private Vector3 currentForward;
     private int currentPathIndex = 0;
@@ -36,7 +36,7 @@ public class AnimalController : MonoBehaviour
         Assert.IsNotNull(animalModel);
         animalAnimator = animalModel.GetComponent<Animator>();
         Assert.IsNotNull(animalAnimator);
-        animalBody = GetComponent<SurfaceContactRigidbody>();
+        animalBody = GetComponent<SurfaceContactController>();
         Assert.IsNotNull(animalBody);
 
         ResonatableObject resonatable = gameObject.AddComponent<ResonatableObject>();
