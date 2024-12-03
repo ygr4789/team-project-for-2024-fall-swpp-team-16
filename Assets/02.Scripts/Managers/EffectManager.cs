@@ -1,33 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class EffectManager : MonoBehaviour
 {
-    [SerializeField] public ParticleSystem ripplesEffectPrefab;
+    [SerializeField] private ParticleSystem ripplesEffectPrefab;
     [SerializeField] private float colorSwitchInterval = 0.5f;
     private float colorSwitchTimer;
     private float defaultSize = 7;
     
-    
-    public void TriggerRipples(Transform target, Color color, Vector3 targetScale, float heightRatio = 0.5f, bool isPlayer = false)
+    public void TriggerRipples(Transform target, Color color, Vector3 targetScale, Vector3 positionOffset, bool isPlayer = false)
     {
         if (!GameManager.pm.activeRipplesEffects.ContainsKey(target))
         {
             ParticleSystem newEffect = Instantiate(ripplesEffectPrefab, target.position, Quaternion.identity);
-            
-            Bounds totalBounds = new Bounds(target.position, Vector3.zero);
-            Renderer[] renderers = target.GetComponentsInChildren<Renderer>();
-            foreach (Renderer renderer in renderers)
+
+            if (isPlayer)
             {
-                totalBounds.Encapsulate(renderer.bounds);
+                // Collider를 사용하여 위치 계산
+                Collider collider = target.GetComponent<Collider>();
+                if (collider is not null)
+                {
+                    Bounds bounds = collider.bounds;
+
+                    // 기본 위치는 Collider 중심 + 오프셋
+                    Vector3 effectPosition = bounds.center + positionOffset;
+                    newEffect.transform.position = effectPosition;
+                }
             }
 
-            // 높이 비율(heightRatio)을 이용해 y축 위치를 조정합니다.
-            float effectYPosition = totalBounds.min.y + totalBounds.size.y * heightRatio;
-            newEffect.transform.position = new Vector3(totalBounds.center.x, effectYPosition, totalBounds.center.z);
             newEffect.transform.SetParent(target, true);
-
             GameManager.pm.RegisterTarget(target, newEffect); // PlayManager에 등록
         }
 
@@ -43,7 +46,7 @@ public class EffectManager : MonoBehaviour
             var mainModule = activeEffect.main;
             mainModule.startSize = Mathf.Max(targetScale.x, targetScale.y, targetScale.z) * defaultSize;
         }
-        else { SetRippleSize(target); }
+        else { SetRippleSize(target, positionOffset : positionOffset); }
         
         if (!isPlayer || !activeEffect.isPlaying)
         {
@@ -51,37 +54,43 @@ public class EffectManager : MonoBehaviour
         }
     }
     
-    public void SetRippleSize(Transform target, float multiplier = 0.5f, float minParticleSize = 2.5f, float maxParitlceSixe = 3.5f)
+    public void SetRippleSize(Transform target, float multiplier = 3.0f, float minParticleSize = 0.1f, float maxParticleSize = 6f, Vector3 positionOffset = default)
     {
         if (!GameManager.pm.activeRipplesEffects.ContainsKey(target)) return;
 
-        Renderer[] renderers = target.GetComponentsInChildren<Renderer>();
-        if (renderers.Length > 0)
+        Collider collider = target.GetComponent<Collider>();
+        if (collider is not null)
         {
-            // 2D 기준 크기 계산: X, Y 축만 사용
-            Bounds totalBounds = new Bounds(target.position, Vector3.zero);
-            foreach (Renderer renderer in renderers)
-            {
-                totalBounds.Encapsulate(renderer.bounds);
-            }
+            Bounds bounds = collider.bounds;
 
-            float width = totalBounds.size.x;
-            float height = totalBounds.size.y;
+            // y축의 중간 위치 계산
+            float yMidPosition = bounds.min.y + (bounds.size.y * 0.5f);
 
-            // 2D 평균 크기 계산 (Bounding Box X와 Y만 사용)
-            float averageDimension = (width + height) / 2;
-            
-            Vector3 localScale = target.localScale;
-            float scaleFactor = Mathf.Max(localScale.x, localScale.y, localScale.z); // 가장 큰 축의 스케일 선택
-            float scaledSize = averageDimension * scaleFactor;
+            // xz 평면의 크기 계산
+            // 로컬 크기를 글로벌 크기로 변환
+            Vector3 localSize = collider.bounds.size; // 이미 Global Space 크기
+            Vector3 globalSize = new Vector3(
+                localSize.x * target.lossyScale.x,
+                localSize.y * target.lossyScale.y,
+                localSize.z * target.lossyScale.z
+            );
+
+            // xz 크기 계산
+            float xzAverage = (globalSize.x + globalSize.z) / 2;
 
             // 크기 제한 및 설정
-            float particleSize = Mathf.Clamp(scaledSize * multiplier, minParticleSize, maxParitlceSixe); // 비율 조정 및 최소/최대 크기 제한
-            Debug.Log($"[SetRippleSize] Target: {target.name}, ParticleSize: {particleSize}");
+            float particleSize = Mathf.Clamp(xzAverage * multiplier, minParticleSize, maxParticleSize);
 
+            Debug.Log($"[SetRippleSize] Target: {target.name}, ParticleSize: {particleSize}, Y-Mid: {yMidPosition}");
+
+            // 파티클 효과에 크기 적용
             ParticleSystem effect = GameManager.pm.activeRipplesEffects[target];
             var mainModule = effect.main;
-            mainModule.startSize = particleSize; // 최종 크기 적용
+            mainModule.startSize = particleSize; // 파티클 크기 설정
+
+            // 파티클의 위치를 y축 중간 위치로 업데이트
+            Vector3 newEffectPosition = new Vector3(bounds.center.x, yMidPosition, bounds.center.z);
+            effect.transform.position = newEffectPosition + positionOffset;
         }
     }
 

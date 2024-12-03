@@ -59,14 +59,14 @@ public class PlayManager : MonoBehaviour
         if (currentTarget is not null && activeRipplesEffects.ContainsKey(currentTarget))
         {
             Debug.Log($"[Return Size] Target: {currentTarget.name}");
-            GameManager.em.SetRippleSize(currentTarget);
+            GameManager.em.SetRippleSize(currentTarget, positionOffset: currentTarget.GetComponent<ResonatableObject>().ripplesPositionOffset);
         }
 
         currentTarget = newTarget;
 
         if (currentTarget is not null && activeRipplesEffects.ContainsKey(currentTarget))
         {
-            GameManager.em.SetRippleSize(currentTarget, 0.9f, 3.5f, 6f);
+            GameManager.em.SetRippleSize(currentTarget, 4.5f, positionOffset:currentTarget.GetComponent<ResonatableObject>().ripplesPositionOffset);
         }
     }
     
