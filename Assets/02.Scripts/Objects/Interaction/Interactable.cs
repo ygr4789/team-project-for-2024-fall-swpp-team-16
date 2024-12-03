@@ -9,7 +9,7 @@ public abstract class Interactable: MonoBehaviour
         var interaction = InteractionRegistry.GetInteraction(this.GetType(), other.GetType());
         if (interaction != null)
         {
-            interaction(this, other);
+            interaction.DynamicInvoke(this, other);
         }
         else
         {
@@ -20,17 +20,18 @@ public abstract class Interactable: MonoBehaviour
 
 public static class InteractionRegistry
 {
-    private static readonly Dictionary<(Type, Type), Action<Interactable, Interactable>> Interactions = new();
+    private static readonly Dictionary<(Type, Type), Delegate> Interactions = new();
 
     // Register Interaction
-    public static void Register<T1, T2>(Action<Interactable, Interactable> interaction)
-        where T1 : Interactable where T2 : Interactable
+    public static void Register<T1, T2>(Action<T1, T2> interaction)
+        where T1 : Interactable
+        where T2 : Interactable
     {
         Interactions[(typeof(T1), typeof(T2))] = interaction;
     }
 
     // Search Interaction
-    public static Action<Interactable, Interactable> GetInteraction(Type type1, Type type2)
+    public static Delegate GetInteraction(Type type1, Type type2)
     {
         Interactions.TryGetValue((type1, type2), out var interaction);
         return interaction;
