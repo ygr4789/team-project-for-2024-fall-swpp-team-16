@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4553077937098872365}
-  - component: {fileID: 1761688361249616928}
   - component: {fileID: 1761688361249616929}
   - component: {fileID: 1761688361249616935}
   - component: {fileID: 1761688361249616933}
@@ -37,19 +36,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1761688361249616928
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4553077937098872367}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 15.927792, y: 9.543372, z: 15.554281}
-  m_Center: {x: 0.02851804, y: -0.048841633, z: -0.038901962}
 --- !u!64 &1761688361249616929
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -59,7 +45,7 @@ MeshCollider:
   m_GameObject: {fileID: 4553077937098872367}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
@@ -108,6 +94,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cba1bfa9ee93f4d429f7a49ed03c4f96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxAcceleration: 50
+  maxAirAcceleration: 5
+  jumpHeight: 2
   maxGroundAngle: 25
   probeDistance: 1
   probeMask:

@@ -29,6 +29,7 @@ public class RockController : MonoBehaviour
     
     private void Awake()
     {
+        gameObject.AddComponent<PhysicsImmunity>();
         _rockBody = GetComponent<SurfaceContactController>();
         Assert.IsNotNull(_rockBody);
         

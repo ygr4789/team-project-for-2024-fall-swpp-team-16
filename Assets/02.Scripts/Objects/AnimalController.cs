@@ -33,6 +33,7 @@ public class AnimalController : MonoBehaviour
     
     private void Awake()
     {
+        gameObject.AddComponent<PhysicsImmunity>();
         Assert.IsNotNull(animalModel);
         animalAnimator = animalModel.GetComponent<Animator>();
         Assert.IsNotNull(animalAnimator);
