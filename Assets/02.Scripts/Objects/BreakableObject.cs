@@ -3,12 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BreakableObject : MonoBehaviour
+public class BreakableObject : Interactable
 {
     private int durability = 1;
     [SerializeField] private ParticleSystem particleEffect; // 재생할 ParticleSystem
     [SerializeField] private GameObject models;
     private BoxCollider bc;
+
+    private void Awake()
+    {
+        gameObject.AddComponent<InteractionHandler>();
+    }
 
     private void Start()
     {

@@ -10,7 +10,7 @@ public enum AnimalState
     FollowPath
 }
 
-public class AnimalController : MonoBehaviour
+public class AnimalController : Interactable
 {
     // SerializeFields
     [SerializeField] private AnimalState currentState = AnimalState.FollowPath;
@@ -33,6 +33,7 @@ public class AnimalController : MonoBehaviour
     
     private void Awake()
     {
+        gameObject.AddComponent<InteractionHandler>();
         gameObject.AddComponent<PhysicsImmunity>();
         Assert.IsNotNull(animalModel);
         animalAnimator = animalModel.GetComponent<Animator>();

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TreeController : MonoBehaviour
+public class TreeController : Interactable
 {
     
     [SerializeField] private int durability = 3;
@@ -22,6 +22,7 @@ public class TreeController : MonoBehaviour
 
     private void Awake()
     {
+        gameObject.AddComponent<InteractionHandler>();
         ResonatableObject resonatable = gameObject.AddComponent<ResonatableObject>();
         resonatable.properties = new[] { PitchType.So, PitchType.La };
         resonatable.resonate += TreeResonate;

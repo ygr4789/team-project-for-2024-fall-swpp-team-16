@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Serialization;
 
-public class RockController : MonoBehaviour
+public class RockController : Interactable
 {
     [Tooltip("Flag to check if the rock is rolling")]
     [SerializeField] 
@@ -29,6 +29,7 @@ public class RockController : MonoBehaviour
     
     private void Awake()
     {
+        gameObject.AddComponent<InteractionHandler>();
         gameObject.AddComponent<PhysicsImmunity>();
         _rockBody = GetComponent<SurfaceContactController>();
         Assert.IsNotNull(_rockBody);

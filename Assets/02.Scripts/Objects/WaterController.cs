@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WaterController : MonoBehaviour
+public class WaterController : Interactable
 {
     // Configurations
     public float waterLevelMax = 100.0f; // Maximum height of water
