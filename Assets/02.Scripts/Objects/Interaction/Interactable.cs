@@ -9,11 +9,12 @@ public abstract class Interactable: MonoBehaviour
         var interaction = InteractionRegistry.GetInteraction(this.GetType(), other.GetType());
         if (interaction != null)
         {
+            Debug.Log($"Interaction Called : {this.GetType().Name} to {other.GetType().Name}");
             interaction.DynamicInvoke(this, other);
         }
         else
         {
-            Debug.Log($"No interaction defined between {this.GetType().Name} and {other.GetType().Name}");
+            Debug.Log($"Interaction Undefined : {this.GetType().Name} to {other.GetType().Name}");
         }
     }
 }

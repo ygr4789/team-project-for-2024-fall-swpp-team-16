@@ -11,18 +11,23 @@ public class InteractionHandler : MonoBehaviour
         _interactable = GetComponent<Interactable>();
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private bool TryGetInteractable(Transform target, out Interactable interactable)
     {
-        var other = collision.gameObject.GetComponent<Interactable>();
-        if (other != null)
+        if (target.CompareTag("Padding")) target = target.parent;
+        return target.TryGetComponent(out interactable);
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        if (TryGetInteractable(other.transform, out var interactable))
         {
-            _interactable.InteractWith(other);
+            _interactable.InteractWith(interactable);
         }
     }
     
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.TryGetComponent<Interactable>(out var interactable))
+        if (TryGetInteractable(other.transform, out var interactable))
         {
             _interactable.InteractWith(interactable);
         }

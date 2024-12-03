@@ -10,9 +10,8 @@ public class PhysicsImmunity : MonoBehaviour
     
     private void Awake()
     {
-        var pushShield = new GameObject
+        var padding = new GameObject
         {
-            name = "PushShield",
             transform =
             {
                 parent = transform,
@@ -23,15 +22,16 @@ public class PhysicsImmunity : MonoBehaviour
         };
         
         var originalCollider = GetComponent<Collider>();
-        var shieldCollider = CopyComponent(originalCollider, pushShield);
+        var shieldCollider = CopyComponent(originalCollider, padding);
         Physics.IgnoreCollision(originalCollider, shieldCollider);
         
-        var shieldRigidbody = pushShield.AddComponent<Rigidbody>();
+        var shieldRigidbody = padding.AddComponent<Rigidbody>();
         shieldRigidbody.isKinematic = true;
         shieldRigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         
-        pushShield.name = "PushShield";
-        pushShield.layer = LayerMask.NameToLayer("Ignore Raycast");
+        padding.name = "Padding";
+        padding.tag = "Padding";
+        padding.layer = LayerMask.NameToLayer("Ignore Raycast");
     }
     
     private static T CopyComponent<T>(T original, GameObject destination) where T : Component
