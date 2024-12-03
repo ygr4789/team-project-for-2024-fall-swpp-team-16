@@ -37,13 +37,11 @@ public class PhysicsImmunity : MonoBehaviour
     private static T CopyComponent<T>(T original, GameObject destination) where T : Component
     {
         var type = original.GetType();
-        print(type.ToString());
         var copy = destination.AddComponent(type);
         var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty | BindingFlags.GetProperty);
         foreach (var property in properties)
         {
             if (!property.CanWrite) continue;
-            print (property.Name);
             property.SetValue(copy, property.GetValue(original));
         }
         return copy as T;
