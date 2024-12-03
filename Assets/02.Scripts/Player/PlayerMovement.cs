@@ -184,7 +184,7 @@ public class PlayerMovement : MonoBehaviour
         playerRigidBody.isKinematic = true;
         playerRigidBody.velocity = Vector3.zero;
         playerCollider.enabled = false;
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(respawnDelayTime);
         playerAnimator.SetBool("Grounded", true);
         playerAnimator.SetBool("Moving", false);
         yield return MoveSmooth(transform.position, _lastStablePosition, respawnPositionRestoreTime);

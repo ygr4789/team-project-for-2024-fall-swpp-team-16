@@ -207,6 +207,7 @@ GameObject:
   - component: {fileID: 8853257442073670805}
   - component: {fileID: 8853257442073670803}
   - component: {fileID: 8853257442073670802}
+  - component: {fileID: 2059583201950020480}
   m_Layer: 9
   m_Name: Controller
   m_TagString: Player
@@ -246,7 +247,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _movementSpeed: 2
   _runMultiplier: 2
-  _jumpHeight: 1
   _smoothTime: 0.02
 --- !u!114 &8853257442073670804
 MonoBehaviour:
@@ -303,6 +303,26 @@ CapsuleCollider:
   m_Height: 1.7637095
   m_Direction: 1
   m_Center: {x: 0, y: 0.8850106, z: 0}
+--- !u!114 &2059583201950020480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8853257442073670793}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cba1bfa9ee93f4d429f7a49ed03c4f96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxAcceleration: 50
+  maxAirAcceleration: 5
+  jumpHeight: 2
+  maxGroundAngle: 45
+  probeDistance: 0.5
+  probeMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1001 &6485003409446601366
 PrefabInstance:
   m_ObjectHideFlags: 0
