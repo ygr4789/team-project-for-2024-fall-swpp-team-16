@@ -97,7 +97,7 @@ public class LevelSelectionManager : MonoBehaviour
             {
                 currentSelectedIndex = 0;
             }
-        } while (levelNotes[currentSelectedIndex].isLocked); // Skip locked stages
+        } while (levelNotes[currentSelectedIndex].isLocked()); // Skip locked stages
 
         // Update the selection
         UpdateSelection();
@@ -117,7 +117,7 @@ public class LevelSelectionManager : MonoBehaviour
 {
     LevelSelectionNoteController selectedNote = levelNotes[currentSelectedIndex];
 
-    if (selectedNote.isLocked)
+    if (selectedNote.isLocked())
     {
         Debug.LogWarning($"Stage {selectedNote.stageNumber} is locked and cannot be selected.");
         return; // Prevent loading locked stages
@@ -143,7 +143,7 @@ public class LevelSelectionManager : MonoBehaviour
     {
         for (int i = 0; i < levelNotes.Count; i++)
         {
-            if (levelNotes[i].isLocked)
+            if (levelNotes[i].isLocked())
             {
                 if (i == 0) return 0;
                 return i - 1;

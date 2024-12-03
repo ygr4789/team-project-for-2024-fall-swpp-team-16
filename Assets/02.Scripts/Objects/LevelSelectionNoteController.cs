@@ -11,7 +11,6 @@ public class LevelSelectionNoteController : MonoBehaviour
 
     private Image imageComponent;   // UI Image component
     public int stageNumber;         // Set this for each stage note in the Inspector
-    public bool isLocked;         // Whether this stage is unlocked
     public bool isSelected;         // Whether this stage is currently selected
 
     void Start()
@@ -26,7 +25,7 @@ public class LevelSelectionNoteController : MonoBehaviour
         {
             imageComponent.sprite = selectedSprite;
         }
-        else if (isLocked)
+        else if (isLocked())
         {
             imageComponent.sprite = lockedSprite;
         }
@@ -36,4 +35,20 @@ public class LevelSelectionNoteController : MonoBehaviour
         }
     }
 
+    public bool isLocked()
+    {
+        if (stageNumber == 1)
+        {
+            return false;
+        } 
+        else if (GameManager.stm.IsStageAccomplished(stageNumber))
+        {
+            return false;
+        } 
+        else if (GameManager.stm.IsStageAccomplished(stageNumber-1))
+        {
+            return false;
+        } 
+        return true;
+    }
 }
