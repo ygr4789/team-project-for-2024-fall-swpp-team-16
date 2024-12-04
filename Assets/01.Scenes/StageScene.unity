@@ -177,7 +177,6 @@ MonoBehaviour:
   selectedSprite: {fileID: 21300000, guid: facf904f4761e46e9bf04cfe3278afb5, type: 3}
   unlockedSprite: {fileID: 21300000, guid: cf3e3ebfadadf45a4a81c9c338e2f4d6, type: 3}
   stageNumber: 16
-  isLocked: 1
   isSelected: 0
 --- !u!114 &7550403
 MonoBehaviour:
@@ -272,7 +271,6 @@ MonoBehaviour:
   selectedSprite: {fileID: 21300000, guid: c1d0d277f8459477193473623747b866, type: 3}
   unlockedSprite: {fileID: 21300000, guid: ac5f0112aa74b4d3482b67730b3ee750, type: 3}
   stageNumber: 4
-  isLocked: 1
   isSelected: 0
 --- !u!114 &30310826
 MonoBehaviour:
@@ -367,7 +365,6 @@ MonoBehaviour:
   selectedSprite: {fileID: 21300000, guid: 3f28964857703473fa253b2ec527c21e, type: 3}
   unlockedSprite: {fileID: 21300000, guid: 66feec38f706d49a3988034a6b94db85, type: 3}
   stageNumber: 8
-  isLocked: 1
   isSelected: 0
 --- !u!114 &190848668
 MonoBehaviour:
@@ -462,7 +459,6 @@ MonoBehaviour:
   selectedSprite: {fileID: 21300000, guid: ce3f139ca9e59478bbfe63abe2a6da63, type: 3}
   unlockedSprite: {fileID: 21300000, guid: fd529bd0ab5e74c168cf98526f173bbf, type: 3}
   stageNumber: 10
-  isLocked: 1
   isSelected: 0
 --- !u!114 &228985458
 MonoBehaviour:
@@ -557,7 +553,6 @@ MonoBehaviour:
   selectedSprite: {fileID: 21300000, guid: 3f28964857703473fa253b2ec527c21e, type: 3}
   unlockedSprite: {fileID: 21300000, guid: 66feec38f706d49a3988034a6b94db85, type: 3}
   stageNumber: 12
-  isLocked: 1
   isSelected: 0
 --- !u!114 &350413617
 MonoBehaviour:
@@ -652,7 +647,6 @@ MonoBehaviour:
   selectedSprite: {fileID: 21300000, guid: 3f28964857703473fa253b2ec527c21e, type: 3}
   unlockedSprite: {fileID: 21300000, guid: 66feec38f706d49a3988034a6b94db85, type: 3}
   stageNumber: 1
-  isLocked: 0
   isSelected: 0
 --- !u!114 &445813907
 MonoBehaviour:
@@ -823,7 +817,6 @@ MonoBehaviour:
   selectedSprite: {fileID: 21300000, guid: f0d2ce75a6cd04b1599f48a8f1888e5f, type: 3}
   unlockedSprite: {fileID: 21300000, guid: 9c8c56d8ad4b04a31af1d9f7fc49fc99, type: 3}
   stageNumber: 3
-  isLocked: 0
   isSelected: 0
 --- !u!114 &562461930
 MonoBehaviour:
@@ -1022,7 +1015,6 @@ MonoBehaviour:
   selectedSprite: {fileID: 21300000, guid: facf904f4761e46e9bf04cfe3278afb5, type: 3}
   unlockedSprite: {fileID: 21300000, guid: cf3e3ebfadadf45a4a81c9c338e2f4d6, type: 3}
   stageNumber: 5
-  isLocked: 1
   isSelected: 0
 --- !u!114 &784723440
 MonoBehaviour:
@@ -1117,7 +1109,6 @@ MonoBehaviour:
   selectedSprite: {fileID: 21300000, guid: c1d0d277f8459477193473623747b866, type: 3}
   unlockedSprite: {fileID: 21300000, guid: ac5f0112aa74b4d3482b67730b3ee750, type: 3}
   stageNumber: 6
-  isLocked: 1
   isSelected: 0
 --- !u!114 &936562541
 MonoBehaviour:
@@ -1465,7 +1456,6 @@ MonoBehaviour:
   selectedSprite: {fileID: 21300000, guid: ce3f139ca9e59478bbfe63abe2a6da63, type: 3}
   unlockedSprite: {fileID: 21300000, guid: fd529bd0ab5e74c168cf98526f173bbf, type: 3}
   stageNumber: 15
-  isLocked: 1
   isSelected: 0
 --- !u!114 &1010114930
 MonoBehaviour:
@@ -1771,7 +1761,6 @@ MonoBehaviour:
   selectedSprite: {fileID: 21300000, guid: ce3f139ca9e59478bbfe63abe2a6da63, type: 3}
   unlockedSprite: {fileID: 21300000, guid: fd529bd0ab5e74c168cf98526f173bbf, type: 3}
   stageNumber: 7
-  isLocked: 1
   isSelected: 0
 --- !u!114 &1331314264
 MonoBehaviour:
@@ -1866,7 +1855,6 @@ MonoBehaviour:
   selectedSprite: {fileID: 21300000, guid: ce3f139ca9e59478bbfe63abe2a6da63, type: 3}
   unlockedSprite: {fileID: 21300000, guid: fd529bd0ab5e74c168cf98526f173bbf, type: 3}
   stageNumber: 2
-  isLocked: 0
   isSelected: 0
 --- !u!114 &1378264762
 MonoBehaviour:
@@ -2013,7 +2001,6 @@ MonoBehaviour:
   selectedSprite: {fileID: 21300000, guid: c1d0d277f8459477193473623747b866, type: 3}
   unlockedSprite: {fileID: 21300000, guid: ac5f0112aa74b4d3482b67730b3ee750, type: 3}
   stageNumber: 13
-  isLocked: 1
   isSelected: 0
 --- !u!114 &1829419842
 MonoBehaviour:
@@ -2250,7 +2237,6 @@ MonoBehaviour:
   selectedSprite: {fileID: 21300000, guid: 3f28964857703473fa253b2ec527c21e, type: 3}
   unlockedSprite: {fileID: 21300000, guid: 66feec38f706d49a3988034a6b94db85, type: 3}
   stageNumber: 14
-  isLocked: 1
   isSelected: 0
 --- !u!114 &2005091054
 MonoBehaviour:
@@ -2345,7 +2331,6 @@ MonoBehaviour:
   selectedSprite: {fileID: 21300000, guid: f0d2ce75a6cd04b1599f48a8f1888e5f, type: 3}
   unlockedSprite: {fileID: 21300000, guid: 9c8c56d8ad4b04a31af1d9f7fc49fc99, type: 3}
   stageNumber: 11
-  isLocked: 1
   isSelected: 0
 --- !u!114 &2023866795
 MonoBehaviour:
@@ -2440,7 +2425,6 @@ MonoBehaviour:
   selectedSprite: {fileID: 21300000, guid: c1d0d277f8459477193473623747b866, type: 3}
   unlockedSprite: {fileID: 21300000, guid: ac5f0112aa74b4d3482b67730b3ee750, type: 3}
   stageNumber: 9
-  isLocked: 1
   isSelected: 0
 --- !u!114 &2038537832
 MonoBehaviour:

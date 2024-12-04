@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
+using Collections.Shaders.CircleTransition;
 
 public class LevelSelectionManager : MonoBehaviour
 {
@@ -114,29 +115,46 @@ public class LevelSelectionManager : MonoBehaviour
     }
 
     void ConfirmSelection()
-{
-    LevelSelectionNoteController selectedNote = levelNotes[currentSelectedIndex];
-
-    if (selectedNote.isLocked())
     {
-        Debug.LogWarning($"Stage {selectedNote.stageNumber} is locked and cannot be selected.");
-        return; // Prevent loading locked stages
+        LevelSelectionNoteController selectedNote = levelNotes[currentSelectedIndex];
+
+        if (selectedNote.isLocked())
+        {
+            Debug.LogWarning($"Stage {selectedNote.stageNumber} is locked and cannot be selected.");
+            return; // Prevent loading locked stages
+        }
+
+        Debug.Log($"Loading Stage {selectedNote.stageNumber}...");
+
+        // Load the scene corresponding to the selected stage
+        string sceneName = $"Test Stage{selectedNote.stageNumber} JS"; // Example: Stage1, Stage2, etc.
+
+        if (Application.CanStreamedLevelBeLoaded(sceneName))
+        {
+            CircleTransition ct = FindObjectOfType<CircleTransition>();
+            if (ct != null)
+            {
+                ct.FadeOut();
+                StartCoroutine(WaitAndLoadScene(sceneName));
+            }
+            else
+            {
+                Debug.LogError("CircleTransition not found in the scene.");
+            }
+            SceneManager.LoadScene(sceneName);
+        }
+        else
+        {
+            Debug.LogError($"Scene '{sceneName}' not found. Please ensure it is added to the Build Settings.");
+        }
     }
-
-    Debug.Log($"Loading Stage {selectedNote.stageNumber}...");
-
-    // Load the scene corresponding to the selected stage
-    string sceneName = $"Test Stage{selectedNote.stageNumber} JS"; // Example: Stage1, Stage2, etc.
-
-    if (Application.CanStreamedLevelBeLoaded(sceneName))
+    
+    // Coroutine to wait for 2 seconds and then load the scene
+    private IEnumerator WaitAndLoadScene(string sceneName)
     {
-        SceneManager.LoadScene(sceneName);
+        yield return new WaitForSeconds(2f); // Wait for 2 seconds
+        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
     }
-    else
-    {
-        Debug.LogError($"Scene '{sceneName}' not found. Please ensure it is added to the Build Settings.");
-    }
-}
 
 
     int FindLastUnlockedIndex()
