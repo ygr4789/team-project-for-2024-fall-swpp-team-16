@@ -104,6 +104,6 @@ public class TreeController : MonoBehaviour
     
     private void PlayCollapseSound()
     {
-        GameManager.sm.PlaySound("collapse");
+        GameManager.sm.PlaySound("collapse", 2f);
     }
 }
