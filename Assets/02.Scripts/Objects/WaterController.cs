@@ -43,18 +43,18 @@ public class WaterController : MonoBehaviour
         Assert.IsNotNull(waterSurface.GetComponent<Renderer>(), "Water Surface must have renderer component");
         minWaterLevel = Mathf.Clamp(minWaterLevel, 0f, maxWaterLevel);
         initialWaterLevel = Mathf.Clamp(initialWaterLevel, minWaterLevel, maxWaterLevel);
-        Init();
+        InspectorDependentInit();
     }
 
     private void Awake()
     {
-        Init();
+        _waterSinkHandler = new WaterSinkHandler(this);
+        InspectorDependentInit();
     }
     
-    private void Init()
+    private void InspectorDependentInit()
     {
         _waterCollider = gameObject.GetComponent<BoxCollider>();
-        _waterSinkHandler = new WaterSinkHandler(this);
         currentWaterLevel = initialWaterLevel;
         SetWaterSurfacePosition();
         SetWaterSurfaceSize();
