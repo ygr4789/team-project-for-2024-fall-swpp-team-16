@@ -1,111 +1,110 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using UnityEngine;
+using UnityEngine.Assertions;
+using Vector3 = UnityEngine.Vector3;
 
+[RequireComponent(typeof(BoxCollider))]
 public class WaterController : Interactable
 {
-    // Configurations
-    public float waterLevelMax = 100.0f; // Maximum height of water
-    public float waterLevelMin = 0.0f; // Minimum height of water
-    public float waterLevelTargetUnit = 1.0f; // Target height of water
-    public float timeToReachTarget = 2.0f; // 목표에 도달할 시간
+    [SerializeField, Range(0f, 10f)] private float minWaterLevel = 0f; // Minimum height of water
+    [SerializeField, Range(0f, 10f)] private float maxWaterLevel = 1f; // Maximum height of water
+    [Range(0f, 10f)] public float initialWaterLevel = 0.5f; // Original height of water
     
-    // Internal variables (But made public for debugging)
-    public float initialPositionY;
-    public bool isHeightChanging = false;
-    public float waterLevelTarget; // Target height of water
+    [SerializeField, Range(0f, 10f)] private float waterSurfaceSizeX = 1f; // Size of water surface
+    [SerializeField, Range(0f, 10f)] private float waterSurfaceSizeY = 1f; // Size of water surface
+    [SerializeField, Range(0f, 3f)] private float timeToReachTarget = 10f; // 목표에 도달할 시간
+    [Tooltip("Water Surface Object (Must be child of this GameObject)")]
+    [SerializeField] private Transform waterSurface;
     
-    private float elapsedTime = 0.0f;
-    private float startHeight; // 현재 높이를 저장할 변수
-    
-    private Collider waterCollider;
-    private PlayerMovement playerMovement;
+    [HideInInspector] public float currentWaterLevel;
+    [HideInInspector] public BoxCollider waterCollider;
 
-    void Awake()
+    private PlayerMovement playerMovement;
+    // private WaterSinkHandler waterSinkHandler;
+
+    private void OnValidate()
     {
-        waterCollider = gameObject.GetComponent<Collider>();
+        Assert.IsNotNull(waterSurface, "Water Surface Object must be assigned");
+        Assert.IsTrue(waterSurface.IsChildOf(transform), "Water Surface Object must be child of this GameObject");
+        Assert.IsNotNull(waterSurface.GetComponent<Renderer>(), @"Water Surface must have renderer component");
+        minWaterLevel = Mathf.Clamp(minWaterLevel, 0f, maxWaterLevel);
+        initialWaterLevel = Mathf.Clamp(initialWaterLevel, minWaterLevel, maxWaterLevel);
+        Init();
     }
 
-    void Start()
+    private void Awake()
+    {
+        Init();
+    }
+    
+    private void Init()
+    {
+        waterCollider = gameObject.GetComponent<BoxCollider>();
+        // waterSinkHandler = new WaterSinkHandler(this);
+        currentWaterLevel = initialWaterLevel;
+        SetWaterSurfacePosition();
+        SetWaterSurfaceSize();
+        SetWaterCollider();
+    }
+
+    private void Start()
     {
         playerMovement = GameManager.gm.controller.GetComponent<PlayerMovement>();
-        initialPositionY = transform.position.y;
-        waterLevelTarget = initialPositionY;
     }
 
     void Update()
     {
-        if (isHeightChanging)
-        {
-            // 경과 시간 갱신
-            elapsedTime += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsedTime / timeToReachTarget); // 진행률 계산
-
-            // 부드러운 가속/감속을 적용하여 높이 변경
-            float smoothStepValue = Mathf.SmoothStep(0, 1, t);
-            float newY = Mathf.LerpUnclamped(startHeight, waterLevelTarget, smoothStepValue);
-
-            transform.position = new Vector3(transform.position.x, newY, transform.position.z);
-
-            // 목표에 도달했으면 높이 변경 중지 및 초기화
-            if (t >= 1.0f)
-            {
-                transform.position = new Vector3(transform.position.x, waterLevelTarget, transform.position.z);
-                isHeightChanging = false;
-                elapsedTime = 0.0f; // 초기화
-            }
-        }
-        
         CheckPlayerCollision();
-    }
-    
-    public bool TriggerStepIncreaseWaterLevel()
-    {
-        if (isHeightChanging) return false; // If already changing, return false
-
-        if (waterLevelTarget+waterLevelTargetUnit > waterLevelMax)
-        {
-            Debug.Log("Water level is already at the maximum height.");
-            waterLevelTarget = waterLevelMax; // Adjust to max if exceeded
-            return false;
-        }
-        waterLevelTarget += waterLevelTargetUnit;
-        TriggerChangeWaterLevel();
-        return true; // Successfully initiated height change
-    }
-    
-    public bool TriggerStepDecreaseWaterLevel()
-    {
-        if (isHeightChanging) return false; // If already changing, return false
-
-        if (waterLevelTarget-waterLevelTargetUnit < waterLevelMin)
-        {
-            Debug.Log("Water level is already at the minimum height.");
-            waterLevelTarget = waterLevelMin; // Adjust to min if exceeded
-            return false;
-        }
-        waterLevelTarget -= waterLevelTargetUnit;
-        TriggerChangeWaterLevel();
-        return true; // Successfully initiated height change
-    }
-    
-    private void TriggerChangeWaterLevel()
-    {
-        isHeightChanging = true;
-        startHeight = transform.position.y; // 현재 높이를 시작 높이로 설정
-        elapsedTime = 0.0f; // 새로운 변화가 시작되므로 경과 시간 초기화
+        SetWaterSurfacePosition();
+        // waterSinkHandler.Handle();
     }
 
     private void CheckPlayerCollision()
     {
-        Vector3 playerPosition = GameManager.gm.controller.position;
-        float sinkHeight = playerPosition.y - transform.position.y;
-        int waterLayer = 1 << LayerMask.NameToLayer("Water");
-        Collider[] targets = Physics.OverlapSphere(playerPosition, 3f, waterLayer);
-        if (Array.IndexOf(targets, waterCollider) > -1 && sinkHeight < -0.5f)
+        var playerPosition = GameManager.gm.controller.position;
+        var sinkHeight = playerPosition.y - waterSurface.position.y;
+        var waterLayer = 1 << LayerMask.NameToLayer("Water");
+        Collider[] results = {};
+        var size = Physics.OverlapSphereNonAlloc(playerPosition, 3f, results, waterLayer);
+        if (Array.IndexOf(results, waterCollider) > -1 && sinkHeight < -0.5f)
         {
             playerMovement.Drown();
         }
     }
+
+    private void SetWaterSurfacePosition()
+    {
+        var waterSurfacePosition = Vector3.zero;
+        waterSurfacePosition.y = currentWaterLevel;
+        waterSurface.localPosition = waterSurfacePosition;
+    }
+
+    private void SetWaterSurfaceSize()
+    {
+        var waterSurfaceSize = Vector3.one;
+        waterSurfaceSize.x = waterSurfaceSizeX;
+        waterSurfaceSize.y = waterSurfaceSizeY;
+        waterSurface.localScale = waterSurfaceSize;
+    }
+    
+    private void SetWaterCollider()
+    {
+        var bounds = waterSurface.GetComponent<Renderer>().bounds;
+        var center = Vector3.up * (maxWaterLevel + minWaterLevel) / 2;
+        var size = new Vector3(bounds.size.x, maxWaterLevel - minWaterLevel, bounds.size.z);
+        waterCollider.center = center;
+        waterCollider.size = size;
+        waterCollider.isTrigger = true;
+    }
+
+    private void OnDrawGizmos()
+    {
+        var boxCollider = GetComponent<BoxCollider>();
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(transform.position + boxCollider.center , boxCollider.size);
+    }
 }
+
