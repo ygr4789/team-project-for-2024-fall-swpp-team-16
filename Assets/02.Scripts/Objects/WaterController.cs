@@ -35,6 +35,12 @@ public class WaterController : MonoBehaviour
     public float InitialWaterLevel => initialWaterLevel;
     public float ExposedSurfaceRatio => exposedSurfaceRatio;
 
+    public void AdjustWaterLevel(float heightDelta)
+    {
+        initialWaterLevel += heightDelta;
+        initialWaterLevel = Mathf.Clamp(initialWaterLevel, minWaterLevel, maxWaterLevel);
+    }
+    
     // Reflect changes to inspector values directly in the Editor Scene
     private void OnValidate()
     {
