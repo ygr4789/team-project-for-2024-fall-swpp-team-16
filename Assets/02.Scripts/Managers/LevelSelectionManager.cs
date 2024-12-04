@@ -135,6 +135,7 @@ public class LevelSelectionManager : MonoBehaviour
             if (ct != null)
             {
                 ct.FadeOut();
+                GameManager.stm.SetCurrentStage(selectedNote.stageNumber);
                 StartCoroutine(WaitAndLoadScene(sceneName));
             }
             else
