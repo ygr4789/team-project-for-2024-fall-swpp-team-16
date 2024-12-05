@@ -62,7 +62,7 @@ public class DoorController : MonoBehaviour
                             StartCoroutine(OpenDoor());
                             playedNotes.Clear();
                             // camera effect
-                            GameManager.em.FadeOutCircleTransition();
+                            GameManager.em.FadeInCircleTransition();
                             // Go Back to the stage selection scene
                             StartCoroutine(GameManager.stm.WaitAndLoadScene("StageScene"));
                         }

@@ -180,4 +180,17 @@ public class EffectManager : MonoBehaviour
             Debug.LogError("CircleTransition not found in the scene.");
         }
     }
+
+    public void FadeInCircleTransition()
+    {
+        CircleTransition ct = FindObjectOfType<CircleTransition>();
+        if (ct != null)
+        {
+            ct.FadeIn();
+        }
+        else
+        {
+            Debug.LogError("CircleTransition not found in the scene.");
+        }
+    }
 }

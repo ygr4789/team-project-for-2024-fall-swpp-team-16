@@ -43,6 +43,11 @@ namespace Collections.Shaders.CircleTransition
         {
             StartCoroutine(OpenBlackScreenCoroutine(0, 2.0f, 0.1f, 1.0f));
         }
+
+        public void FadeIn()
+        {
+            StartCoroutine(CloseBlackScreenCoroutine(0, 2.0f, 1.0f, 0.1f));
+        }
         
         private IEnumerator OpenBlackScreenCoroutine(float delay, float duration = -1, float startRadius = -1, float endRadius = -1)
         {
