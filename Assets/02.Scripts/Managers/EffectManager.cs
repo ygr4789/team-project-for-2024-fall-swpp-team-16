@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using Collections.Shaders.CircleTransition;
 
 public class EffectManager : MonoBehaviour
 {
@@ -164,6 +165,19 @@ public class EffectManager : MonoBehaviour
         if (GameManager.pm is not null)
         {
             makeRipples();
+        }
+    }
+
+    public void FadeOutCircleTransition()
+    {
+        CircleTransition ct = FindObjectOfType<CircleTransition>();
+        if (ct != null)
+        {
+            ct.FadeOut();
+        }
+        else
+        {
+            Debug.LogError("CircleTransition not found in the scene.");
         }
     }
 }

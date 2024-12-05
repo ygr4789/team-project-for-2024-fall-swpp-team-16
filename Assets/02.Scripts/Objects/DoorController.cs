@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.SceneManagement;
 
 public class DoorController : MonoBehaviour
 {
@@ -60,7 +61,10 @@ public class DoorController : MonoBehaviour
                             GameManager.stm.CompleteCurrentStage();
                             StartCoroutine(OpenDoor());
                             playedNotes.Clear();
-                            // TODO: Go Back to the stage selection scene
+                            // camera effect
+                            GameManager.em.FadeOutCircleTransition();
+                            // Go Back to the stage selection scene
+                            StartCoroutine(GameManager.stm.WaitAndLoadScene("StageScene"));
                         }
                     }
                     else

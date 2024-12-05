@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
-using Collections.Shaders.CircleTransition;
 
 public class LevelSelectionManager : MonoBehaviour
 {
@@ -131,18 +130,9 @@ public class LevelSelectionManager : MonoBehaviour
 
         if (Application.CanStreamedLevelBeLoaded(sceneName))
         {
-            CircleTransition ct = FindObjectOfType<CircleTransition>();
-            if (ct != null)
-            {
-                ct.FadeOut();
-                GameManager.stm.SetCurrentStage(selectedNote.stageNumber);
-                StartCoroutine(WaitAndLoadScene(sceneName));
-            }
-            else
-            {
-                Debug.LogError("CircleTransition not found in the scene.");
-            }
-            SceneManager.LoadScene(sceneName);
+            GameManager.em.FadeOutCircleTransition();
+            GameManager.stm.SetCurrentStage(selectedNote.stageNumber);
+            StartCoroutine(GameManager.stm.WaitAndLoadScene(sceneName));
         }
         else
         {
@@ -150,13 +140,6 @@ public class LevelSelectionManager : MonoBehaviour
         }
     }
     
-    // Coroutine to wait for 2 seconds and then load the scene
-    private IEnumerator WaitAndLoadScene(string sceneName)
-    {
-        yield return new WaitForSeconds(2f); // Wait for 2 seconds
-        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
-    }
-
 
     int FindLastUnlockedIndex()
     {

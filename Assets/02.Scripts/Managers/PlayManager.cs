@@ -23,15 +23,8 @@ public class PlayManager : MonoBehaviour
 
     private void Update()
     {
-        if (playerTransform is null)
-        {
-            // Debug.Log("Player Transform is null");
-            // playerTransform = FindObjectOfType<PlayerMovement>().transform;
-        } else {
-            // Debug.Log("Player Transform is not null");
-        }
-        // HandleTargetSwitch();
-        // HandleResonance();
+        HandleTargetSwitch();
+        HandleResonance();
     }
     
     private void HandleTargetSwitch()

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -89,5 +90,12 @@ public class StageManager : MonoBehaviour
     public bool[] GetStagesStatus()
     {
         return accomplishedStages;
+    }
+
+    // Coroutine to wait for 2 seconds and then load the scene
+    public IEnumerator WaitAndLoadScene(string sceneName)
+    {
+        yield return new WaitForSeconds(2f); // Wait for 2 seconds
+        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
     }
 }
