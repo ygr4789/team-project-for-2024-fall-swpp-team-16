@@ -5,9 +5,10 @@ using UnityEngine.Serialization;
 
 public class DoorController : MonoBehaviour
 {
+    public List<GameObject> scores = new List<GameObject>(); // list of scores to collect
 	public GameObject scoreUIPanel; // Reference to the score UI panel
     public int[] answerNotes; // Array to store notes for this door
-    private List<int> playedNotes = new List<int>(); // List to store played notes
+    public List<int> playedNotes = new List<int>(); // List to store played notes
     public GameObject doorWing; // Reference to the door object
     
     public GameObject rippleEffectPrefab; // Reference to the ripple effect prefab
@@ -59,6 +60,7 @@ public class DoorController : MonoBehaviour
                             GameManager.stm.CompleteCurrentStage();
                             StartCoroutine(OpenDoor());
                             playedNotes.Clear();
+                            // TODO: Go Back to the stage selection scene
                         }
                     }
                     else
@@ -75,6 +77,11 @@ public class DoorController : MonoBehaviour
     
     private void SpawnColoredNote(int note)
     {
+        if (playedNotes.Count > coloredNotes.Length)
+        {
+            Debug.LogError("Not enough colored notes to spawn. Add more colored notes to the coloredNotes array.");
+            return;
+        }
         // 색 음표 생성 (색 음표 배열이 있고 그게 뿅 하는 효과와 함께 나타남)
         GameObject notePrefab = coloredNotes[playedNotes.Count - 1];
         notePrefab.SetActive(true);

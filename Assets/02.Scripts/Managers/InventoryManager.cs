@@ -4,14 +4,29 @@ using UnityEngine;
 
 public class InventoryManager : MonoBehaviour
 {
+    // different by stage
 	public List<GameObject> scores = new List<GameObject>(); // list of scores to collect
-    private Dictionary<GameObject, bool> _scoreMap = new Dictionary<GameObject, bool>(); // map of scores and their collection status
+    public Dictionary<GameObject, bool> _scoreMap = new Dictionary<GameObject, bool>(); // map of scores and their collection status
+    
     public GameObject inventoryIconUI;
     public TMPro.TextMeshProUGUI scoreText;
     private int _collectedScores = 0;
     
 	void Start()
     {
+
+    }
+
+    public void OnSceneLoaded()
+    {
+        // TODO: load scores from DoorController in the scene
+        DoorController doorController = FindObjectOfType<DoorController>();
+        if (doorController == null)
+        {
+            Debug.LogWarning("DoorController is not found in the scene. Ignore this message if it's not a game scene.");
+            return;
+        }
+        scores = doorController.scores;
         if (scores == null || scores.Count == 0)
         {
             Debug.LogWarning("Scores list is empty or not initialized!");

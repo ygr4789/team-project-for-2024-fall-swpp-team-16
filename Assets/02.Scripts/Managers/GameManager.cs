@@ -47,6 +47,9 @@ public class GameManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         pm = FindObjectOfType<PlayManager>();
+        pm.playerTransform = FindObjectOfType<PlayerMovement>().transform;
+        
+        im.OnSceneLoaded();
     }
 
     // Start is called before the first frame update
