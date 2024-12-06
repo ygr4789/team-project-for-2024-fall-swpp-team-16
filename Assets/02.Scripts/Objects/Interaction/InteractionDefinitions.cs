@@ -23,11 +23,11 @@ public static class InteractionDefinitions
     
     private static void AnimalDamageTree(AnimalController animal, TreeController tree)
     {
-        tree.Damage();
+        tree.Damage(animal.transform);
     }
     
     private static void RockDamageTree(RockController rock, TreeController tree)
     {
-        tree.Damage();
+        tree.Damage(rock.transform);
     }
 }
