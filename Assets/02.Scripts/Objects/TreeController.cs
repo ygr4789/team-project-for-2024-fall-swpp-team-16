@@ -32,7 +32,7 @@ public class TreeController : Interactable
         treePrefab.transform.localScale = new Vector3(radius*2, maxHeight, radius*2);
         treePrefab.transform.localPosition = new Vector3(0f, currentHeight - maxHeight, 0f);
         var capsuleCollider = gameObject.GetComponent<CapsuleCollider>();
-        capsuleCollider.height = maxHeight;
+        capsuleCollider.height = 2 * maxHeight;
         capsuleCollider.radius = radius;
     }
 
@@ -64,13 +64,13 @@ public class TreeController : Interactable
         }
     }
 
-    public void SmoothIncreaseHeight()
+    private void SmoothIncreaseHeight()
     {
         currentHeight += heightChangeSpeed * Time.deltaTime;
         currentHeight = Mathf.Clamp(currentHeight, minHeight, maxHeight);
     }
 
-    public void SmoothDecreaseHeight()
+    private void SmoothDecreaseHeight()
     {
         currentHeight -= heightChangeSpeed * Time.deltaTime;
         currentHeight = Mathf.Clamp(currentHeight, minHeight, maxHeight);
@@ -87,7 +87,7 @@ public class TreeController : Interactable
         }
     }
     
-    public void Collapse(Vector3 direction)
+    private void Collapse(Vector3 direction)
     {
         const float initialAngularVelocity = 1f;
         var cutOffset = radius + 0.1f;
@@ -96,7 +96,7 @@ public class TreeController : Interactable
         var cutTree = Cutter.Cut(treePrefab, transform.position + Vector3.up * cutOffset, Vector3.up);
         cutTree.AddComponent<CapsuleCollider>();
         var cutRigidbody = cutTree.AddComponent<Rigidbody>();
-        var axis = Vector3.Cross(direction, Vector3.up).normalized;
+        var axis = Vector3.Cross(Vector3.up, direction).normalized;
         var torque = axis * initialAngularVelocity;
         cutRigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
         cutRigidbody.centerOfMass = Vector3.up * maxHeight;
