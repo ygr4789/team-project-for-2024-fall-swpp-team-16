@@ -7,7 +7,7 @@ public class FloatingTextController : MonoBehaviour
 {
     public GameObject target;
     public Vector3 offset = new Vector3(0, 3, 0);
-    public string inspectGuideText = "Press E to inspect";
+    public string inspectGuideText = "Press [E]";
     public float inspectMaxDistance = 3;
     
     void Start()
