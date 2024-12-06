@@ -16,6 +16,15 @@ public class BreakableObject : MonoBehaviour
         // Test: Invoke("Damage", 5f);
     }
 
+    private void Update()
+    {
+        // 테스트용 코드
+        // if (Input.GetKeyDown(KeyCode.Space))
+        // {
+        //     Damage();
+        // }
+    }
+
     public void Damage()
     {
         if (--durability <= 0) Collapse();
@@ -35,6 +44,13 @@ public class BreakableObject : MonoBehaviour
             // 파티클이 없는 경우 즉시 삭제
             Destroy(gameObject);
         }
+        
+        PlayCollapseSound();
+    }
+    
+    private void PlayCollapseSound()
+    {
+        GameManager.sm.PlaySound("collapse");
     }
 
     private IEnumerator DestroyAfterParticle(ParticleSystem particle)

@@ -53,18 +53,40 @@ public class TreeController : MonoBehaviour
         {
             treePrefab.transform.localPosition = Vector3.SmoothDamp(currentPosition, targetPosition, ref currentVelocity, heightChangeSmoothTime);
         }
+        
+        // 테스트용 코드
+        // if (Input.GetKeyDown(KeyCode.Space))
+        // {
+        //     Damage();
+        // }
+        // if (Input.GetKeyDown(KeyCode.Minus))
+        // {
+        //     SmoothDecreaseHeight();
+        // } else if (Input.GetKeyDown(KeyCode.Equals))
+        // {
+        //     SmoothIncreaseHeight();
+        // }
     }
 
     public void SmoothIncreaseHeight()
     {
         targetHeight += heightChangeSpeed * Time.deltaTime;
         targetHeight = Mathf.Clamp(targetHeight, minHeight, maxHeight);
+        
+        PlayTreeSound("increase");
     }
 
     public void SmoothDecreaseHeight()
     {
         targetHeight -= heightChangeSpeed * Time.deltaTime;
         targetHeight = Mathf.Clamp(targetHeight, minHeight, maxHeight);
+        
+        PlayTreeSound("decrease");
+    }
+    
+    private void PlayTreeSound(string action)
+    {
+        GameManager.sm.PlaySound("tree-" + action);
     }
     public void Damage()
     {
@@ -77,5 +99,12 @@ public class TreeController : MonoBehaviour
         if (isCollapsed) return;
         Cutter.Cut(treePrefab, transform.position + Vector3.up * 0.1f, Vector3.up);
         isCollapsed = true;
+        
+        PlayCollapseSound();
+    }
+    
+    private void PlayCollapseSound()
+    {
+        GameManager.sm.PlaySound("collapse", 2f);
     }
 }

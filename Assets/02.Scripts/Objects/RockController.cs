@@ -20,6 +20,9 @@ public class RockController : MonoBehaviour
     private readonly float _moveSmoothTime = 0.6f;
     private Vector3 _currentVelocity = Vector3.zero;
     private Vector3 _targetPosition;
+    private const float SpeedThreshold = .5f; // Speed threshold for playing sound
+    private bool isPlayingSound = false;
+    private GameObject _movingSound;
     
     private void Awake()
     {
@@ -51,13 +54,35 @@ public class RockController : MonoBehaviour
 
         Vector3 currentPosition = transform.position;
         transform.position = Vector3.SmoothDamp(currentPosition, _targetPosition, ref _currentVelocity, _moveSmoothTime);
-        
+
         if (isRolling) // rotate rock if it is rolling
         {
             RollRock(_currentVelocity);
         }
 
         StickToGround();
+
+        // Check speed and play/stop sound
+        float speed = _currentVelocity.magnitude;
+        if (speed > SpeedThreshold && !isPlayingSound)
+        {
+            PlayMovingSound();
+            isPlayingSound = true;
+        }
+        else if (speed <= SpeedThreshold && isPlayingSound)
+        {
+            StopMovingSound();
+            isPlayingSound = false;
+        }
+        
+        // 테스트용 코드
+        // if (Input.GetKeyDown(KeyCode.LeftBracket))
+        // {
+        //     MoveToPlayer();
+        // } else if (Input.GetKeyDown(KeyCode.RightBracket))
+        // {
+        //     MoveAwayFromPlayer();
+        // }
     }
 
     private void RollRock(Vector3 velocity)
@@ -127,5 +152,24 @@ public class RockController : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void PlayMovingSound()
+    {
+        // Implement sound playing logic here
+        _movingSound = GameManager.sm.PlayLoopSound("stone-moving");
+        AudioSource source = _movingSound.GetComponent<AudioSource>();
+        if (source != null)
+        {
+            source.volume *= 0.3f; // Reduce volume by half
+        }
+        Debug.Log("Playing rolling sound");
+    }
+
+    private void StopMovingSound()
+    {
+        // Implement sound stopping logic here
+        Destroy(_movingSound);
+        Debug.Log("Stopping rolling sound");
     }
 }
