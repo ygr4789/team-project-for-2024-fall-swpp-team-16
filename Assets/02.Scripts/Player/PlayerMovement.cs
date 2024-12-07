@@ -225,19 +225,7 @@ public class PlayerMovement : MonoBehaviour
 
     public IEnumerator WalkToPoint(Vector3 targetPosition, float duration)
     {
-        float elapsedTime = 0f;
-        Vector3 startPosition = transform.position;
-        
-        characterController.enabled = false;
-        while (elapsedTime < duration)
-        {
-            elapsedTime += Time.deltaTime;
-            float normalizedTime = elapsedTime / duration;
-            Vector3 newPosition = Vector3.Lerp(startPosition, targetPosition, Mathf.SmoothStep(0f, 1f, normalizedTime));
-            characterController.Move(newPosition - transform.position); // Use Move instead of directly setting position
-            yield return null;
-        }
-        characterController.enabled = true;
+        yield return StartCoroutine(MoveSmooth(transform.position, targetPosition, duration));
     }
     
     // Repeat blinking for the specified time count times

@@ -47,7 +47,10 @@ public class GameManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         pm = FindObjectOfType<PlayManager>();
-        pm.playerTransform = FindObjectOfType<PlayerMovement>().transform;
+        PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+        if (playerMovement != null) {
+            pm.playerTransform = playerMovement.transform;
+        }
         
         im.OnSceneLoaded();
     }
