@@ -281,6 +281,15 @@ MonoBehaviour:
   pathPoints:
   - {fileID: 1341854343}
   - {fileID: 861917736}
+  colliderOriginHeight: 0
+  footOffsetLF: {x: 0, y: 0, z: 0}
+  footOffsetRF: {x: 0, y: 0, z: 0}
+  footOffsetLB: {x: 0, y: 0, z: 0}
+  footOffsetRB: {x: 0, y: 0, z: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  pathWaitTime: 0.3
 --- !u!1 &180710424
 GameObject:
   m_ObjectHideFlags: 0
@@ -1504,6 +1513,51 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ea6efa880efea42e89c0f3d47c3139f4, type: 3}
+--- !u!1 &689935787
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 689935788}
+  - component: {fileID: 689935789}
+  m_Layer: 0
+  m_Name: StageManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &689935788
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 689935787}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 19.326536, y: 67.94361, z: -30.66552}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1611030915}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &689935789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 689935787}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce6f7ed6358940459b705922494ff02d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  totalStages: 10
 --- !u!1 &724701213
 GameObject:
   m_ObjectHideFlags: 0
@@ -2727,6 +2781,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 746901841}
+  transitionDuration: 2
+  defaultStartRadius: 1
+  defaultEndRadius: 0
 --- !u!114 &1091675280
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3433,7 +3490,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af010bfc7dd3a6d4bb0cc987b4024e67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Player: {fileID: 0}
+  controller: {fileID: 0}
 --- !u!4 &1611030915
 Transform:
   m_ObjectHideFlags: 0
@@ -3448,6 +3505,7 @@ Transform:
   m_Children:
   - {fileID: 1438303443}
   - {fileID: 1382304416}
+  - {fileID: 689935788}
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

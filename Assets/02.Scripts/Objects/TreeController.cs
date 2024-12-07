@@ -42,6 +42,7 @@ public class TreeController : Interactable
         ResonatableObject resonatable = gameObject.AddComponent<ResonatableObject>();
         resonatable.properties = new[] { PitchType.So, PitchType.La };
         resonatable.resonate += TreeResonate;
+        resonatable.ripplesPositionOffset = Vector3.up * 0.5f;
     }
 
     private void TreeResonate(PitchType pitch)
@@ -68,13 +69,21 @@ public class TreeController : Interactable
     {
         currentHeight += heightChangeSpeed * Time.deltaTime;
         currentHeight = Mathf.Clamp(currentHeight, minHeight, maxHeight);
+        PlayTreeSound("increase");
     }
 
     public void SmoothDecreaseHeight()
     {
         currentHeight -= heightChangeSpeed * Time.deltaTime;
         currentHeight = Mathf.Clamp(currentHeight, minHeight, maxHeight);
+        PlayTreeSound("decrease");
     }
+    
+    private void PlayTreeSound(string action)
+    {
+        GameManager.sm.PlaySound("tree-" + action);
+    }
+    
     public void Damage(Transform damager)
     {
         if (isCollapsed) return;
@@ -107,6 +116,7 @@ public class TreeController : Interactable
         cutRigidbody.mass = 100;
         isCollapsed = true;
         this.enabled = false;
+        PlayCollapseSound();
     }
 
     private void OnDrawGizmos()
@@ -117,4 +127,10 @@ public class TreeController : Interactable
         Gizmos.DrawCube(transform.position + minHeight * Vector3.up, new Vector3(3f, 0.01f, 3f));
         Gizmos.DrawCube(transform.position + maxHeight * Vector3.up, new Vector3(3f, 0.01f, 3f));
     }
+    
+    private void PlayCollapseSound()
+    {
+        GameManager.sm.PlaySound("collapse", 2f);
+    }
 }
+
