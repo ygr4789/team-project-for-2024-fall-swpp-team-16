@@ -61,6 +61,9 @@ public class DoorController : MonoBehaviour
                             GameManager.stm.CompleteCurrentStage();
                             StartCoroutine(OpenDoor());
                             playedNotes.Clear();
+                            // TODO: change camera view to the back of the player
+                            // player walks into the door
+                            StartCoroutine(FindObjectOfType<PlayerMovement>().WalkToPoint(doorWing.transform.position, 1.5f));
                             // camera effect
                             GameManager.em.FadeInCircleTransition();
                             // Go Back to the stage selection scene
