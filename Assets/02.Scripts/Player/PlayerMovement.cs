@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerInput
@@ -27,16 +28,14 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("additional speed multiplier when running")]
     [Range(1f, 20f)]
     [SerializeField] private float _runMultiplier;
-    
-    [SerializeField] private float _gravity = -9.81f;
-    [Range(0f, 3f)]
-    [SerializeField] private float _jumpHeight;
-    
+
     [Tooltip("time taken to rotate when the direction of movement is changed")]
     [Range(0f, 0.1f)]
     [SerializeField] private float _smoothTime = 0.1f;
 
-    private CharacterController characterController;
+    private SurfaceContactController playerController;
+    private Rigidbody playerRigidBody;
+    private Collider playerCollider;
     private Transform playerTransform;
     private Animator playerAnimator;
     private Renderer playerMeshRenderer;
@@ -45,18 +44,11 @@ public class PlayerMovement : MonoBehaviour
     
     private PlayerInput input;
     
-    private IEnumerator jumpCheckGroundAvoider; 
-    private IEnumerator JumpCheckGroundAvoider()
-    {
-        yield return new WaitForFixedUpdate();
-        playerAnimator.SetBool("Jump", false);
-    }
-
-    private bool immune = false; //
-    private float respawnDelayTime = 0.5f; //
-    private float respawnPositionRestoreTime = 1f; //
-    private int respawnBlinkCount = 5; //
-    private float respawnBlinkTime = 0.1f; //
+    private bool immune = false;
+    private float respawnDelayTime = 0.5f;
+    private float respawnPositionRestoreTime = 1f;
+    private int respawnBlinkCount = 5;
+    private float respawnBlinkTime = 0.1f;
     
     private int runLayer = 1;
     private float runLayerWeight = 0f;
@@ -66,7 +58,9 @@ public class PlayerMovement : MonoBehaviour
     private void Awake()
     {
         input = new PlayerInput();
-        characterController = GetComponent<CharacterController>();
+        playerRigidBody = GetComponent<Rigidbody>();
+        playerController = GetComponent<SurfaceContactController>();
+        playerCollider = GetComponent<Collider>();
         playerTransform = transform.Find("Player");
         playerAnimator = playerTransform.GetComponent<Animator>();
         playerMeshRenderer = playerTransform.GetComponentInChildren<Renderer>();
@@ -93,65 +87,55 @@ public class PlayerMovement : MonoBehaviour
 
     private void ControlPlayer()
     {
-        // stops the y velocity when player is on the ground and the velocity has reached 0
-        if (characterController.isGrounded && _controllerVelocity.y < 0)
-        {
-            _controllerVelocity.y = 0;
-        }
-
         if (immune) return;
         
         CheckStable();
         
         // moves the controller in the desired direction on the x- and z-axis
         Vector3 movement = transform.right * input.moveX + transform.forward * input.moveZ;
-        characterController.Move(movement * (_movementSpeed * Time.deltaTime));
+        movement *= _movementSpeed;
 
         // the controller is able to run
-        if (input.run)
+        if (input.run && playerController.Grounded)
         {
-            characterController.Move(movement * (Time.deltaTime * _runMultiplier));
+            movement *= _runMultiplier;
 
             if(playerAnimator.GetBool("Grounded"))
             {
                 runLayerWeight = Mathf.MoveTowards(runLayerWeight, 1f, Time.deltaTime * runTransitionSpeed);
             }
-        }else{
+        }
+        else
+        {
             runLayerWeight = Mathf.MoveTowards(runLayerWeight, 0f, Time.deltaTime * runTransitionSpeed);
         }
         playerAnimator.SetLayerWeight(runLayer, runLayerWeight);
         
-        // set player's forward same as moving direction
         float currentVelocity = movement.magnitude;
+        
+        // player movement is only controllable while being grounded
+        playerController.Velocity = movement;
         playerAnimator.SetBool("Moving", currentVelocity > 0);
         if (currentVelocity > 0)
         {
+            // set player's forward same as moving direction
             float targetAngle = Mathf.Atan2(input.moveX, input.moveZ) * Mathf.Rad2Deg - 90;
             float angle = Mathf.SmoothDampAngle(playerTransform.eulerAngles.y, targetAngle, ref currentVelocity, _smoothTime);
             playerTransform.rotation = Quaternion.Euler(0, angle, 0);
         }
-            
-        // gravity affects the controller on the y-axis
-        _controllerVelocity.y += _gravity * Time.deltaTime;
 
-        // moves the controller on the y-axis
-        characterController.Move(_controllerVelocity * Time.deltaTime);
+        playerAnimator.SetBool("Grounded", playerController.Grounded);
         
-        if (characterController.isGrounded) playerAnimator.SetBool("Grounded", true);
-
         // the controller is able to jump when on the ground
-        if (input.jump && characterController.isGrounded)
+        if (input.jump && playerController.Grounded)
         {
             playerAnimator.SetBool("Jump", true);
             playerAnimator.SetBool("Grounded", false);
-            _controllerVelocity.y = Mathf.Sqrt(_jumpHeight * -2f * _gravity);
-            
-            if(jumpCheckGroundAvoider != null)
-            {
-                StopCoroutine(jumpCheckGroundAvoider);
-            }
-            jumpCheckGroundAvoider = JumpCheckGroundAvoider();
-            StartCoroutine(jumpCheckGroundAvoider);
+            playerController.Jump = true;
+        }
+        else
+        {
+            playerAnimator.SetBool("Jump", false);
         }
     }
 
@@ -159,10 +143,10 @@ public class PlayerMovement : MonoBehaviour
     private void CheckStable()
     {
         Debug.DrawRay(_lastStablePosition, Vector3.up, Color.blue);
-        if (!characterController.isGrounded) return;
+        if (!playerController.Grounded) return;
         
         // Restricted distance for impassable areas
-        float checkDistance = characterController.radius * 10f;
+        float checkDistance = 2f;
         // Inspection resolution
         int numStep = 20;
         
@@ -195,15 +179,21 @@ public class PlayerMovement : MonoBehaviour
     
     private IEnumerator RespawnPlayer()
     {
-        playerMeshRenderer.enabled = false;
         input.active = false;
-        yield return new WaitForSeconds(0.5f);
+        playerMeshRenderer.enabled = false;
+        playerRigidBody.isKinematic = true;
+        playerRigidBody.velocity = Vector3.zero;
+        playerCollider.enabled = false;
+        yield return new WaitForSeconds(respawnDelayTime);
         playerAnimator.SetBool("Grounded", true);
         playerAnimator.SetBool("Moving", false);
         yield return MoveSmooth(transform.position, _lastStablePosition, respawnPositionRestoreTime);
         yield return BlinkPlayer(respawnBlinkCount, respawnBlinkTime);
         Input.ResetInputAxes();
         input.active = true;
+        playerMeshRenderer.enabled = true;
+        playerRigidBody.isKinematic = false;
+        playerCollider.enabled = true;
         immune = false;
     }
     
@@ -211,8 +201,6 @@ public class PlayerMovement : MonoBehaviour
     private IEnumerator MoveSmooth(Vector3 startPos, Vector3 endPos, float finishTime)
     {
         float elapsedTime = 0f;
-        
-        characterController.enabled = false;
         while (elapsedTime < finishTime)
         {
             elapsedTime += Time.deltaTime;
@@ -220,7 +208,6 @@ public class PlayerMovement : MonoBehaviour
             transform.position = Vector3.Lerp(startPos, endPos, Mathf.SmoothStep(0f, 1f, normalizedTime));
             yield return null;
         }
-        characterController.enabled = true;
     }
     
     // Repeat blinking for the specified time count times
