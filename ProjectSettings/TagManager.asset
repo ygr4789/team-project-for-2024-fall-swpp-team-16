@@ -6,7 +6,6 @@ TagManager:
   tags:
   - Water
   - Score
-  - Padding
   layers:
   - Default
   - TransparentFX
