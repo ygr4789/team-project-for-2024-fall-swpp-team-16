@@ -18,7 +18,6 @@ public class PlayManager : MonoBehaviour
     private void Start()
     {
         currentTarget = null;
-        Debug.Log("PlayManager Start");
     }
 
     private void Update()

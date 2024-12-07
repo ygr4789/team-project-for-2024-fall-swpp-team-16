@@ -10,6 +10,8 @@ public class InventoryManager : MonoBehaviour
     
     public GameObject inventoryIconUI;
     public TMPro.TextMeshProUGUI scoreText;
+    
+    [SerializeField]
     private int _collectedScores = 0;
     
 	void Start()
@@ -19,7 +21,7 @@ public class InventoryManager : MonoBehaviour
 
     public void OnSceneLoaded()
     {
-        // TODO: load scores from DoorController in the scene
+        _collectedScores = 0;
         DoorController doorController = FindObjectOfType<DoorController>();
         if (doorController == null)
         {
