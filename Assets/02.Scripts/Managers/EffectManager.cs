@@ -168,6 +168,19 @@ public class EffectManager : MonoBehaviour
         }
     }
 
+    public void NoEffectOnCt()
+    {
+        CircleTransition ct = FindObjectOfType<CircleTransition>();
+        if (ct != null)
+        {
+            ct.FastFadeOut();
+        }
+        else
+        {
+            Debug.LogError("CircleTransition not found in the scene.");
+        }
+    }
+    
     public void FadeOutCircleTransition()
     {
         CircleTransition ct = FindObjectOfType<CircleTransition>();

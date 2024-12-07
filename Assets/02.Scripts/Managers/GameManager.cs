@@ -66,6 +66,10 @@ public class GameManager : MonoBehaviour
         {
             em.FadeOutCircleTransition();
         }
+        else
+        {
+            em.NoEffectOnCt();
+        }
         
         im.OnSceneLoaded();
     }

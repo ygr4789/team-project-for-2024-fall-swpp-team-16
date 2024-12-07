@@ -39,6 +39,11 @@ namespace Collections.Shaders.CircleTransition
             StartCoroutine(CloseBlackScreenCoroutine(4.5f, 0.3f, 0.4f, 0.0f));
         }
 
+        public void FastFadeOut()
+        {
+            StartCoroutine(OpenBlackScreenCoroutine(0, 0.1f, 1.0f, 1.0f));
+        }
+
         public void FadeOut()
         {
             StartCoroutine(OpenBlackScreenCoroutine(0, 2.0f, 0.1f, 1.0f));
