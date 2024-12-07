@@ -34,10 +34,10 @@ public class LevelSelectionManager : MonoBehaviour
 
     void Start()
     {
-         StartCoroutine(FadeOut());
+        StartCoroutine(FadeOut());
         // Ensure the first unlocked stage is selected at the start
         currentSelectedIndex = FindLastUnlockedIndex();
-       // StartCoroutine(SlideIn()); // Slide in the level selection screen
+        // StartCoroutine(SlideIn()); // Slide in the level selection screen
         UpdateSelection();
     }
 
@@ -130,7 +130,7 @@ public class LevelSelectionManager : MonoBehaviour
 
         if (Application.CanStreamedLevelBeLoaded(sceneName))
         {
-            GameManager.em.FadeOutCircleTransition();
+            GameManager.em.FadeInCircleTransition();
             GameManager.stm.SetCurrentStage(selectedNote.stageNumber);
             StartCoroutine(GameManager.stm.WaitAndLoadScene(sceneName));
         }

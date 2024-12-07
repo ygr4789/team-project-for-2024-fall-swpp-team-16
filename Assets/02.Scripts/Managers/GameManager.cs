@@ -40,7 +40,17 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
         
-        controller = GameObject.Find("Controller").transform;
+        // Safe check for "Controller" object
+        GameObject controllerObject = GameObject.Find("Controller");
+        if (controllerObject != null)
+        {
+            controller = controllerObject.transform;
+        }
+        else
+        {
+            Debug.LogWarning("Controller object not found in the scene. Setting controller to null.");
+            controller = null; // Prevent NullReferenceException
+        }
     }
     
     // Called every time when some scene is loaded
@@ -50,6 +60,11 @@ public class GameManager : MonoBehaviour
         PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
         if (playerMovement != null) {
             pm.playerTransform = playerMovement.transform;
+        }
+
+        if (GameObject.FindWithTag("Player"))
+        {
+            em.FadeOutCircleTransition();
         }
         
         im.OnSceneLoaded();
