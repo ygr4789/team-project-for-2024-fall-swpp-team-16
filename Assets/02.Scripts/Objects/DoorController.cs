@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI; // For Image components
 
 public class DoorController : MonoBehaviour
 {
@@ -18,6 +19,20 @@ public class DoorController : MonoBehaviour
     void Start()
     {
         scoreUIPanel.SetActive(false);
+
+        // Initialize all notes to black
+        foreach (var note in coloredNotes)
+        {
+            Image image = note.GetComponent<Image>();
+            if (image != null)
+            {
+                image.color = Color.black;
+            }
+            else
+            {
+                Debug.LogError($"Missing Image component on {note.name}");
+            }
+        }
     }
 
     public void Inspect(GameObject floatingText)
@@ -27,8 +42,6 @@ public class DoorController : MonoBehaviour
         {
             // Activate the Score UI to display it
             scoreUIPanel.SetActive(true);
-            ClearColoredNotes();
-			
 			Debug.Log("Play the music to open the door");
             floatingText.SendMessage("Hide");
         }
@@ -51,10 +64,8 @@ public class DoorController : MonoBehaviour
 
                     if (CheckNotes())
                     {
-                        // 색 음표 생성
-                        SpawnColoredNote(i);
-                        
-                        // 정답이라면 잠깐의 딜레이 후 문 열기
+                        UpdateColoredNote(i);
+
                         if (playedNotes.Count == answerNotes.Length)
                         {
                             Debug.Log("Correct notes played. Door is opening.");
@@ -75,40 +86,55 @@ public class DoorController : MonoBehaviour
                         Debug.Log("Incorrect notes played. Try again.");
                         GameManager.sm.PlaySound("wrong-answer");
                         playedNotes.Clear();
-                        ClearColoredNotes();
+                        ResetColoredNotes();
                     }
                 }
             }
         }
     }
-    
-    private void SpawnColoredNote(int note)
+
+    private void UpdateColoredNote(int note)
     {
-        if (playedNotes.Count > coloredNotes.Length)
+        if (playedNotes.Count - 1 < coloredNotes.Length)
         {
-            Debug.LogError("Not enough colored notes to spawn. Add more colored notes to the coloredNotes array.");
-            return;
+            GameObject noteObject = coloredNotes[playedNotes.Count - 1];
+            Image image = noteObject.GetComponent<Image>();
+            if (image != null)
+            {
+                image.color = GetNoteColor(note);
+
+                // Create ripple effect
+                GameObject ripple = Instantiate(rippleEffectPrefab,
+                    noteObject.transform.position + new Vector3(0, 0, -1), Quaternion.identity);
+                ripple.transform.SetParent(noteObject.transform);
+                ripple.transform.localScale = Vector3.one * 10;
+                Destroy(ripple, 1.0f);
+
+                // StartCoroutine(ScaleEffect(noteObject.transform)); // IF NOTE SHOULD SCALE WHEN PLAYED UNCOMMENT THIS
+            }
         }
-        // 색 음표 생성 (색 음표 배열이 있고 그게 뿅 하는 효과와 함께 나타남)
-        GameObject notePrefab = coloredNotes[playedNotes.Count - 1];
-        notePrefab.SetActive(true);
-        
-        // Create the small effect at the note's position
-        GameObject spawnNoteEffect = Instantiate(rippleEffectPrefab, notePrefab.transform.position + new Vector3(0, 0, -1), Quaternion.identity);
-        spawnNoteEffect.transform.SetParent(notePrefab.transform);
-        spawnNoteEffect.transform.localScale = Vector3.one * 20; // Ensure the correct initial scale
-        // Destroy the particle effect after a certain duration
-        Destroy(spawnNoteEffect, 1.0f);
-        
-        // Start the scaling animation for both the note and the small effect
-        StartCoroutine(ScaleEffect(notePrefab.transform));
     }
-    
-    private IEnumerator ScaleEffect(Transform targetTransform, bool isEffect = false)
+
+    private Color GetNoteColor(int note)
     {
-        float duration = 0.15f; // Duration of the scaling effect
-        Vector3 initialScale = Vector3.zero; // Start as a small dot
-        Vector3 finalScale = Vector3.one; // Final size
+        switch (note)
+        {
+            case 1: return Color.red;
+            case 2: return new Color(1f, 0.5f, 0f); // Orange
+            case 3: return Color.yellow;
+            case 4: return Color.green;
+            case 5: return Color.blue;
+            case 6: return new Color(0.5f, 0f, 0.5f); // Purple
+            case 7: return new Color(1f, 0.75f, 0.8f); // Pink
+            default: return Color.white;
+        }
+    }
+
+    private IEnumerator ScaleEffect(Transform targetTransform)
+    {
+        float duration = 0.15f;
+        Vector3 initialScale = Vector3.zero;
+        Vector3 finalScale = Vector3.one;
 
         float time = 0;
         while (time < duration)
@@ -120,13 +146,16 @@ public class DoorController : MonoBehaviour
 
         targetTransform.localScale = finalScale;
     }
-    
-    private void ClearColoredNotes()
+
+    private void ResetColoredNotes()
     {
-        // 색 음표 제거
-        foreach (GameObject notePrefab in coloredNotes)
+        foreach (GameObject note in coloredNotes)
         {
-            notePrefab.SetActive(false);
+            Image image = note.GetComponent<Image>();
+            if (image != null)
+            {
+                image.color = Color.black;
+            }
         }
     }
 
@@ -140,9 +169,9 @@ public class DoorController : MonoBehaviour
             }
         }
         return true;
-    }        
-    
-	private IEnumerator OpenDoor()
+    }
+
+    private IEnumerator OpenDoor()
     {
         // delay
         yield return new WaitForSeconds(1.5f);

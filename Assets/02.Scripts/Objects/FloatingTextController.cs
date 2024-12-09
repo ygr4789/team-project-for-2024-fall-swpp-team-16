@@ -7,7 +7,7 @@ public class FloatingTextController : MonoBehaviour
 {
     public GameObject target;
     public Vector3 offset = new Vector3(0, 3, 0);
-    public string inspectGuideText = "Press E to inspect";
+    public string inspectGuideText = "Press [E]";
     public float inspectMaxDistance = 3;
     
     void Start()
@@ -16,7 +16,6 @@ public class FloatingTextController : MonoBehaviour
         {
             Debug.LogError("FloatingTextController: target object is not set!");
         }
-        transform.position = target.transform.position + offset;
         
         TextMeshPro textMeshPro = GetComponent<TextMeshPro>();
         if (textMeshPro != null)
@@ -27,6 +26,9 @@ public class FloatingTextController : MonoBehaviour
     
     void Update()
     {
+        // move the floating text to the target object's position
+        transform.position = target.transform.position + offset;
+        
         // if E is pressed, trigger the inspect function of the target object
         if (Input.GetKeyDown(KeyCode.E))
         {

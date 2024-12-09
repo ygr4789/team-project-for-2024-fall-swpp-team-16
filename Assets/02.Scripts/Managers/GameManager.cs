@@ -61,6 +61,12 @@ public class GameManager : MonoBehaviour
         if (playerMovement != null) {
             pm.playerTransform = playerMovement.transform;
         }
+        
+        GameObject controllerObject = GameObject.Find("Controller");
+        if (controllerObject != null)
+        {
+            controller = controllerObject.transform;
+        }
 
         if (GameObject.FindWithTag("Player"))
         {
