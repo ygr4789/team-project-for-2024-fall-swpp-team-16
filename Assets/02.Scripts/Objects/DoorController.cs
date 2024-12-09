@@ -1,17 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI; // For Image components
 
 public class DoorController : MonoBehaviour
 {
-    public GameObject scoreUIPanel; 
-    public int[] answerNotes; // assign note values in inspector (do, re, mi)
-    private List<int> playedNotes = new List<int>(); 
-    public GameObject doorWing; 
-
-    public GameObject rippleEffectPrefab; 
-    public GameObject[] coloredNotes; // assign objects (in hierarchy)
+    public List<GameObject> scores = new List<GameObject>(); // list of scores to collect
+	public GameObject scoreUIPanel; // Reference to the score UI panel
+    public int[] answerNotes; // Array to store notes for this door
+    public List<int> playedNotes = new List<int>(); // List to store played notes
+    public GameObject doorWing; // Reference to the door object
+    
+    public GameObject rippleEffectPrefab; // Reference to the ripple effect prefab
+    public GameObject[] coloredNotes; // Array to store note prefabs
 
     void Start()
     {
@@ -34,10 +37,12 @@ public class DoorController : MonoBehaviour
 
     public void Inspect(GameObject floatingText)
     {
-        if (GameManager.im.HasAllScores())
+        // if all scores are collected, the user needs to play music
+		if (GameManager.im.HasAllScores())
         {
+            // Activate the Score UI to display it
             scoreUIPanel.SetActive(true);
-            Debug.Log("Play the music to open the door");
+			Debug.Log("Play the music to open the door");
             floatingText.SendMessage("Hide");
         }
         else
@@ -48,6 +53,7 @@ public class DoorController : MonoBehaviour
 
     void Update()
     {
+        // Playing notes
         if (scoreUIPanel.activeSelf)
         {
             for (int i = 1; i <= 8; i++)
@@ -63,8 +69,16 @@ public class DoorController : MonoBehaviour
                         if (playedNotes.Count == answerNotes.Length)
                         {
                             Debug.Log("Correct notes played. Door is opening.");
+                            GameManager.stm.CompleteCurrentStage();
                             StartCoroutine(OpenDoor());
                             playedNotes.Clear();
+                            // TODO: change camera view to the back of the player
+                            // player walks into the door
+                            StartCoroutine(FindObjectOfType<PlayerMovement>().WalkToPoint(doorWing.transform.position, 1.5f));
+                            // camera effect
+                            GameManager.em.FadeInCircleTransition();
+                            // Go Back to the stage selection scene
+                            StartCoroutine(GameManager.stm.WaitAndLoadScene("StageScene"));
                         }
                     }
                     else
@@ -90,12 +104,13 @@ public class DoorController : MonoBehaviour
                 image.color = GetNoteColor(note);
 
                 // Create ripple effect
-                GameObject ripple = Instantiate(rippleEffectPrefab, noteObject.transform.position + new Vector3(0, 0, -1), Quaternion.identity);
+                GameObject ripple = Instantiate(rippleEffectPrefab,
+                    noteObject.transform.position + new Vector3(0, 0, -1), Quaternion.identity);
                 ripple.transform.SetParent(noteObject.transform);
                 ripple.transform.localScale = Vector3.one * 10;
                 Destroy(ripple, 1.0f);
 
-               // StartCoroutine(ScaleEffect(noteObject.transform)); // IF NOTE SHOULD SCALE WHEN PLAYED UNCOMMENT THIS
+                // StartCoroutine(ScaleEffect(noteObject.transform)); // IF NOTE SHOULD SCALE WHEN PLAYED UNCOMMENT THIS
             }
         }
     }
@@ -158,15 +173,20 @@ public class DoorController : MonoBehaviour
 
     private IEnumerator OpenDoor()
     {
+        // delay
         yield return new WaitForSeconds(1.5f);
+        
+        // UI off
         scoreUIPanel.SetActive(false);
-        GameManager.sm.PlaySound("opening-door");
+        
+       	// opening door sound & animation
+		GameManager.sm.PlaySound("opening-door");
         StartCoroutine(OpenDoorAnimation(doorWing));
     }
-
+    
     private IEnumerator OpenDoorAnimation(GameObject door)
     {
-        float duration = 1f;
+        float duration = 1f; // animation duration
         float startRotation = door.transform.eulerAngles.y;
         float endRotation = startRotation + 90;
         float time = 0;

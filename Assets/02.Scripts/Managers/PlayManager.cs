@@ -43,7 +43,7 @@ public class PlayManager : MonoBehaviour
     }
     private void HandleResonance()
     {
-        if (currentTarget is null) return;
+        if (currentTarget == null) return;
         ResonatableObject resonatable = currentTarget.GetComponent<ResonatableObject>();
         if (resonatable is null) return;
         foreach (PitchType pitch in Enum.GetValues(typeof(PitchType)))

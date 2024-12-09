@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,6 +7,7 @@ using UnityEngine;
 public class StageManager : MonoBehaviour
 {
     public int totalStages = 10; // Set this to the total number of stages
+    public int currentStage = 0; // Set this to the current stage number
     
     private string filePath;
     private bool[] accomplishedStages;
@@ -46,6 +48,16 @@ public class StageManager : MonoBehaviour
         }
     }
     
+    public void SetCurrentStage(int stage)
+    {
+        currentStage = stage;
+    }
+    
+    public void CompleteCurrentStage()
+    {
+        CompleteStage(currentStage);
+    }
+    
     public void CompleteStage(int stage)
     {
         if (stage > 0 && stage <= totalStages && !accomplishedStages[stage - 1])
@@ -78,5 +90,12 @@ public class StageManager : MonoBehaviour
     public bool[] GetStagesStatus()
     {
         return accomplishedStages;
+    }
+
+    // Coroutine to wait for 2 seconds and then load the scene
+    public IEnumerator WaitAndLoadScene(string sceneName)
+    {
+        yield return new WaitForSeconds(2f); // Wait for 2 seconds
+        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
     }
 }

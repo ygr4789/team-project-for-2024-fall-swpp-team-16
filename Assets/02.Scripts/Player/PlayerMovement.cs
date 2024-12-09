@@ -209,6 +209,11 @@ public class PlayerMovement : MonoBehaviour
             yield return null;
         }
     }
+
+    public IEnumerator WalkToPoint(Vector3 targetPosition, float duration)
+    {
+        yield return StartCoroutine(MoveSmooth(transform.position, targetPosition, duration));
+    }
     
     // Repeat blinking for the specified time count times
     private IEnumerator BlinkPlayer(int count, float time)
