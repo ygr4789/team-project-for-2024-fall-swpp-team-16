@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Cutter : MonoBehaviour
@@ -6,25 +7,35 @@ public class Cutter : MonoBehaviour
     private static bool isBusy;
     private static Mesh originalMesh;
 
-    public static void Cut(GameObject originalGameObject, Vector3 contactPoint, Vector3 cutNormal)
+    /// <summary>
+    /// Crop objects relative to a specified plane
+    /// The normal opposite direction cut becomes the original object
+    /// Returns a new GameObject cut in the normal direction
+    /// All existing colliders will be removed
+    /// </summary>
+    /// <param name="originalGameObject"></param>
+    /// <param name="contactPoint"></param>
+    /// <param name="cutNormal"></param>
+    public static GameObject Cut(GameObject originalGameObject, Vector3 contactPoint, Vector3 cutNormal)
     {
-        if(isBusy) return;
+        if(isBusy) return null;
+
         isBusy = true;
         
         Plane cutPlane = new Plane(originalGameObject.transform.InverseTransformDirection(-cutNormal), originalGameObject.transform.InverseTransformPoint(contactPoint));
         originalMesh = originalGameObject.GetComponent<MeshFilter>().mesh;
 
-        if (!originalMesh)
+        if (originalMesh == null)
         {
             Debug.LogError("Need mesh to cut");
-            return;
+            return null;
         }
         
         List<Vector3> addedVertices = new List<Vector3>();
         GeneratedMesh leftMesh = new GeneratedMesh();
         GeneratedMesh rightMesh = new GeneratedMesh();
         
-        SeparateMeshes(leftMesh,rightMesh,cutPlane,addedVertices);
+        SeparateMeshes(leftMesh, rightMesh, cutPlane, addedVertices);
         FillCut(addedVertices, cutPlane, leftMesh, rightMesh);
 
         Mesh finishedLeftMesh = leftMesh.GetGeneratedMesh();
@@ -33,51 +44,37 @@ public class Cutter : MonoBehaviour
         //Getting and destroying all original colliders to prevent having multiple colliders
         //of different kinds on one object
         var originalCols = originalGameObject.GetComponents<Collider>();
-        foreach (var col in originalCols)
-            Destroy(col);
+        foreach (var col in originalCols) Destroy(col);
 
         originalGameObject.GetComponent<MeshFilter>().mesh = finishedLeftMesh;
-        var collider = originalGameObject.AddComponent<MeshCollider>();
-        collider.sharedMesh = finishedLeftMesh;
-        collider.convex = true;
-        
-        // Material[] mats = new Material[finishedLeftMesh.subMeshCount];
-        // for (int i = 0; i < finishedLeftMesh.subMeshCount; i++)
-		// {
-        //     mats[i] = originalGameObject.GetComponent<MeshRenderer>().material;
-        // }
-        // originalGameObject.GetComponent<MeshRenderer>().materials = mats;
+        var meshRenderer = originalGameObject.GetComponent<MeshRenderer>();
+        Material[] mats = new Material[finishedLeftMesh.subMeshCount];
+        Array.Copy(meshRenderer.materials, mats, meshRenderer.materials.Length);
+        for (int i = originalMesh.subMeshCount; i < finishedLeftMesh.subMeshCount; i++)
+        {
+            mats[i] = meshRenderer.materials[0];
+        }
+        meshRenderer.materials = mats;
 
         GameObject right = new GameObject();
         right.transform.position = originalGameObject.transform.position + (Vector3.up * .05f);
         right.transform.rotation = originalGameObject.transform.rotation;
         right.transform.localScale = originalGameObject.transform.localScale;
-        right.AddComponent<MeshRenderer>();
-        
-        // mats = new Material[finishedRightMesh.subMeshCount];
-        // for (int i = 0; i < finishedRightMesh.subMeshCount; i++)
-		// {
-        //     mats[i] = originalGameObject.GetComponent<MeshRenderer>().material;
-        // }
-        // right.GetComponent<MeshRenderer>().materials = mats;
-        right.GetComponent<MeshRenderer>().materials = originalGameObject.GetComponent<MeshRenderer>().materials;
+        right.AddComponent<MeshRenderer>().materials = mats;
         right.AddComponent<MeshFilter>().mesh = finishedRightMesh;
         
-        right.AddComponent<MeshCollider>().sharedMesh = finishedRightMesh;
-        var cols = right.GetComponents<MeshCollider>();
-        foreach (var col in cols)
-        {
-            col.convex = true;
-        }
-        
-        var rightRigidbody = right.AddComponent<Rigidbody>();
-        rightRigidbody.AddRelativeForce(-cutPlane.normal * 250f);
-        
         isBusy = false;
+        return right;
     }
-    
+
+    /// <summary>
     /// Iterates over all the triangles of all the submeshes of the original mesh to separate the left
     /// and right side of the plane into individual meshes.
+    /// </summary>
+    /// <param name="leftMesh"></param>
+    /// <param name="rightMesh"></param>
+    /// <param name="plane"></param>
+    /// <param name="addedVertices"></param>
     private static void SeparateMeshes(GeneratedMesh leftMesh,GeneratedMesh rightMesh, Plane plane, List<Vector3> addedVertices)
     {
         for (int i = 0; i < originalMesh.subMeshCount; i++)
@@ -117,8 +114,15 @@ public class Cutter : MonoBehaviour
             }
         }
     }
-    
+
+    /// <summary>
     /// Returns the tree vertices of a triangle as one MeshTriangle to keep code more readable
+    /// </summary>
+    /// <param name="_triangleIndexA"></param>
+    /// <param name="_triangleIndexB"></param>
+    /// <param name="_triangleIndexC"></param>
+    /// <param name="_submeshIndex"></param>
+    /// <returns></returns>
     private static MeshTriangle GetTriangle(int _triangleIndexA, int _triangleIndexB, int _triangleIndexC, int _submeshIndex)
     {
         //Adding the Vertices at the triangleIndex
@@ -144,9 +148,19 @@ public class Cutter : MonoBehaviour
 
         return new MeshTriangle(verticesToAdd, normalsToAdd, uvsToAdd, _submeshIndex);
     }
-    
+
+    /// <summary>
     /// Cuts a triangle that exists between both sides of the cut apart adding additional vertices
     /// where needed to create intact triangles on both sides.
+    /// </summary>
+    /// <param name="plane"></param>
+    /// <param name="triangle"></param>
+    /// <param name="triangleALeftSide"></param>
+    /// <param name="triangleBLeftSide"></param>
+    /// <param name="triangleCLeftSide"></param>
+    /// <param name="leftMesh"></param>
+    /// <param name="rightMesh"></param>
+    /// <param name="addedVertices"></param>
     private static void CutTriangle(Plane plane,MeshTriangle triangle, bool triangleALeftSide, bool triangleBLeftSide, bool triangleCLeftSide,
     GeneratedMesh leftMesh, GeneratedMesh rightMesh, List<Vector3> addedVertices)
     {

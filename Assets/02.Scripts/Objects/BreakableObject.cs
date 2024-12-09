@@ -3,17 +3,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BreakableObject : MonoBehaviour
+public class BreakableObject : Interactable
 {
     private int durability = 1;
     [SerializeField] private ParticleSystem particleEffect; // 재생할 ParticleSystem
     [SerializeField] private GameObject models;
     private BoxCollider bc;
 
+    private void Awake()
+    {
+        gameObject.AddComponent<InteractionHandler>();
+    }
+
     private void Start()
     {
         bc = GetComponent<BoxCollider>();
         // Test: Invoke("Damage", 5f);
+    }
+
+    private void Update()
+    {
+        // 테스트용 코드
+        // if (Input.GetKeyDown(KeyCode.Space))
+        // {
+        //     Damage();
+        // }
     }
 
     public void Damage()
@@ -35,6 +49,13 @@ public class BreakableObject : MonoBehaviour
             // 파티클이 없는 경우 즉시 삭제
             Destroy(gameObject);
         }
+        
+        PlayCollapseSound();
+    }
+    
+    private void PlayCollapseSound()
+    {
+        GameManager.sm.PlaySound("collapse");
     }
 
     private IEnumerator DestroyAfterParticle(ParticleSystem particle)
