@@ -15,9 +15,12 @@ public class FlotageController : MonoBehaviour
     
     private GameObject _player; // Reference to the player object
     private Rigidbody _rigidbody; // Rigidbody component
+    private Vector3 _velocityInput;
+    private Vector3 _currentVelocity;
     
     private void Awake()
     {
+        gameObject.AddComponent<PhysicsImmunity>();
         _rigidbody = gameObject.GetComponent<Rigidbody>();
         Assert.IsNotNull(_rigidbody);
         ResonatableObject resonatable = gameObject.AddComponent<ResonatableObject>();
@@ -42,7 +45,13 @@ public class FlotageController : MonoBehaviour
     void Update()
     {
         FlattenPosition();
-        if (_rigidbody.velocity.magnitude < 0.01f) _rigidbody.isKinematic = true;
+        _currentVelocity = _velocityInput;
+        _velocityInput = Vector3.zero;
+    }
+
+    private void FixedUpdate()
+    {
+        _rigidbody.velocity = _currentVelocity;
     }
 
     // Anchor to the water surface
@@ -57,21 +66,21 @@ public class FlotageController : MonoBehaviour
     private void MoveToPlayer()
     {
         if (_player is null) return;
-        _rigidbody.isKinematic = false;
         var directionToPlayer = _player.transform.position - transform.position;
         directionToPlayer.y = 0;
         directionToPlayer.Normalize();
-        _rigidbody.velocity = directionToPlayer * moveSpeed;
+        // _rigidbody.velocity = directionToPlayer * moveSpeed;
+        _velocityInput = directionToPlayer * moveSpeed;
     }
 
     private void MoveAwayFromPlayer()
     {
         if (_player is null) return;
-        _rigidbody.isKinematic = false;
         var directionAwayFromPlayer = transform.position - _player.transform.position;
         directionAwayFromPlayer.y = 0;
         directionAwayFromPlayer.Normalize();
-        _rigidbody.velocity = directionAwayFromPlayer * moveSpeed;
+        // _rigidbody.velocity = directionAwayFromPlayer * moveSpeed;
+        _velocityInput = directionAwayFromPlayer * moveSpeed;
     }
 }
 

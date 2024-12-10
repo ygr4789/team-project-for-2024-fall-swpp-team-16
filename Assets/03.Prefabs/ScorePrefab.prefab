@@ -661,6 +661,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7697726511162938563}
   - component: {fileID: 7697726511985672586}
+  - component: {fileID: 164848540}
   m_Layer: 0
   m_Name: ScorePrefab
   m_TagString: Score
@@ -697,6 +698,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4a37c367524a4707879dd1eba6066f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!95 &164848540
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7697726511163345597}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 7436b0695ec09f14d8517269af498009, type: 3}
+  m_Controller: {fileID: 9100000, guid: 9a472e71e4dfd8445a8841d0efe6c5af, type: 2}
+  m_CullingMode: 1
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &7697726511163348589
 GameObject:
   m_ObjectHideFlags: 0

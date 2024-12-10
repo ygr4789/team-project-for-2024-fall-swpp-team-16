@@ -13,13 +13,19 @@ public class PlayManager : MonoBehaviour
     public Transform currentTarget;
 
     private float defaultSize = 6;
-    private float targetScaleMultiplier = 1.5f;
+    private float targetScaleMultiplier = 1.2f;
 
     private void Start()
     {
         currentTarget = null;
     }
 
+    private void Update()
+    {
+        HandleTargetSwitch();
+        HandleResonance();
+    }
+    
     private void HandleTargetSwitch()
     {
         if (Input.GetKeyDown(KeyCode.Tab))
@@ -37,7 +43,7 @@ public class PlayManager : MonoBehaviour
     }
     private void HandleResonance()
     {
-        if (currentTarget is null) return;
+        if (currentTarget == null) return;
         ResonatableObject resonatable = currentTarget.GetComponent<ResonatableObject>();
         if (resonatable is null) return;
         foreach (PitchType pitch in Enum.GetValues(typeof(PitchType)))
@@ -49,25 +55,45 @@ public class PlayManager : MonoBehaviour
 
     private void SetCurrentTarget(Transform newTarget)
     {
+        if (currentTarget == newTarget) return;
         if (currentTarget is not null && activeRipplesEffects.ContainsKey(currentTarget))
         {
-            var mainModule = activeRipplesEffects[currentTarget].main;
-            mainModule.startSize = defaultSize;
+            Debug.Log($"[Return Size] Target: {currentTarget.name}");
+            GameManager.em.SetRippleSize(currentTarget, positionOffset: currentTarget.GetComponent<ResonatableObject>().ripplesPositionOffset);
         }
 
         currentTarget = newTarget;
 
         if (currentTarget is not null && activeRipplesEffects.ContainsKey(currentTarget))
         {
-            var mainModule = activeRipplesEffects[currentTarget].main;
-            mainModule.startSize = defaultSize * targetScaleMultiplier;
+            GameManager.em.SetRippleSize(currentTarget, 4.5f, positionOffset:currentTarget.GetComponent<ResonatableObject>().ripplesPositionOffset);
+        }
+    }
+    
+    
+    // 타겟을 등록하는 메서드
+    public void RegisterTarget(Transform target, ParticleSystem effect)
+    {
+        if (!activeRipplesEffects.ContainsKey(target))
+        {
+            activeRipplesEffects[target] = effect;
+            activeRipplesColors[target] = new List<Color>();
         }
     }
 
-
-    private void Update()
+    // 타겟을 제거하는 메서드
+    public void UnregisterTarget(Transform target)
     {
-        HandleTargetSwitch();
-        HandleResonance();
+        if (activeRipplesEffects.ContainsKey(target))
+        {
+            activeRipplesEffects.Remove(target);
+            activeRipplesColors.Remove(target);
+        }
+        
+        // 현재 타겟과 동일한 경우 초기화
+        if (currentTarget == target)
+        {
+            currentTarget = null;
+        }
     }
 }

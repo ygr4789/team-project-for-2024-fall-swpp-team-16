@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     public static SoundManager sm;
     public static EffectManager em;
     public static InventoryManager im;
+    public static StageManager stm;
     
     // Other Managers
     public static PlayManager pm;
@@ -31,6 +32,7 @@ public class GameManager : MonoBehaviour
             sm = GetComponentInChildren<SoundManager>();
             em = GetComponentInChildren<EffectManager>();
             im = GetComponentInChildren<InventoryManager>();
+            stm = GetComponentInChildren<StageManager>();
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else if (gm != this)
@@ -38,13 +40,44 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
         
-        controller = GameObject.Find("Controller").transform;
+        // Safe check for "Controller" object
+        GameObject controllerObject = GameObject.Find("Controller");
+        if (controllerObject != null)
+        {
+            controller = controllerObject.transform;
+        }
+        else
+        {
+            Debug.LogWarning("Controller object not found in the scene. Setting controller to null.");
+            controller = null; // Prevent NullReferenceException
+        }
     }
     
     // Called every time when some scene is loaded
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         pm = FindObjectOfType<PlayManager>();
+        PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+        if (playerMovement != null) {
+            pm.playerTransform = playerMovement.transform;
+        }
+        
+        GameObject controllerObject = GameObject.Find("Controller");
+        if (controllerObject != null)
+        {
+            controller = controllerObject.transform;
+        }
+
+        if (GameObject.FindWithTag("Player"))
+        {
+            em.FadeOutCircleTransition();
+        }
+        else
+        {
+            em.NoEffectOnCt();
+        }
+        
+        im.OnSceneLoaded();
     }
 
     // Start is called before the first frame update
