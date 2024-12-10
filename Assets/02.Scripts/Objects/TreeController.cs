@@ -22,6 +22,9 @@ public class TreeController : Interactable
     
     private HingeJoint hinge;
     private bool isCollapsed = false;
+    
+    private bool isPlayingSound = false;
+    private GameObject _movingSound;
 
     private void OnValidate()
     {
@@ -62,6 +65,22 @@ public class TreeController : Interactable
         if (currentPosition != targetPosition)
         {
             treePrefab.transform.localPosition = Vector3.SmoothDamp(currentPosition, targetPosition, ref currentVelocity, heightChangeSmoothTime);
+            if (Vector3.Distance(currentPosition, targetPosition) < 0.02f)
+            {
+                if (isPlayingSound)
+                {
+                    StopTreeSound();
+                    isPlayingSound = false;
+                }
+            }
+        }
+        else
+        {
+            if (isPlayingSound)
+            {
+                StopTreeSound();
+                isPlayingSound = false;
+            }
         }
     }
 
@@ -69,19 +88,44 @@ public class TreeController : Interactable
     {
         currentHeight += heightChangeSpeed * Time.deltaTime;
         currentHeight = Mathf.Clamp(currentHeight, minHeight, maxHeight);
-        PlayTreeSound("increase");
+        
+        // Play tree sound
+        if (!isPlayingSound)
+        {
+            PlayTreeSound("increase");
+            isPlayingSound = true;
+        }
     }
 
     public void SmoothDecreaseHeight()
     {
         currentHeight -= heightChangeSpeed * Time.deltaTime;
         currentHeight = Mathf.Clamp(currentHeight, minHeight, maxHeight);
-        PlayTreeSound("decrease");
+
+        // Play tree sound
+        if (!isPlayingSound)
+        {
+            PlayTreeSound("decrease");
+            isPlayingSound = true;
+        }
     }
     
     private void PlayTreeSound(string action)
     {
-        GameManager.sm.PlaySound("tree-" + action);
+        _movingSound = GameManager.sm.PlayLoopSound("tree-" + action);
+        AudioSource source = _movingSound.GetComponent<AudioSource>();
+        if (source != null)
+        {
+            source.volume *= 1f; // Reduce volume by half
+        }
+        Debug.Log("Playing tree sound");
+    }
+    
+    private void StopTreeSound()
+    {
+        // Implement sound stopping logic here
+        Destroy(_movingSound);
+        Debug.Log("Stopping tree sound");
     }
     
     public void Damage(Transform damager)
