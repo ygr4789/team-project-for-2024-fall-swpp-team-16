@@ -90,52 +90,52 @@ public class SettingsModalController : MonoBehaviour
     }
 
    private GameObject CreateButton(string name, string buttonText, Vector2 position, Transform parent, Sprite buttonSprite)
-{
-    GameObject button = new GameObject(name, typeof(Button), typeof(Image));
-    button.transform.SetParent(parent, false);
-
-    RectTransform rectTransform = button.GetComponent<RectTransform>();
-
-    if (name == "CloseButton" || name == "SettingsButton")
     {
-        rectTransform.sizeDelta = new Vector2(300, 75); // This remains constant in pixels now
-    }
-    else
-    {
-        rectTransform.sizeDelta = new Vector2(200, 50);
-    }
+        GameObject button = new GameObject(name, typeof(Button), typeof(Image));
+        button.transform.SetParent(parent, false);
 
-    if (name == "SettingsButton")
-    {
-        rectTransform.anchorMin = new Vector2(1f, 1f);
-        rectTransform.anchorMax = new Vector2(1f, 1f);
-        rectTransform.pivot = new Vector2(1f, 1f);
-        rectTransform.anchoredPosition = new Vector2(-50, -50);
-    }
-    else
-    {
-        rectTransform.anchoredPosition = position;
-    }
+        RectTransform rectTransform = button.GetComponent<RectTransform>();
 
-    Button btnComponent = button.GetComponent<Button>();
-    Image btnImage = button.GetComponent<Image>();
-    btnImage.color = Color.white;
+        if (name == "CloseButton" || name == "SettingsButton")
+        {
+            rectTransform.sizeDelta = new Vector2(300, 75); // This remains constant in pixels now
+        }
+        else
+        {
+            rectTransform.sizeDelta = new Vector2(200, 50);
+        }
 
-    if (buttonSprite != null)
-    {
-        btnImage.sprite = buttonSprite;
-        btnImage.preserveAspect = true;
-    }
-    else
-    {
-        btnImage.color = Color.gray;
-        GameObject textObject = CreateText(name + "Text", buttonText, Vector2.zero, button.transform);
-        Text textComponent = textObject.GetComponent<Text>();
-        textComponent.alignment = TextAnchor.MiddleCenter;
-    }
+        if (name == "SettingsButton")
+        {
+            rectTransform.anchorMin = new Vector2(1f, 1f);
+            rectTransform.anchorMax = new Vector2(1f, 1f);
+            rectTransform.pivot = new Vector2(1f, 1f);
+            rectTransform.anchoredPosition = new Vector2(-50, -50);
+        }
+        else
+        {
+            rectTransform.anchoredPosition = position;
+        }
 
-    return button;
-}
+        Button btnComponent = button.GetComponent<Button>();
+        Image btnImage = button.GetComponent<Image>();
+        btnImage.color = Color.white;
+
+        if (buttonSprite != null)
+        {
+            btnImage.sprite = buttonSprite;
+            btnImage.preserveAspect = true;
+        }
+        else
+        {
+            btnImage.color = Color.gray;
+            GameObject textObject = CreateText(name + "Text", buttonText, Vector2.zero, button.transform);
+            Text textComponent = textObject.GetComponent<Text>();
+            textComponent.alignment = TextAnchor.MiddleCenter;
+        }
+
+        return button;
+    }
 
     private void CreateSlider(string name, string label, Vector2 position, Transform parent, UnityEngine.Events.UnityAction<float> onChange, float initialValue)
     {
