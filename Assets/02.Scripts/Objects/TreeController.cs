@@ -21,6 +21,7 @@ public class TreeController : Interactable
     private Vector3 currentVelocity = Vector3.zero;
     
     private HingeJoint hinge;
+    private CapsuleCollider capsuleCollider;
     private bool isCollapsed = false;
     
     private bool isPlayingSound = false;
@@ -34,8 +35,8 @@ public class TreeController : Interactable
         currentHeight = Mathf.Clamp(currentHeight, minHeight, maxHeight);
         treePrefab.transform.localScale = new Vector3(radius*2, maxHeight, radius*2);
         treePrefab.transform.localPosition = new Vector3(0f, currentHeight - maxHeight, 0f);
-        var capsuleCollider = gameObject.GetComponent<CapsuleCollider>();
-        capsuleCollider.height = maxHeight;
+        capsuleCollider = gameObject.GetComponent<CapsuleCollider>();
+        capsuleCollider.height = 2 * maxHeight;
         capsuleCollider.radius = radius;
     }
 
@@ -84,7 +85,7 @@ public class TreeController : Interactable
         }
     }
 
-    public void SmoothIncreaseHeight()
+    private void SmoothIncreaseHeight()
     {
         currentHeight += heightChangeSpeed * Time.deltaTime;
         currentHeight = Mathf.Clamp(currentHeight, minHeight, maxHeight);
@@ -97,7 +98,7 @@ public class TreeController : Interactable
         }
     }
 
-    public void SmoothDecreaseHeight()
+    private void SmoothDecreaseHeight()
     {
         currentHeight -= heightChangeSpeed * Time.deltaTime;
         currentHeight = Mathf.Clamp(currentHeight, minHeight, maxHeight);
@@ -148,18 +149,27 @@ public class TreeController : Interactable
         if (isCollapsed) return;
         var cutTree = Cutter.Cut(treePrefab, transform.position + Vector3.up * cutOffset, Vector3.up);
         cutTree.AddComponent<CapsuleCollider>();
+        cutTree.AddComponent<PhysicsImmunity>();
+        
         var cutRigidbody = cutTree.AddComponent<Rigidbody>();
-        var axis = Vector3.Cross(direction, Vector3.up).normalized;
+        var axis = Vector3.Cross(Vector3.up, direction).normalized;
         var torque = axis * initialAngularVelocity;
+        
         cutRigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
         cutRigidbody.centerOfMass = Vector3.up * maxHeight;
+        
         hinge.connectedBody = cutRigidbody;
         hinge.anchor = Vector3.up * cutOffset;
         hinge.axis = axis;
+        
         cutRigidbody.AddTorque(torque, ForceMode.VelocityChange);
         cutRigidbody.mass = 100;
+        
         isCollapsed = true;
         this.enabled = false;
+        capsuleCollider.enabled = false;
+        Destroy(gameObject.GetComponent<ResonatableObject>());
+        
         PlayCollapseSound();
     }
 
