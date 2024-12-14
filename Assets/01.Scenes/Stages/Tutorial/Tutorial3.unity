@@ -962,13 +962,33 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 1875856832}
-    - target: {fileID: 1392622848452239268, guid: 589485ec7b4b546f3938579ede0e2a8e, type: 3}
-      propertyPath: offset.y
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 3189293820305238040, guid: 589485ec7b4b546f3938579ede0e2a8e, type: 3}
       propertyPath: m_Name
       value: FloatingTextOverScore
+      objectReference: {fileID: 0}
+    - target: {fileID: 4121608704605074847, guid: 589485ec7b4b546f3938579ede0e2a8e, type: 3}
+      propertyPath: m_overflowMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4121608704605074847, guid: 589485ec7b4b546f3938579ede0e2a8e, type: 3}
+      propertyPath: m_verticalMapping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4121608704605074847, guid: 589485ec7b4b546f3938579ede0e2a8e, type: 3}
+      propertyPath: m_VerticalAlignment
+      value: 2048
+      objectReference: {fileID: 0}
+    - target: {fileID: 4121608704605074847, guid: 589485ec7b4b546f3938579ede0e2a8e, type: 3}
+      propertyPath: m_horizontalMapping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4121608704605074847, guid: 589485ec7b4b546f3938579ede0e2a8e, type: 3}
+      propertyPath: m_enableWordWrapping
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4121608704605074847, guid: 589485ec7b4b546f3938579ede0e2a8e, type: 3}
+      propertyPath: m_HorizontalAlignment
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6560230225549944079, guid: 589485ec7b4b546f3938579ede0e2a8e, type: 3}
       propertyPath: m_Pivot.x
