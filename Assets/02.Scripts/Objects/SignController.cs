@@ -13,12 +13,13 @@ public class SignController : MonoBehaviour
     private RectTransform imageRect; // Image의 RectTransform
     private TextMeshProUGUI textComponent; // Text Component
     private bool isActive = false;
-    private float padding = 0.2f; // 10% padding
+    private float padding = 0.2f; // 20% padding
+    private PlayerInput playerInput; // 동적으로 가져올 PlayerInput
 
     private void Awake()
     {
         textContent = textContent.Replace("\\n", "\n");
-        // 자식 객체에서 RectTransform과 Text 자동으로 찾기
+
         if (tutorialSignUI != null)
         {
             imageRect = tutorialSignUI.GetComponentInChildren<Image>().rectTransform;
@@ -33,6 +34,17 @@ public class SignController : MonoBehaviour
     private void Start()
     {
         tutorialSignUI.SetActive(false);
+
+        // PlayerMovement를 찾아 PlayerInput 참조 설정
+        PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+        if (playerMovement != null)
+        {
+            playerInput = playerMovement.GetPlayerInput();
+        }
+        else
+        {
+            Debug.LogWarning("PlayerMovement not found! PlayerInput may not be set.");
+        }
     }
 
     public void Inspect(GameObject floatingText)
@@ -42,6 +54,9 @@ public class SignController : MonoBehaviour
             tutorialSignUI.SetActive(false);
             GameManager.sm.PlaySound("sign");
             isActive = false;
+
+            if (playerInput != null)
+                playerInput.active = true; // 플레이어 움직임 활성화
         }
         else
         {
@@ -57,7 +72,7 @@ public class SignController : MonoBehaviour
             // Update the size of the image
             imageRect.sizeDelta = new Vector2(imageWidth, imageHeight);
 
-            // Calculate and update the size of the text with 10% padding
+            // Calculate and update the size of the text with padding
             float textWidth = imageWidth * (1 - 2 * padding);
             float textHeight = imageHeight * (1 - 2 * padding);
             textComponent.rectTransform.sizeDelta = new Vector2(textWidth, textHeight);
@@ -65,6 +80,9 @@ public class SignController : MonoBehaviour
             tutorialSignUI.SetActive(true);
             GameManager.sm.PlaySound("sign");
             isActive = true;
+
+            if (playerInput != null)
+                playerInput.active = false; // 플레이어 움직임 비활성화
         }
     }
 }

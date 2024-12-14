@@ -44,12 +44,39 @@ public class DoorController : MonoBehaviour
             scoreUIPanel.SetActive(true);
 			Debug.Log("Play the music to open the door");
             floatingText.SendMessage("Hide");
+            
+            // Disable player input
+            DisableInput();
         }
         else
         {
             Debug.Log("You need to collect all the scores to open the door");
         }
     }
+    
+    private void DisableInput()
+    {
+        PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+        if (playerMovement != null)
+        {
+            PlayerInput playerInput = playerMovement.GetPlayerInput();
+            if (playerInput != null)
+                playerInput.active = false; // 플레이어 움직임 활성화
+        }
+    }
+
+    private void EnableInput()
+    {
+        PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+        if (playerMovement != null)
+        {
+            PlayerInput playerInput = playerMovement.GetPlayerInput();
+            if (playerInput != null)
+                playerInput.active = false; // 플레이어 움직임 활성화
+        }
+    }
+
+    
 
     void Update()
     {
