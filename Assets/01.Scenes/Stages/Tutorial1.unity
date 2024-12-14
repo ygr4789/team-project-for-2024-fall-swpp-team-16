@@ -916,7 +916,6 @@ GameObject:
   - component: {fileID: 412012967}
   - component: {fileID: 412012971}
   - component: {fileID: 412012970}
-  - component: {fileID: 412012969}
   - component: {fileID: 412012968}
   m_Layer: 5
   m_Name: Canvas
@@ -962,23 +961,6 @@ MonoBehaviour:
   transitionDuration: 2
   defaultStartRadius: 1
   defaultEndRadius: 0
---- !u!114 &412012969
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 412012966}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
 --- !u!114 &412012970
 MonoBehaviour:
   m_ObjectHideFlags: 0
