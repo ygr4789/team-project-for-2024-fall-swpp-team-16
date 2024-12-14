@@ -55,7 +55,7 @@ public class EffectManager : MonoBehaviour
         }
     }
     
-    public void SetRippleSize(Transform target, float multiplier = 3.0f, float minParticleSize = 0.1f, float maxParticleSize = 6f, Vector3 positionOffset = default)
+    public void SetRippleSize(Transform target, float multiplier = 3.0f, float minParticleSize = 0.1f, float maxParticleSize = 10f, Vector3 positionOffset = default)
     {
         if (!GameManager.pm.activeRipplesEffects.ContainsKey(target)) return;
 
