@@ -53,6 +53,8 @@ public class PlayerMovement : MonoBehaviour
     private int runLayer = 1;
     private float runLayerWeight = 0f;
     private float runTransitionSpeed = 3f;
+    private bool isWalkingAutomatically = false;
+    private bool lockAngle = false;
 
     // Start is called before the first frame update
     private void Awake()
@@ -116,8 +118,8 @@ public class PlayerMovement : MonoBehaviour
         
         // player movement is only controllable while being grounded
         playerController.Velocity = movement;
-        playerAnimator.SetBool("Moving", currentVelocity > 0);
-        if (currentVelocity > 0)
+        playerAnimator.SetBool("Moving", currentVelocity > 0 || isWalkingAutomatically);
+        if (currentVelocity > 0 && !lockAngle)
         {
             // set player's forward same as moving direction
             float targetAngle = Mathf.Atan2(input.moveX, input.moveZ) * Mathf.Rad2Deg - 90;
@@ -211,9 +213,38 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // Walk from startPos to endPos over finishTime
+    private IEnumerator WalkSmooth(Vector3 startPos, Vector3 endPos, float finishTime)
+    {
+        isWalkingAutomatically = true;
+        lockAngle = true;
+        
+        // angle
+        float dummyVelocity = 1f;
+        float targetAngle = Mathf.Atan2(endPos.x - startPos.x, endPos.z - startPos.z) * Mathf.Rad2Deg - 90;
+        float angle = Mathf.SmoothDampAngle(playerTransform.eulerAngles.y, targetAngle, ref dummyVelocity, _smoothTime);
+        playerTransform.rotation = Quaternion.Euler(0, angle, 0);
+        
+        float elapsedTime = 0f;
+        while (elapsedTime < finishTime)
+        {
+            // TODO
+            // if (Distance(playerTransform.position - endPos) < 1f) {
+            //     break;
+            // }
+            elapsedTime += Time.deltaTime;
+            float normalizedTime = elapsedTime / finishTime;
+            transform.position = Vector3.Lerp(startPos, endPos, Mathf.SmoothStep(0f, 1f, normalizedTime));
+            yield return null;
+        }
+        
+        isWalkingAutomatically = false;
+        lockAngle = false;
+    }
+
     public IEnumerator WalkToPoint(Vector3 targetPosition, float duration)
     {
-        yield return StartCoroutine(MoveSmooth(transform.position, targetPosition, duration));
+        yield return StartCoroutine(WalkSmooth(transform.position, targetPosition, duration));
     }
     
     // Repeat blinking for the specified time count times
