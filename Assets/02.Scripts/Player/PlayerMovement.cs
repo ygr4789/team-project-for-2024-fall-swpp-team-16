@@ -79,6 +79,11 @@ public class PlayerMovement : MonoBehaviour
         GetInputs();
         ControlPlayer();
     }
+    
+    public PlayerInput GetPlayerInput()
+    {
+        return input;
+    }
 
     private void GetInputs()
     {
