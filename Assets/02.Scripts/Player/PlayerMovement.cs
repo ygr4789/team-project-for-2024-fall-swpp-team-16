@@ -57,6 +57,12 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     private void Awake()
     {
+        var objectDetector = new GameObject
+        {
+            name = "objectDetector"
+        };
+        objectDetector.AddComponent<ObjectDetecter>();
+        
         input = new PlayerInput();
         playerRigidBody = GetComponent<Rigidbody>();
         playerController = GetComponent<SurfaceContactController>();
