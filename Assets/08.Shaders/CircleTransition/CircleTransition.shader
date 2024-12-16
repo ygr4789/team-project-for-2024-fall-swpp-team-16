@@ -1,4 +1,4 @@
-Shader "Custom/CircleTransition"
+                                                                                                                                                                                                                                                                                                                                                                                                         Shader "Custom/CircleTransition"
 {
     Properties
     {
@@ -56,17 +56,10 @@ Shader "Custom/CircleTransition"
                 // if the distance is inside the radius, we discard it
                 // else we draw it pixel
 
-                float sqrDistance = pow(uv.x - center.x, 2) + pow(uv.y - center.y, 2);
-                float sqrRadius = pow(radius, 2);
+                float sqrDistance = (uv.x - center.x) * (uv.x - center.x) + (uv.y - center.y) * (uv.y - center.y);
+                float sqrRadius = radius * radius;
 
-                if(sqrDistance < radius)
-                {
-                    output = smoothstep(sqrRadius, sqrRadius - smoothValue, sqrDistance);
-                }
-                else
-                {
-                    output = 0;
-                }
+                output = smoothstep(sqrRadius, sqrRadius - smoothValue, sqrDistance);
             }
 
             fixed4 frag(v2f i) : SV_Target
