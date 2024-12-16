@@ -14,7 +14,7 @@ public class DialogueTrigger : MonoBehaviour
     private void Start()
     {
         // 플레이어와 DialogueManager를 동적으로 찾음
-        playerTransform = GameObject.FindGameObjectWithTag("Player")?.transform;
+        playerTransform = GameManager.gm.controller.transform;
         dialogueManager = FindObjectOfType<DialogueManager>();
 
         if (playerTransform == null)
