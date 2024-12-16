@@ -11,13 +11,19 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/01.Scenes/StageScene.unity
     guid: 20442198256d94b32841d8799f43da59
-  - enabled: 1
+  - enabled: 0
     path: Assets/01.Scenes/Stages/Test Stage1 JS.unity
     guid: 215573532a4964b5c8d049728da0bfcd
-  - enabled: 1
+  - enabled: 0
     path: Assets/01.Scenes/Stages/Test Stage2 JS.unity
     guid: 25983a5e27eec4f828ae7982838d367b
-  - enabled: 1
+  - enabled: 0
     path: Assets/01.Scenes/TestScene.unity
     guid: f6daac8c04ff74740918f16583d8a844
+  - enabled: 1
+    path: Assets/01.Scenes/Stages/Tutorial/Stage1.unity
+    guid: 672791e953e31d54bae12a2cced5a41d
+  - enabled: 1
+    path: Assets/01.Scenes/Stages/Tutorial/Stage2.unity
+    guid: a7d8180b7c7d1b74687455455cf01de0
   m_configObjects: {}
