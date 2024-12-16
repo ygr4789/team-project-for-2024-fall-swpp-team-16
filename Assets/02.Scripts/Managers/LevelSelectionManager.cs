@@ -126,7 +126,7 @@ public class LevelSelectionManager : MonoBehaviour
         Debug.Log($"Loading Stage {selectedNote.stageNumber}...");
 
         // Load the scene corresponding to the selected stage
-        string sceneName = $"Tutorial{selectedNote.stageNumber}"; // Example: Stage1, Stage2, etc.
+        string sceneName = $"Stage{selectedNote.stageNumber}"; // Example: Stage1, Stage2, etc.
 
         if (Application.CanStreamedLevelBeLoaded(sceneName))
         {
