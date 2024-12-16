@@ -22,7 +22,7 @@ public class InventoryManager : MonoBehaviour
 
     public void OnSceneLoaded()
     {
-        inventoryIconUI = GameObject.Find("inventoryIconUI");
+        inventoryIconUI = GameObject.Find("InventoryIcon");
         if (inventoryIconUI)
         {
             scoreText = inventoryIconUI.GetComponentInChildren<TextMeshProUGUI>();
