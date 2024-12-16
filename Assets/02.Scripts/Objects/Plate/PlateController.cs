@@ -44,7 +44,7 @@ public class PlateController : MonoBehaviour
 
     private void Awake()
     {
-        originalPosition = plateModel.position;
+        originalPosition = plateModel.localPosition;
         var detectCollider = gameObject.GetComponent<Collider>();
         var subColliders = transform.GetComponentsInChildren<Collider>();
         foreach (var subCollider in subColliders)
@@ -165,7 +165,7 @@ public class PlateController : MonoBehaviour
         stayTime += Time.deltaTime;
         float t = Mathf.Clamp01(stayTime / lowerDuration);
         float smoothStepT = Mathf.SmoothStep(0, 1, t);
-        plateModel.position = Vector3.Lerp(originalPosition, originalPosition - new Vector3(0, lowerHeight, 0), smoothStepT);
+        plateModel.localPosition = Vector3.Lerp(originalPosition, originalPosition - new Vector3(0, lowerHeight, 0), smoothStepT);
 
         if (t >= 1f)
         {
@@ -178,11 +178,11 @@ public class PlateController : MonoBehaviour
         raiseTimer += Time.deltaTime;
         float t = Mathf.Clamp01(raiseTimer / raiseDuration);
         float smoothStepT = Mathf.SmoothStep(0, 1, t);
-        plateModel.position = Vector3.Lerp(plateModel.position, originalPosition, smoothStepT);
+        plateModel.localPosition = Vector3.Lerp(plateModel.localPosition, originalPosition, smoothStepT);
 
-        if (plateModel.position == originalPosition)
+        if (plateModel.localPosition == originalPosition)
         {
-            plateModel.position = originalPosition;
+            plateModel.localPosition = originalPosition;
             isRaising = false; // 복구 완료
             raiseTimer = 0f;
         }
