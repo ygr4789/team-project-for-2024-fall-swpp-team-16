@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,11 @@ public class ObjectDetecter : MonoBehaviour
         SphereCollider triggerCollider = gameObject.AddComponent<SphereCollider>();
         triggerCollider.isTrigger = true;
         triggerCollider.radius = detectionRadius;
+    }
+
+    private void Update()
+    {
+        transform.position = GameManager.gm.controller.transform.position;
     }
 
     private void OnTriggerEnter(Collider other)

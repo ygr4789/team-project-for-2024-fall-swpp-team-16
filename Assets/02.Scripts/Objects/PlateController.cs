@@ -1,20 +1,20 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class PlateController : MonoBehaviour
 {
     [Header("Detection Settings")]
-    [SerializeField] private float rayLength = 1f; // Ray 길이
     [SerializeField] private float stayDuration = 0.5f; // 감지 최소 시간
-    [SerializeField] private LayerMask detectionLayer; // 감지 Layer
-    [SerializeField] private int gridResolution = 5; // Ray 촘촘함 정도
     private float stayTime = 0f; // Plate 위에서 머문 시간
-    private Bounds plateBounds; // Plate의 Bounds 정보
+    private List<GameObject> detectedObjects = new(); // 충돌 중인 오브젝트들
 
     [Header("Flag")]
     [SerializeField] private bool isPressed = false; // Press 상태 플래그
+
     private bool isLowering = false; // Plate가 낮아지고 있는지 여부
     private bool isRaising = false; // Plate가 원래 높이로 복귀 중인지 여부
     
@@ -25,27 +25,29 @@ public class PlateController : MonoBehaviour
     [SerializeField] private float raiseDuration = 1f; // Plate가 원래 높이로 복귀하는 데 걸리는 시간
     
     // internal variables
+    [SerializeField] private Transform plateModel;
     private Vector3 originalPosition; // Plate의 원래 위치
     private float raiseTimer = 0f; // RaisePlate 타이머
     
     // observer pattern    
-    private List<IPlateObserver> observers = new List<IPlateObserver>();
-    
-    
-    
-    void Start()
+    private List<IPlateObserver> observers = new();
+
+    private void OnValidate()
     {
-        if (TryGetComponent<Collider>(out Collider collider))
+        Assert.IsNotNull(plateModel);
+    }
+
+    private void Awake()
+    {
+        originalPosition = plateModel.position;
+        var detectCollider = gameObject.GetComponent<Collider>();
+        var subColliders = transform.GetComponentsInChildren<Collider>();
+        foreach (var subCollider in subColliders)
         {
-            plateBounds = collider.bounds;
-            originalPosition = transform.position;
-        }
-        else
-        {
-            Debug.LogError("No Collider found on Plate.");
+            Physics.IgnoreCollision(detectCollider, subCollider);
         }
     }
-    
+
     public void RegisterObserver(IPlateObserver observer)
     {
         if (!observers.Contains(observer))
@@ -95,33 +97,10 @@ public class PlateController : MonoBehaviour
 
     private void DetectObjectsAbovePlate()
     {
-        bool isObjectDetected = false;
-
-        // Plate 위의 범위를 격자로 나누어 Ray 발사
-        for (int x = 0; x < gridResolution; x++)
-        {
-            for (int z = 0; z < gridResolution; z++)
-            {
-                // Plate의 XZ 평면 범위 내에서 격자 위치 계산
-                float sampleX = Mathf.Lerp(plateBounds.min.x, plateBounds.max.x, x / (float)(gridResolution - 1));
-                float sampleZ = Mathf.Lerp(plateBounds.min.z, plateBounds.max.z, z / (float)(gridResolution - 1));
-                Vector3 samplePoint = new Vector3(sampleX, plateBounds.max.y, sampleZ); // Plate 위의 점
-
-                Ray ray = new Ray(samplePoint, Vector3.up); // 위에서 아래로 Ray 발사
-                if (Physics.Raycast(ray, out RaycastHit hit, rayLength, detectionLayer))
-                {
-                    isObjectDetected = true;
-                    Debug.DrawRay(ray.origin, ray.direction * hit.distance, Color.green); // 디버깅용 Ray
-                }
-                else
-                {
-                    Debug.DrawRay(ray.origin, ray.direction * rayLength, Color.red); // 디버깅용 Ray
-                }
-            }
-        }
-
+        bool isDetected = detectedObjects.Count > 0;
+        
         // 객체가 감지된 경우 타이머 증가
-        if (isObjectDetected)
+        if (isDetected)
         {
             stayTime += Time.deltaTime;
 
@@ -181,7 +160,7 @@ public class PlateController : MonoBehaviour
         stayTime += Time.deltaTime;
         float t = Mathf.Clamp01(stayTime / lowerDuration);
         float smoothStepT = Mathf.SmoothStep(0, 1, t);
-        transform.position = Vector3.Lerp(originalPosition, originalPosition - new Vector3(0, lowerHeight, 0), smoothStepT);
+        plateModel.position = Vector3.Lerp(originalPosition, originalPosition - new Vector3(0, lowerHeight, 0), smoothStepT);
 
         if (t >= 1f)
         {
@@ -194,13 +173,23 @@ public class PlateController : MonoBehaviour
         raiseTimer += Time.deltaTime;
         float t = Mathf.Clamp01(raiseTimer / raiseDuration);
         float smoothStepT = Mathf.SmoothStep(0, 1, t);
-        transform.position = Vector3.Lerp(transform.position, originalPosition, smoothStepT);
+        plateModel.position = Vector3.Lerp(plateModel.position, originalPosition, smoothStepT);
 
-        if (transform.position == originalPosition)
+        if (plateModel.position == originalPosition)
         {
-            transform.position = originalPosition;
+            plateModel.position = originalPosition;
             isRaising = false; // 복구 완료
             raiseTimer = 0f;
         }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        detectedObjects.Add (other.gameObject);
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        detectedObjects.Remove (other.gameObject);
     }
 }

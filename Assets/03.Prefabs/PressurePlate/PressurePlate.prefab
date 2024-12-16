@@ -13,8 +13,7 @@ GameObject:
   - component: {fileID: 7271939945554083132}
   - component: {fileID: 5711627886332956027}
   - component: {fileID: 1507197938}
-  - component: {fileID: 1507197933}
-  m_Layer: 2
+  m_Layer: 0
   m_Name: PressurePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -115,29 +114,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &1507197933
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1585812707020778774}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fbedc91ab60c8fa4bac491804d98fe1a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rayLength: 0.3
-  stayDuration: 0.5
-  detectionLayer:
-    serializedVersion: 2
-    m_Bits: 563
-  gridResolution: 10
-  isPressed: 0
-  particleEffect: {fileID: 4623714256311884149}
-  lowerHeight: 0.1
-  lowerDuration: 1
-  raiseDuration: 1
 --- !u!1 &4864642534834948506
 GameObject:
   m_ObjectHideFlags: 0
@@ -147,7 +123,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5244861985986155296}
-  m_Layer: 0
+  - component: {fileID: 1519431508}
+  - component: {fileID: 1519431507}
+  m_Layer: 2
   m_Name: PressurePlate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -172,6 +150,38 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1519431508
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4864642534834948506}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.7, y: 0.21427831, z: 1.7}
+  m_Center: {x: 0, y: 0.14286084, z: 0}
+--- !u!114 &1519431507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4864642534834948506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbedc91ab60c8fa4bac491804d98fe1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stayDuration: 0.5
+  isPressed: 1
+  particleEffect: {fileID: 4623714256311884149}
+  lowerHeight: 0.1
+  lowerDuration: 1
+  raiseDuration: 1
+  plateModel: {fileID: 6725541835844293482}
 --- !u!1 &6262981749593323976
 GameObject:
   m_ObjectHideFlags: 0
