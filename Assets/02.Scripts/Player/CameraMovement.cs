@@ -21,11 +21,11 @@ public class CameraMovement : MonoBehaviour
     private void HandleRotationInput()
     {
         rotationAngle = 0f;
-        if (Input.GetKey(KeyCode.E))
+        if (Input.GetKey(KeyCode.Z))
         {
             rotationAngle = rotationSpeed * Time.deltaTime;
         }
-        else if (Input.GetKey(KeyCode.Q))
+        else if (Input.GetKey(KeyCode.C))
         {
             rotationAngle = -rotationSpeed * Time.deltaTime;
         }
