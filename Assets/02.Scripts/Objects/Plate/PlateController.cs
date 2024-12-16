@@ -5,6 +5,11 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Assertions;
 
+public interface IPlateObserver
+{
+    void OnPlateStateChanged(bool isPressed);
+}
+
 public class PlateController : MonoBehaviour
 {
     [Header("Detection Settings")]
@@ -47,7 +52,7 @@ public class PlateController : MonoBehaviour
             Physics.IgnoreCollision(detectCollider, subCollider);
         }
     }
-
+    
     public void RegisterObserver(IPlateObserver observer)
     {
         if (!observers.Contains(observer))
