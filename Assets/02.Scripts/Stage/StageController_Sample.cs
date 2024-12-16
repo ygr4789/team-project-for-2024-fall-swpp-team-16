@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class StageSampleController : MonoBehaviour
+public class StageController_Sample : MonoBehaviour
 {
     public PlateController plate1;
     public PlateController plate2;

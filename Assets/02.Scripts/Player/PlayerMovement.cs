@@ -33,6 +33,7 @@ public class PlayerMovement : MonoBehaviour
     [Range(0f, 0.1f)]
     [SerializeField] private float _smoothTime = 0.1f;
 
+    private Camera controllerCamera;
     private SurfaceContactController playerController;
     private Rigidbody playerRigidBody;
     private Collider playerCollider;
@@ -54,6 +55,8 @@ public class PlayerMovement : MonoBehaviour
     private float runLayerWeight = 0f;
     private float runTransitionSpeed = 3f;
 
+    private Vector3 directionX, directionZ;
+
     // Start is called before the first frame update
     private void Awake()
     {
@@ -64,6 +67,7 @@ public class PlayerMovement : MonoBehaviour
         objectDetector.AddComponent<ObjectDetecter>();
         
         input = new PlayerInput();
+        controllerCamera = Camera.main;
         playerRigidBody = GetComponent<Rigidbody>();
         playerController = GetComponent<SurfaceContactController>();
         playerCollider = GetComponent<Collider>();
@@ -104,7 +108,8 @@ public class PlayerMovement : MonoBehaviour
         CheckStable();
         
         // moves the controller in the desired direction on the x- and z-axis
-        Vector3 movement = transform.right * input.moveX + transform.forward * input.moveZ;
+        CalculateDirection();
+        Vector3 movement = directionX * input.moveX + directionZ * input.moveZ;
         movement *= _movementSpeed;
 
         // the controller is able to run
@@ -131,7 +136,7 @@ public class PlayerMovement : MonoBehaviour
         if (currentVelocity > 0)
         {
             // set player's forward same as moving direction
-            float targetAngle = Mathf.Atan2(input.moveX, input.moveZ) * Mathf.Rad2Deg - 90;
+            float targetAngle = Mathf.Atan2(-movement.z, movement.x) * Mathf.Rad2Deg + 90;
             float angle = Mathf.SmoothDampAngle(playerTransform.eulerAngles.y, targetAngle, ref currentVelocity, _smoothTime);
             playerTransform.rotation = Quaternion.Euler(0, angle, 0);
         }
@@ -149,6 +154,12 @@ public class PlayerMovement : MonoBehaviour
         {
             playerAnimator.SetBool("Jump", false);
         }
+    }
+
+    private void CalculateDirection()
+    {
+        directionX = controllerCamera.transform.right;
+        directionZ = Vector3.Cross(directionX, Vector3.up);
     }
 
     // Convert the direction of movement to avoid entering a impassible area
