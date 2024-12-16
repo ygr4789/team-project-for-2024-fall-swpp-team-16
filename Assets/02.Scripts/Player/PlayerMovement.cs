@@ -228,10 +228,9 @@ public class PlayerMovement : MonoBehaviour
         float elapsedTime = 0f;
         while (elapsedTime < finishTime)
         {
-            // TODO
-            // if (Distance(playerTransform.position - endPos) < 1f) {
-            //     break;
-            // }
+            if (Vector3.Distance(playerTransform.position, endPos) < 0.5f) {
+                break;
+            }
             elapsedTime += Time.deltaTime;
             float normalizedTime = elapsedTime / finishTime;
             transform.position = Vector3.Lerp(startPos, endPos, Mathf.SmoothStep(0f, 1f, normalizedTime));
