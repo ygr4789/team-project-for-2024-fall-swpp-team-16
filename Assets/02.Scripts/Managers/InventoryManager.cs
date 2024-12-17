@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class InventoryManager : MonoBehaviour
@@ -21,6 +22,11 @@ public class InventoryManager : MonoBehaviour
 
     public void OnSceneLoaded()
     {
+        inventoryIconUI = GameObject.Find("InventoryIcon");
+        if (inventoryIconUI)
+        {
+            scoreText = inventoryIconUI.GetComponentInChildren<TextMeshProUGUI>();
+        }
         _collectedScores = 0;
         DoorController doorController = FindObjectOfType<DoorController>();
         if (doorController == null)

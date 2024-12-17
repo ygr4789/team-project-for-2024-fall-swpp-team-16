@@ -44,12 +44,40 @@ public class DoorController : MonoBehaviour
             scoreUIPanel.SetActive(true);
 			Debug.Log("Play the music to open the door");
             floatingText.SendMessage("Hide");
+            GameManager.gm.isSheetOn = true;
+            
+            // Disable player input
+            DisableInput();
         }
         else
         {
             Debug.Log("You need to collect all the scores to open the door");
         }
     }
+    
+    private void DisableInput()
+    {
+        PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+        if (playerMovement != null)
+        {
+            PlayerInput playerInput = playerMovement.GetPlayerInput();
+            if (playerInput != null)
+                playerInput.active = false; // 플레이어 움직임 활성화
+        }
+    }
+
+    private void EnableInput()
+    {
+        PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+        if (playerMovement != null)
+        {
+            PlayerInput playerInput = playerMovement.GetPlayerInput();
+            if (playerInput != null)
+                playerInput.active = false; // 플레이어 움직임 활성화
+        }
+    }
+
+    
 
     void Update()
     {
@@ -70,15 +98,10 @@ public class DoorController : MonoBehaviour
                         {
                             Debug.Log("Correct notes played. Door is opening.");
                             GameManager.stm.CompleteCurrentStage();
-                            StartCoroutine(OpenDoor());
-                            playedNotes.Clear();
+                            GetComponent<Collider>().enabled = false;
+                            GameManager.gm.isSheetOn = false;
+                            StartCoroutine(StageClearDirection());
                             // TODO: change camera view to the back of the player
-                            // player walks into the door
-                            StartCoroutine(FindObjectOfType<PlayerMovement>().WalkToPoint(doorWing.transform.position, 1.5f));
-                            // camera effect
-                            GameManager.em.FadeInCircleTransition();
-                            // Go Back to the stage selection scene
-                            StartCoroutine(GameManager.stm.WaitAndLoadScene("StageScene"));
                         }
                     }
                     else
@@ -171,17 +194,21 @@ public class DoorController : MonoBehaviour
         return true;
     }
 
-    private IEnumerator OpenDoor()
+    private IEnumerator StageClearDirection()
     {
-        // delay
-        yield return new WaitForSeconds(1.5f);
-        
         // UI off
         scoreUIPanel.SetActive(false);
+        playedNotes.Clear();
         
        	// opening door sound & animation
 		GameManager.sm.PlaySound("opening-door");
-        StartCoroutine(OpenDoorAnimation(doorWing));
+        yield return OpenDoorAnimation(doorWing);
+        StartCoroutine(GameManager.gm.controller.GetComponent<PlayerMovement>().WalkToPoint(transform.position, 1.5f));
+        
+        // camera effect
+        GameManager.em.FadeInCircleTransition();
+        // Go Back to the stage selection scene
+        StartCoroutine(GameManager.stm.WaitAndLoadScene("StageScene"));
     }
     
     private IEnumerator OpenDoorAnimation(GameObject door)

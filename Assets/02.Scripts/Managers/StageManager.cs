@@ -8,6 +8,8 @@ public class StageManager : MonoBehaviour
 {
     public int totalStages = 10; // Set this to the total number of stages
     public int currentStage = 0; // Set this to the current stage number
+
+    [SerializeField] private bool developmentMode = true; 
     
     private string filePath;
     private bool[] accomplishedStages;
@@ -24,6 +26,17 @@ public class StageManager : MonoBehaviour
     {
         accomplishedStages = new bool[totalStages];
 
+        if (developmentMode)
+        {
+            // Development mode: Set all stages to accomplished
+            for (int i = 0; i < totalStages; i++)
+            {
+                accomplishedStages[i] = true;
+            }
+            Debug.Log("Development mode active: All stages set to accomplished.");
+            return; // Skip loading from file
+        }
+
         if (File.Exists(filePath))
         {
             try
@@ -31,7 +44,7 @@ public class StageManager : MonoBehaviour
                 string[] lines = File.ReadAllLines(filePath);
                 foreach (string line in lines)
                 {
-                    if (int.TryParse(line, out int stage) && stage > 0 && stage <= totalStages)
+                    if (int.TryParse(line, out int stage) && stage > 0 && stage < totalStages)
                     {
                         accomplishedStages[stage - 1] = true;
                     }
@@ -41,12 +54,14 @@ public class StageManager : MonoBehaviour
             {
                 Debug.LogError("Error reading progress file: " + e.Message);
             }
-        } else
+        }
+        else
         {
             Debug.Log("No progress file found. Creating a new one.");
             SaveStages();
         }
     }
+
     
     public void SetCurrentStage(int stage)
     {
@@ -60,7 +75,12 @@ public class StageManager : MonoBehaviour
     
     public void CompleteStage(int stage)
     {
-        if (stage > 0 && stage <= totalStages && !accomplishedStages[stage - 1])
+        if (developmentMode)
+        {
+            return;
+        }
+
+        if (stage > 0 && stage < totalStages && !accomplishedStages[stage - 1])
         {
             accomplishedStages[stage - 1] = true;
             SaveStages();
@@ -84,7 +104,7 @@ public class StageManager : MonoBehaviour
 
     public bool IsStageAccomplished(int stage)
     {
-        return stage > 0 && stage <= totalStages && accomplishedStages[stage - 1];
+        return stage > 0 && stage < totalStages && accomplishedStages[stage - 1];
     }
 
     public bool[] GetStagesStatus()

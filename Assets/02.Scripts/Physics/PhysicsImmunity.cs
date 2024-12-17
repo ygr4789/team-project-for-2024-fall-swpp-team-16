@@ -23,6 +23,14 @@ public class PhysicsImmunity : MonoBehaviour
         
         var originalCollider = GetComponent<Collider>();
         var shieldCollider = CopyComponent(originalCollider, padding);
+        
+        var centerProperty = originalCollider.GetType().GetProperty("center", BindingFlags.Public | BindingFlags.Instance);
+        if (centerProperty is not null)
+        {
+            var newCenter = (Vector3)centerProperty.GetValue(originalCollider) / (1f + PaddingSize);
+            centerProperty.SetValue(shieldCollider, newCenter);
+        }
+
         Physics.IgnoreCollision(originalCollider, shieldCollider);
         
         var shieldRigidbody = padding.AddComponent<Rigidbody>();

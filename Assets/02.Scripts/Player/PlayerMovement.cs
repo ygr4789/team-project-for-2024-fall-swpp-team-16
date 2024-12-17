@@ -33,6 +33,7 @@ public class PlayerMovement : MonoBehaviour
     [Range(0f, 0.1f)]
     [SerializeField] private float _smoothTime = 0.1f;
 
+    private Camera controllerCamera;
     private SurfaceContactController playerController;
     private Rigidbody playerRigidBody;
     private Collider playerCollider;
@@ -54,10 +55,19 @@ public class PlayerMovement : MonoBehaviour
     private float runLayerWeight = 0f;
     private float runTransitionSpeed = 3f;
 
+    private Vector3 directionX, directionZ;
+
     // Start is called before the first frame update
     private void Awake()
     {
+        var objectDetector = new GameObject
+        {
+            name = "objectDetector"
+        };
+        objectDetector.AddComponent<ObjectDetecter>();
+        
         input = new PlayerInput();
+        controllerCamera = Camera.main;
         playerRigidBody = GetComponent<Rigidbody>();
         playerController = GetComponent<SurfaceContactController>();
         playerCollider = GetComponent<Collider>();
@@ -72,6 +82,11 @@ public class PlayerMovement : MonoBehaviour
     {
         GetInputs();
         ControlPlayer();
+    }
+    
+    public PlayerInput GetPlayerInput()
+    {
+        return input;
     }
 
     private void GetInputs()
@@ -93,9 +108,17 @@ public class PlayerMovement : MonoBehaviour
         CheckStable();
         
         // moves the controller in the desired direction on the x- and z-axis
-        Vector3 movement = transform.right * input.moveX + transform.forward * input.moveZ;
+        CalculateDirection();
+        Vector3 movement = directionX * input.moveX + directionZ * input.moveZ;
         movement *= _movementSpeed;
 
+        HandleRunning(ref movement);
+        HandleMovement(movement);
+        HandleGoundJump();
+    }
+
+    private void HandleRunning(ref Vector3 movement)
+    {
         // the controller is able to run
         if (input.run && playerController.Grounded)
         {
@@ -111,23 +134,24 @@ public class PlayerMovement : MonoBehaviour
             runLayerWeight = Mathf.MoveTowards(runLayerWeight, 0f, Time.deltaTime * runTransitionSpeed);
         }
         playerAnimator.SetLayerWeight(runLayer, runLayerWeight);
-        
-        float currentVelocity = movement.magnitude;
-        
-        // player movement is only controllable while being grounded
-        playerController.Velocity = movement;
-        playerAnimator.SetBool("Moving", currentVelocity > 0);
-        if (currentVelocity > 0)
-        {
-            // set player's forward same as moving direction
-            float targetAngle = Mathf.Atan2(input.moveX, input.moveZ) * Mathf.Rad2Deg - 90;
-            float angle = Mathf.SmoothDampAngle(playerTransform.eulerAngles.y, targetAngle, ref currentVelocity, _smoothTime);
-            playerTransform.rotation = Quaternion.Euler(0, angle, 0);
-        }
+    }
 
-        playerAnimator.SetBool("Grounded", playerController.Grounded);
-        
+    private void HandleMovement(Vector3 movement)
+    {
+        playerController.Velocity = movement;
+        var currentVelocity = movement.magnitude;
+        playerAnimator.SetBool("Moving", currentVelocity > 0);
+        if (!(currentVelocity > 0)) return;
+        // set player's forward same as moving direction
+        var targetAngle = Mathf.Atan2(-movement.z, movement.x) * Mathf.Rad2Deg + 90;
+        var angle = Mathf.SmoothDampAngle(playerTransform.eulerAngles.y, targetAngle, ref currentVelocity, _smoothTime);
+        playerTransform.rotation = Quaternion.Euler(0, angle, 0);
+    }
+
+    private void HandleGoundJump()
+    {
         // the controller is able to jump when on the ground
+        playerAnimator.SetBool("Grounded", playerController.Grounded);
         if (input.jump && playerController.Grounded)
         {
             playerAnimator.SetBool("Jump", true);
@@ -140,6 +164,12 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void CalculateDirection()
+    {
+        directionX = controllerCamera.transform.right;
+        directionZ = Vector3.Cross(directionX, Vector3.up);
+    }
+
     // Convert the direction of movement to avoid entering a impassible area
     private void CheckStable()
     {
@@ -147,13 +177,13 @@ public class PlayerMovement : MonoBehaviour
         if (!playerController.Grounded) return;
         
         // Restricted distance for impassable areas
-        float checkDistance = 2f;
+        const float checkDistance = 2f;
         // Inspection resolution
-        int numStep = 20;
+        const int numStep = 20;
         
-        for (int i = 0; i < numStep; i++)
+        for (var i = 0; i < numStep; i++)
         {
-            float checkAngle = 360f * i / numStep;
+            var checkAngle = 360f * i / numStep;
             Vector3 checkDirection = Quaternion.AngleAxis(checkAngle, Vector3.up) * Vector3.forward;
             if (!CheckPassable(transform.position + checkDirection * checkDistance)) return;
         }
@@ -180,6 +210,7 @@ public class PlayerMovement : MonoBehaviour
     
     private IEnumerator RespawnPlayer()
     {
+        immune = true;
         input.active = false;
         playerMeshRenderer.enabled = false;
         playerRigidBody.isKinematic = true;
@@ -201,25 +232,38 @@ public class PlayerMovement : MonoBehaviour
     // Smoothly move from startPos to endPos over finishTime
     private IEnumerator MoveSmooth(Vector3 startPos, Vector3 endPos, float finishTime)
     {
-        float elapsedTime = 0f;
+        var elapsedTime = 0f;
         while (elapsedTime < finishTime)
         {
             elapsedTime += Time.deltaTime;
-            float normalizedTime = elapsedTime / finishTime;
+            var normalizedTime = elapsedTime / finishTime;
             transform.position = Vector3.Lerp(startPos, endPos, Mathf.SmoothStep(0f, 1f, normalizedTime));
             yield return null;
         }
     }
 
+    // Walk from startPos to endPos over finishTime
     public IEnumerator WalkToPoint(Vector3 targetPosition, float duration)
     {
-        yield return StartCoroutine(MoveSmooth(transform.position, targetPosition, duration));
+        input.active = false;
+        var currentPosition = transform.position;
+        var movement = (targetPosition - currentPosition) / duration;
+        movement.y = 0f;
+        var elapsedTime = 0f;
+        while (elapsedTime < duration)
+        {
+            HandleMovement(movement);
+            if (Vector3.Distance(playerTransform.position, targetPosition) < 0.5f) break;
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        input.active = true;
     }
     
     // Repeat blinking for the specified time count times
     private IEnumerator BlinkPlayer(int count, float time)
     {
-        for (int i=0; i<count; i++)
+        for (var i=0; i<count; i++)
         {
             playerMeshRenderer.enabled = false;
             yield return new WaitForSeconds(time);

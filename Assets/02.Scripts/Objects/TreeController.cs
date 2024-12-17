@@ -8,31 +8,37 @@ using UnityEngine.Assertions;
 [RequireComponent(typeof(CapsuleCollider))]
 public class TreeController : Interactable
 {
-    [SerializeField] private int durability = 3;
+    [SerializeField] private int durability = 1;
     [SerializeField] private GameObject treePrefab;
     
-    [SerializeField, Range(0f, 10f)] private float minHeight = 3f;
-    [SerializeField, Range(0f, 10f)] private float maxHeight = 8f;
-    [SerializeField, Range(0f, 10f)] private float currentHeight = 5f;
-    [SerializeField, Range(0f, 3f)] private float radius = 0.7f;
+    [SerializeField, Range(3f, 15f)] private float prefabHeight = 13.5f;
+    [SerializeField, Range(3f, 15f)] private float minHeight = 3f;
+    [SerializeField, Range(3f, 15f)] private float maxHeight = 13f;
+    [SerializeField, Range(3f, 15f)] private float currentHeight = 8f;
+    [SerializeField, Range(0f, 1f)] private float radius = 0.7f;
     
     private readonly float heightChangeSmoothTime = 0.6f;
     private float heightChangeSpeed = 1f;
     private Vector3 currentVelocity = Vector3.zero;
     
     private HingeJoint hinge;
+    private CapsuleCollider capsuleCollider;
     private bool isCollapsed = false;
+    
+    private bool isPlayingSound = false;
+    private GameObject _movingSound;
 
     private void OnValidate()
     {
         Assert.IsNotNull(treePrefab, "TreePrefab cannot be null.");
         Assert.IsTrue(treePrefab.TryGetComponent<MeshFilter>(out _), "TreePrefab must have MeshFilter component.");
+        maxHeight = Mathf.Clamp(maxHeight, 0f, prefabHeight);
         minHeight = Mathf.Clamp(minHeight, 0f, maxHeight);
         currentHeight = Mathf.Clamp(currentHeight, minHeight, maxHeight);
-        treePrefab.transform.localScale = new Vector3(radius*2, maxHeight, radius*2);
-        treePrefab.transform.localPosition = new Vector3(0f, currentHeight - maxHeight, 0f);
-        var capsuleCollider = gameObject.GetComponent<CapsuleCollider>();
-        capsuleCollider.height = maxHeight;
+        treePrefab.transform.localPosition = new Vector3(0f, currentHeight - prefabHeight, 0f);
+        treePrefab.transform.localScale = Vector3.one;
+        capsuleCollider = gameObject.GetComponent<CapsuleCollider>();
+        capsuleCollider.height = 2 * currentHeight;
         capsuleCollider.radius = radius;
     }
 
@@ -58,30 +64,73 @@ public class TreeController : Interactable
     {
         if (isCollapsed) return;
         Vector3 currentPosition = treePrefab.transform.localPosition;
-        Vector3 targetPosition = new Vector3(0f, currentHeight - maxHeight, 0f);
+        Vector3 targetPosition = new Vector3(0f, currentHeight - prefabHeight, 0f);
+        capsuleCollider.height = 2 * currentHeight;
+        
         if (currentPosition != targetPosition)
         {
             treePrefab.transform.localPosition = Vector3.SmoothDamp(currentPosition, targetPosition, ref currentVelocity, heightChangeSmoothTime);
+            if (Vector3.Distance(currentPosition, targetPosition) < 0.02f)
+            {
+                if (isPlayingSound)
+                {
+                    StopTreeSound();
+                    isPlayingSound = false;
+                }
+            }
+        }
+        else
+        {
+            if (isPlayingSound)
+            {
+                StopTreeSound();
+                isPlayingSound = false;
+            }
         }
     }
 
-    public void SmoothIncreaseHeight()
+    private void SmoothIncreaseHeight()
     {
         currentHeight += heightChangeSpeed * Time.deltaTime;
         currentHeight = Mathf.Clamp(currentHeight, minHeight, maxHeight);
-        PlayTreeSound("increase");
+        
+        // Play tree sound
+        if (!isPlayingSound)
+        {
+            PlayTreeSound("increase");
+            isPlayingSound = true;
+        }
     }
 
-    public void SmoothDecreaseHeight()
+    private void SmoothDecreaseHeight()
     {
         currentHeight -= heightChangeSpeed * Time.deltaTime;
         currentHeight = Mathf.Clamp(currentHeight, minHeight, maxHeight);
-        PlayTreeSound("decrease");
+
+        // Play tree sound
+        if (!isPlayingSound)
+        {
+            PlayTreeSound("decrease");
+            isPlayingSound = true;
+        }
     }
     
     private void PlayTreeSound(string action)
     {
-        GameManager.sm.PlaySound("tree-" + action);
+        _movingSound = GameManager.sm.PlayLoopSound("tree-" + action);
+        AudioSource source = _movingSound.GetComponent<AudioSource>();
+        if (source != null)
+        {
+            source.volume *= 1f; // Reduce volume by half
+        }
+        Debug.Log("Playing tree sound");
+    }
+    
+    private void StopTreeSound()
+    {
+        // Implement sound stopping logic here
+        Destroy(_movingSound);
+        Debug.Log("Stopping tree sound");
     }
     
     public void Damage(Transform damager)
@@ -102,21 +151,40 @@ public class TreeController : Interactable
         var cutOffset = radius + 0.1f;
         
         if (isCollapsed) return;
-        var cutTree = Cutter.Cut(treePrefab, transform.position + Vector3.up * cutOffset, Vector3.up);
-        cutTree.AddComponent<CapsuleCollider>();
+        var cutPoint = transform.position + Vector3.up * cutOffset;
+        var cutTree = Cutter.Cut(treePrefab, cutPoint, Vector3.up);
+        var cutCollider = cutTree.AddComponent<CapsuleCollider>();
+
+        var remainHeight = cutPoint.y - treePrefab.transform.position.y;
+        var cutHeight = prefabHeight - remainHeight;
+        cutCollider.center = new Vector3(0f, (prefabHeight + remainHeight) / 2f, 0f);
+        cutCollider.height = cutHeight;
+        cutCollider.radius = radius;
+        
+        cutTree.AddComponent<PhysicsImmunity>();
+        
         var cutRigidbody = cutTree.AddComponent<Rigidbody>();
-        var axis = Vector3.Cross(direction, Vector3.up).normalized;
+        var axis = Vector3.Cross(Vector3.up, direction).normalized;
         var torque = axis * initialAngularVelocity;
+        
         cutRigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
-        cutRigidbody.centerOfMass = Vector3.up * maxHeight;
+        cutRigidbody.centerOfMass = Vector3.up * prefabHeight;
+        
         hinge.connectedBody = cutRigidbody;
         hinge.anchor = Vector3.up * cutOffset;
         hinge.axis = axis;
+        
         cutRigidbody.AddTorque(torque, ForceMode.VelocityChange);
         cutRigidbody.mass = 100;
+        
         isCollapsed = true;
-        this.enabled = false;
+        capsuleCollider.enabled = false;
+        GameManager.em.StopRipples(transform);
+        GameManager.pm.UnregisterTarget(transform);
         PlayCollapseSound();
+        
+        this.enabled = false;
+        Destroy(gameObject.GetComponent<ResonatableObject>());
     }
 
     private void OnDrawGizmos()
