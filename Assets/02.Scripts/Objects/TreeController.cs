@@ -8,13 +8,14 @@ using UnityEngine.Assertions;
 [RequireComponent(typeof(CapsuleCollider))]
 public class TreeController : Interactable
 {
-    [SerializeField] private int durability = 3;
+    [SerializeField] private int durability = 1;
     [SerializeField] private GameObject treePrefab;
     
-    [SerializeField, Range(0f, 10f)] private float minHeight = 3f;
-    [SerializeField, Range(0f, 10f)] private float maxHeight = 8f;
-    [SerializeField, Range(0f, 10f)] private float currentHeight = 5f;
-    [SerializeField, Range(0f, 3f)] private float radius = 0.7f;
+    [SerializeField, Range(3f, 15f)] private float prefabHeight = 13.5f;
+    [SerializeField, Range(3f, 15f)] private float minHeight = 3f;
+    [SerializeField, Range(3f, 15f)] private float maxHeight = 13f;
+    [SerializeField, Range(3f, 15f)] private float currentHeight = 8f;
+    [SerializeField, Range(0f, 1f)] private float radius = 0.7f;
     
     private readonly float heightChangeSmoothTime = 0.6f;
     private float heightChangeSpeed = 1f;
@@ -31,12 +32,13 @@ public class TreeController : Interactable
     {
         Assert.IsNotNull(treePrefab, "TreePrefab cannot be null.");
         Assert.IsTrue(treePrefab.TryGetComponent<MeshFilter>(out _), "TreePrefab must have MeshFilter component.");
+        maxHeight = Mathf.Clamp(maxHeight, 0f, prefabHeight);
         minHeight = Mathf.Clamp(minHeight, 0f, maxHeight);
         currentHeight = Mathf.Clamp(currentHeight, minHeight, maxHeight);
-        treePrefab.transform.localScale = new Vector3(radius*2, maxHeight, radius*2);
-        treePrefab.transform.localPosition = new Vector3(0f, currentHeight - maxHeight, 0f);
+        treePrefab.transform.localPosition = new Vector3(0f, currentHeight - prefabHeight, 0f);
+        treePrefab.transform.localScale = Vector3.one;
         capsuleCollider = gameObject.GetComponent<CapsuleCollider>();
-        capsuleCollider.height = 2 * maxHeight;
+        capsuleCollider.height = 2 * currentHeight;
         capsuleCollider.radius = radius;
     }
 
@@ -62,7 +64,9 @@ public class TreeController : Interactable
     {
         if (isCollapsed) return;
         Vector3 currentPosition = treePrefab.transform.localPosition;
-        Vector3 targetPosition = new Vector3(0f, currentHeight - maxHeight, 0f);
+        Vector3 targetPosition = new Vector3(0f, currentHeight - prefabHeight, 0f);
+        capsuleCollider.height = 2 * currentHeight;
+        
         if (currentPosition != targetPosition)
         {
             treePrefab.transform.localPosition = Vector3.SmoothDamp(currentPosition, targetPosition, ref currentVelocity, heightChangeSmoothTime);
@@ -147,8 +151,16 @@ public class TreeController : Interactable
         var cutOffset = radius + 0.1f;
         
         if (isCollapsed) return;
-        var cutTree = Cutter.Cut(treePrefab, transform.position + Vector3.up * cutOffset, Vector3.up);
-        cutTree.AddComponent<CapsuleCollider>();
+        var cutPoint = transform.position + Vector3.up * cutOffset;
+        var cutTree = Cutter.Cut(treePrefab, cutPoint, Vector3.up);
+        var cutCollider = cutTree.AddComponent<CapsuleCollider>();
+
+        var remainHeight = cutPoint.y - treePrefab.transform.position.y;
+        var cutHeight = prefabHeight - remainHeight;
+        cutCollider.center = new Vector3(0f, (prefabHeight + remainHeight) / 2f, 0f);
+        cutCollider.height = cutHeight;
+        cutCollider.radius = radius;
+        
         cutTree.AddComponent<PhysicsImmunity>();
         
         var cutRigidbody = cutTree.AddComponent<Rigidbody>();
