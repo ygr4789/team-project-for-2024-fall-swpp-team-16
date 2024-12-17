@@ -179,8 +179,8 @@ public class TreeController : Interactable
         
         isCollapsed = true;
         capsuleCollider.enabled = false;
-        GameManager.pm.UnregisterTarget(transform);
         GameManager.em.StopRipples(transform);
+        GameManager.pm.UnregisterTarget(transform);
         PlayCollapseSound();
         
         this.enabled = false;
