@@ -168,7 +168,7 @@ public class TreeController : Interactable
         var torque = axis * initialAngularVelocity;
         
         cutRigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
-        cutRigidbody.centerOfMass = Vector3.up * maxHeight;
+        cutRigidbody.centerOfMass = Vector3.up * prefabHeight;
         
         hinge.connectedBody = cutRigidbody;
         hinge.anchor = Vector3.up * cutOffset;
@@ -178,12 +178,13 @@ public class TreeController : Interactable
         cutRigidbody.mass = 100;
         
         isCollapsed = true;
-        this.enabled = false;
         capsuleCollider.enabled = false;
         GameManager.pm.UnregisterTarget(transform);
-        Destroy(gameObject.GetComponent<ResonatableObject>());
-        
+        GameManager.em.StopRipples(transform);
         PlayCollapseSound();
+        
+        this.enabled = false;
+        Destroy(gameObject.GetComponent<ResonatableObject>());
     }
 
     private void OnDrawGizmos()
