@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Tree_Bark
+  m_Name: TreeMaterial
   m_Shader: {fileID: -6465566751694194690, guid: ef2aa9333fbc23b40ae6289389ebd8fb, type: 3}
   m_ValidKeywords:
   - _BLEND_NORMALS
