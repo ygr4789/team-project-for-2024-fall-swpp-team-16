@@ -97,15 +97,8 @@ public class DoorController : MonoBehaviour
                         {
                             Debug.Log("Correct notes played. Door is opening.");
                             GameManager.stm.CompleteCurrentStage();
-                            StartCoroutine(OpenDoor());
-                            playedNotes.Clear();
+                            StartCoroutine(StageClearDirection());
                             // TODO: change camera view to the back of the player
-                            // player walks into the door
-                            StartCoroutine(FindObjectOfType<PlayerMovement>().WalkToPoint(doorWing.transform.position, 1.5f));
-                            // camera effect
-                            GameManager.em.FadeInCircleTransition();
-                            // Go Back to the stage selection scene
-                            StartCoroutine(GameManager.stm.WaitAndLoadScene("StageScene"));
                         }
                     }
                     else
@@ -198,17 +191,21 @@ public class DoorController : MonoBehaviour
         return true;
     }
 
-    private IEnumerator OpenDoor()
+    private IEnumerator StageClearDirection()
     {
-        // delay
-        yield return new WaitForSeconds(0f);
-        
         // UI off
         scoreUIPanel.SetActive(false);
+        playedNotes.Clear();
         
        	// opening door sound & animation
 		GameManager.sm.PlaySound("opening-door");
-        StartCoroutine(OpenDoorAnimation(doorWing));
+        yield return OpenDoorAnimation(doorWing);
+        StartCoroutine(GameManager.gm.controller.GetComponent<PlayerMovement>().WalkToPoint(transform.position, 1.5f));
+        
+        // camera effect
+        GameManager.em.FadeInCircleTransition();
+        // Go Back to the stage selection scene
+        StartCoroutine(GameManager.stm.WaitAndLoadScene("StageScene"));
     }
     
     private IEnumerator OpenDoorAnimation(GameObject door)
