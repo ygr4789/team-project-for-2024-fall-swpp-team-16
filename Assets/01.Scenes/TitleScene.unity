@@ -6205,29 +6205,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32070042899093c4ebc66a7559bd607f, type: 3}
---- !u!1 &308768208 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1379455275906648398, guid: f41f72efa80301b4cab6c591effa3f2f, type: 3}
-  m_PrefabInstance: {fileID: 896381618}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &308768209
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 308768208}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e321bfda8158a40c79dce34edcd23be5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  backgroundSprite: {fileID: 21300000, guid: b500c64f30edd411ebb312a0725ea84b, type: 3}
-  closeButtonSprite: {fileID: 21300000, guid: c8949254655d94b0191529632c30b989, type: 3}
-  quitButtonSprite: {fileID: 21300000, guid: 29bbc4ce3cd3f4f4b8736b5145fd79fd, type: 3}
-  settingsButtonSprite: {fileID: 21300000, guid: 6f455b56705f34e91a807cfb39866781, type: 3}
-  sliderBackgroundSprite: {fileID: 21300000, guid: 906562603b5644872bcd76eba6641856, type: 3}
-  sliderHandleSprite: {fileID: 21300000, guid: 7d7bf197998bf4e40ada6479ede9e77d, type: 3}
 --- !u!4 &311257995 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2076003895308449362, guid: 2f8e0aa312b32ee4fab7ba2c2845e399, type: 3}
