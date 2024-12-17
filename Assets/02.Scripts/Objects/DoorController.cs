@@ -201,7 +201,7 @@ public class DoorController : MonoBehaviour
     private IEnumerator OpenDoor()
     {
         // delay
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(0f);
         
         // UI off
         scoreUIPanel.SetActive(false);
