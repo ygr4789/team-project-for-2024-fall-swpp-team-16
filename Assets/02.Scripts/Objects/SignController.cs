@@ -51,6 +51,9 @@ public class SignController : MonoBehaviour
 
     public void Inspect(GameObject floatingText)
     {
+        if (GameManager.gm.isSheetOn){
+            return;
+        }
         if (isActive)
         {
             tutorialSignUI.SetActive(false);
