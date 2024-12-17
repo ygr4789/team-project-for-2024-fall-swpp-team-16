@@ -67,7 +67,7 @@ public class GameManager : MonoBehaviour
         {
             controller = controllerObject.transform;
         }
-
+        
         if (GameObject.FindWithTag("Player"))
         {
             em.FadeOutCircleTransition();
@@ -76,6 +76,7 @@ public class GameManager : MonoBehaviour
         {
             em.NoEffectOnCt();
         }
+        
         // locks cursor and makes it invisible
         Cursor.lockState = Cursor.lockState;
         Cursor.visible = false;
