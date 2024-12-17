@@ -213,11 +213,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1c851cd16204fb0b979c39f661dbf7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scores:
+  - {fileID: 0}
   scoreUIPanel: {fileID: 0}
-  answerNotes: 010000000300000005000000
+  answerNotes: 01000000020000000300000004000000050000000600000007000000
+  playedNotes: 
   doorWing: {fileID: 8026964720510085605}
   rippleEffectPrefab: {fileID: 4035903591278710484, guid: 4c6a73e17dc124c9b8f4f7475cf4b4d7, type: 3}
-  coloredNotes: []
+  coloredNotes:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+--- !u!136 &2098679264
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8025685362120415047}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.5946659
+  m_Height: 2.1237664
+  m_Direction: 1
+  m_Center: {x: -0.000025272364, y: 0.019421577, z: -1.8333867e-12}
 --- !u!1 &8026964720510085605 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1948837136683586, guid: 3865dab15f85624439f27d11cc132971, type: 3}

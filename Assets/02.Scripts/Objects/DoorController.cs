@@ -97,6 +97,7 @@ public class DoorController : MonoBehaviour
                         {
                             Debug.Log("Correct notes played. Door is opening.");
                             GameManager.stm.CompleteCurrentStage();
+                            GetComponent<CapsuleCollider>().enabled = false;
                             StartCoroutine(StageClearDirection());
                             // TODO: change camera view to the back of the player
                         }
