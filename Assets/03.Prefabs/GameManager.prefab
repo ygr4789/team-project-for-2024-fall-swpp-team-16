@@ -569,7 +569,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce6f7ed6358940459b705922494ff02d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totalStages: 6
+  totalStages: 7
   currentStage: 0
   developmentMode: 1
 --- !u!114 &308768209
