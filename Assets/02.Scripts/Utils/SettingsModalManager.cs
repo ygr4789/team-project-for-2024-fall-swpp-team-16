@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class SettingsModalManager : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class SettingsModalManager : MonoBehaviour
     public Sprite closeButtonSprite = null;
     public Sprite quitButtonSprite = null;
     public Sprite settingsButtonSprite = null;
+    public Sprite resetButtonSprite = null; // New sprite for Reset Button
 
     [Header("Slider Sprites (Optional)")]
     public Sprite sliderBackgroundSprite = null;
@@ -20,7 +22,7 @@ public class SettingsModalManager : MonoBehaviour
 
     private void Update()
     {
-        if (settingsModal is null) return;
+        if (settingsModal == null) return;
         if (Input.GetKeyDown(KeyCode.Escape)) ToggleSettings();
     }
 
@@ -58,15 +60,18 @@ public class SettingsModalManager : MonoBehaviour
             modalImage.color = Color.black;
         }
         settingsModal.SetActive(false);
-        
-        // Close Button
+
+        // Close Button (top-right)
         GameObject closeButton = CreateButton("CloseButton", "X", new Vector2(265, 234), settingsModal.transform, closeButtonSprite);
-        
         closeButton.GetComponent<Button>().onClick.AddListener(CloseModal);
 
-        // Quit Button
-        GameObject quitButton = CreateButton("QuitButton", "Quit Game", new Vector2(0, -250), settingsModal.transform, quitButtonSprite);
+        // Quit Button (bottom-right)
+        GameObject quitButton = CreateButton("QuitButton", "Quit Game", new Vector2(110, -250), settingsModal.transform, quitButtonSprite);
         quitButton.GetComponent<Button>().onClick.AddListener(QuitGame);
+
+        // Reset Stage Button (bottom-left, next to quit)
+        GameObject resetStageButton = CreateButton("ResetStageButton", "Reset Stage", new Vector2(-110, -250), settingsModal.transform, resetButtonSprite);
+        resetStageButton.GetComponent<Button>().onClick.AddListener(ResetStage);
 
         // Master Volume Slider
         CreateSlider("MasterVolumeSlider", "Master Volume", new Vector2(-10, 100), settingsModal.transform, AdjustSoundLevel, AudioListener.volume);
@@ -77,12 +82,12 @@ public class SettingsModalManager : MonoBehaviour
         // SFX Volume Slider
         CreateSlider("SFXVolumeSlider", "SFX Volume", new Vector2(-10, -100), settingsModal.transform, AdjustSfxVolume, GameManager.sm.masterVolumeSfx);
 
-        // Settings Button
+        // Settings Button (on main canvas) - do not change logic
         GameObject settingsButton = CreateButton("SettingsButton", "Settings", new Vector2(850, 500), canvas.transform, settingsButtonSprite);
         settingsButton.GetComponent<Button>().onClick.AddListener(ToggleSettings);
     }
 
-   private GameObject CreateButton(string name, string buttonText, Vector2 position, Transform parent, Sprite buttonSprite)
+    private GameObject CreateButton(string name, string buttonText, Vector2 position, Transform parent, Sprite buttonSprite)
     {
         GameObject button = new GameObject(name, typeof(Button), typeof(Image));
         button.transform.SetParent(parent, false);
@@ -91,24 +96,17 @@ public class SettingsModalManager : MonoBehaviour
 
         if (name == "CloseButton" || name == "SettingsButton")
         {
-            rectTransform.sizeDelta = new Vector2(300, 75); // This remains constant in pixels now
+            rectTransform.sizeDelta = new Vector2(300, 75); // Larger buttons
         }
         else
         {
-            rectTransform.sizeDelta = new Vector2(200, 50);
+            rectTransform.sizeDelta = new Vector2(200, 50); // Standard buttons
         }
 
-        if (name == "SettingsButton")
-        {
-            rectTransform.anchorMin = new Vector2(1f, 1f);
-            rectTransform.anchorMax = new Vector2(1f, 1f);
-            rectTransform.pivot = new Vector2(1f, 1f);
-            rectTransform.anchoredPosition = new Vector2(-50, -50);
-        }
-        else
-        {
-            rectTransform.anchoredPosition = position;
-        }
+        
+
+     
+        rectTransform.anchoredPosition = position;
 
         Button btnComponent = button.GetComponent<Button>();
         Image btnImage = button.GetComponent<Image>();
@@ -121,10 +119,23 @@ public class SettingsModalManager : MonoBehaviour
         }
         else
         {
+            // If no sprite, add text
             btnImage.color = Color.gray;
             GameObject textObject = CreateText(name + "Text", buttonText, Vector2.zero, button.transform);
             Text textComponent = textObject.GetComponent<Text>();
             textComponent.alignment = TextAnchor.MiddleCenter;
+        }
+
+         if (name == "SettingsButton")
+        {
+            rectTransform.anchorMin = new Vector2(1f, 1f);
+            rectTransform.anchorMax = new Vector2(1f, 1f);
+            rectTransform.pivot = new Vector2(1f, 1f);
+            rectTransform.anchoredPosition = new Vector2(-50, -50);
+        }
+        else
+        {
+            rectTransform.anchoredPosition = position;
         }
 
         return button;
@@ -227,11 +238,17 @@ public class SettingsModalManager : MonoBehaviour
 
     private void QuitGame()
     {
-        Application.Quit();
-
+          UnityEngine.SceneManagement.SceneManager.LoadScene("StageScene");
+        /*Application.Quit();
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
-#endif
+#endif*/
+    }
+
+    private void ResetStage()
+    {
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.name);
     }
 
     private void AdjustSoundLevel(float value)
