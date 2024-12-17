@@ -9,11 +9,12 @@ public class SignController : MonoBehaviour
     [SerializeField] private string textContent;
     [SerializeField] private float imageWidth = 1500;
     [SerializeField] private float imageHeight = 800;
+    [SerializeField] private Sprite guideImage;
     
     private RectTransform imageRect; // Image의 RectTransform
+    private Image signPicture;
     private TextMeshProUGUI textComponent; // Text Component
     private bool isActive = false;
-    private float padding = 0.2f; // 20% padding
     private PlayerInput playerInput; // 동적으로 가져올 PlayerInput
 
     private void Awake()
@@ -24,6 +25,7 @@ public class SignController : MonoBehaviour
         {
             imageRect = tutorialSignUI.GetComponentInChildren<Image>().rectTransform;
             textComponent = tutorialSignUI.GetComponentInChildren<TextMeshProUGUI>();
+            signPicture = tutorialSignUI.GetComponentsInChildren<Image>()[1];
         }
         else
         {
@@ -69,13 +71,18 @@ public class SignController : MonoBehaviour
             // Set the text content
             textComponent.text = textContent;
 
+            if (guideImage == null)
+            {
+                signPicture.enabled = false;
+            }
+            else
+            {
+                signPicture.enabled = true;
+                signPicture.sprite = guideImage;
+            }
+
             // Update the size of the image
             imageRect.sizeDelta = new Vector2(imageWidth, imageHeight);
-
-            // Calculate and update the size of the text with padding
-            float textWidth = imageWidth * (1 - 2 * padding);
-            float textHeight = imageHeight * (1 - 2 * padding);
-            textComponent.rectTransform.sizeDelta = new Vector2(textWidth, textHeight);
 
             tutorialSignUI.SetActive(true);
             GameManager.sm.PlaySound("sign");
