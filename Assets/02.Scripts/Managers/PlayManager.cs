@@ -13,7 +13,7 @@ public class PlayManager : MonoBehaviour
     public Transform currentTarget;
 
     private float defaultSize = 6;
-    private float targetScaleMultiplier = 1.2f;
+    private float targetScaleMultiplier = 5.0f;
 
     private void Start()
     {
@@ -66,7 +66,7 @@ public class PlayManager : MonoBehaviour
 
         if (currentTarget is not null && activeRipplesEffects.ContainsKey(currentTarget))
         {
-            GameManager.em.SetRippleSize(currentTarget, 4.5f, positionOffset:currentTarget.GetComponent<ResonatableObject>().ripplesPositionOffset);
+            GameManager.em.SetRippleSize(currentTarget, targetScaleMultiplier, positionOffset:currentTarget.GetComponent<ResonatableObject>().ripplesPositionOffset);
         }
     }
     
