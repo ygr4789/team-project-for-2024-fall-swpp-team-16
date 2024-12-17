@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Codice.Client.Commands.WkTree;
 using UnityEngine;
 using TMPro;
 
@@ -9,6 +11,8 @@ public class FloatingTextController : MonoBehaviour
     public Vector3 offset = new Vector3(0, 3, 0);
     public string inspectGuideText = "Press [E]";
     public float inspectMaxDistance = 3;
+    private bool isPlayerNear = false;
+    private TextMeshPro fText;
 
     void Start()
     {
@@ -18,10 +22,10 @@ public class FloatingTextController : MonoBehaviour
         }
 
         // 텍스트 설정
-        TextMeshProUGUI textMeshPro = GetComponentInChildren<TextMeshProUGUI>();
-        if (textMeshPro != null)
+        fText = transform.GetComponent<TextMeshPro>();
+        if (fText != null)
         {
-            textMeshPro.text = inspectGuideText;
+            fText.text = "";
         }
 
         // 초기 위치 설정
@@ -37,8 +41,9 @@ public class FloatingTextController : MonoBehaviour
         if (target != null)
         {
             transform.position = target.transform.position + offset;
+            UpdateTarget();
         }
-
+        
         // if E is pressed, trigger the inspect function of the target object
         if (Input.GetKeyDown(KeyCode.E))
         {
@@ -52,6 +57,21 @@ public class FloatingTextController : MonoBehaviour
         }
     }
 
+    private void UpdateTarget()
+    {
+        Collider[] cols = Physics.OverlapSphere(target.transform.position, inspectMaxDistance, 1 << LayerMask.NameToLayer("Player"));
+
+        if(cols.Length > 0 && !isPlayerNear)
+        {
+            fText.text = inspectGuideText;
+            isPlayerNear = true;
+        } else if (cols.Length <= 0 && isPlayerNear)
+        {
+            fText.text = "";
+            isPlayerNear = false;
+        }
+    }
+    
     // triggered when "inspect" action is performed
     public void Hide()
     {

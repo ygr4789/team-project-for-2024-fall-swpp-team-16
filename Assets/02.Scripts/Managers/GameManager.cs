@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     public static PlayManager pm;
 
     public Transform controller;
+    public bool isSheetOn = false;
     
     // Singleton pattern & Find SoundManager
     private void Awake()

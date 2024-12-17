@@ -96,7 +96,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   offset: {x: 0, y: 3, z: 0}
-  inspectGuideText: 
+  inspectGuideText: Press [E]
   inspectMaxDistance: 3
 --- !u!114 &30941792
 MonoBehaviour:

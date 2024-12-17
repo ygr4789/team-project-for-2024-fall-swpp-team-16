@@ -285,6 +285,7 @@ MonoBehaviour:
     \uC9C0\uC815\uD558\uB294 \uAC83\uC774 \uAC00\uB2A5\uD558\uB2E4."
   imageWidth: 1500
   imageHeight: 800
+  guideImage: {fileID: 0}
 --- !u!1001 &6634526256469410266
 PrefabInstance:
   m_ObjectHideFlags: 0
