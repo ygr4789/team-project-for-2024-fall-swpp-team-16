@@ -173,7 +173,7 @@ public class EffectManager : MonoBehaviour
 
     public void NoEffectOnCt()
     {
-        CircleTransition ct = FindObjectOfType<CircleTransition>();
+        CircleTransition ct = GameManager.gm.transform.GetComponentInChildren<CircleTransition>();
         if (ct != null)
         {
             ct.FastFadeOut();
@@ -186,7 +186,7 @@ public class EffectManager : MonoBehaviour
     
     public void FadeOutCircleTransition()
     {
-        CircleTransition ct = FindObjectOfType<CircleTransition>();
+        CircleTransition ct = GameManager.gm.transform.GetComponentInChildren<CircleTransition>();
         if (ct != null)
         {
             ct.FadeOut();
@@ -199,7 +199,7 @@ public class EffectManager : MonoBehaviour
 
     public void FadeInCircleTransition()
     {
-        CircleTransition ct = FindObjectOfType<CircleTransition>();
+        CircleTransition ct = GameManager.gm.transform.GetComponentInChildren<CircleTransition>();
         if (ct != null)
         {
             ct.FadeIn();
