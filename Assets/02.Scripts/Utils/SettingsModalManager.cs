@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SettingsModalController : MonoBehaviour
+public class SettingsModalManager : MonoBehaviour
 {
     [Header("Modal Background")]
     public Sprite backgroundSprite = null;
@@ -18,20 +18,13 @@ public class SettingsModalController : MonoBehaviour
     private GameObject canvas;
     private GameObject settingsModal;
 
-    void Start()
+    private void Update()
     {
-        CreateUI();
+        if (settingsModal is null) return;
+        if (Input.GetKeyDown(KeyCode.Escape)) ToggleSettings();
     }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            ToggleSettings();
-        }
-    }
-
-    private void CreateUI()
+    public void CreateUI()
     {
         // Create or find Canvas
         canvas = GameObject.FindWithTag("MainCanvas");
@@ -208,7 +201,7 @@ public class SettingsModalController : MonoBehaviour
         return textObject;
     }
 
-    public void ToggleSettings()
+    private void ToggleSettings()
     {
         settingsModal.SetActive(!settingsModal.activeSelf);
         if (settingsModal.activeSelf)
@@ -225,14 +218,14 @@ public class SettingsModalController : MonoBehaviour
         }
     }
 
-    public void CloseModal()
+    private void CloseModal()
     {
         settingsModal.SetActive(false);
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-    public void QuitGame()
+    private void QuitGame()
     {
         Application.Quit();
 
@@ -241,17 +234,17 @@ public class SettingsModalController : MonoBehaviour
 #endif
     }
 
-    public void AdjustSoundLevel(float value)
+    private void AdjustSoundLevel(float value)
     {
         AudioListener.volume = value;
     }
 
-    public void AdjustBgmVolume(float value)
+    private void AdjustBgmVolume(float value)
     {
         GameManager.sm.SetVolumeBGM(value);
     }
 
-    public void AdjustSfxVolume(float value)
+    private void AdjustSfxVolume(float value)
     {
         GameManager.sm.SetVolumeSFX(value);
     }
