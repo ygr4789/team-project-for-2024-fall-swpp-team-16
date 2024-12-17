@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using UnityEditor.IMGUI.Controls;
 using UnityEngine.Assertions;
 
 public enum AnimalState
