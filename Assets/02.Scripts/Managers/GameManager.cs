@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     public static EffectManager em;
     public static InventoryManager im;
     public static StageManager stm;
+    public static SettingsModalManager smm;
     
     // Other Managers
     public static PlayManager pm;
@@ -33,6 +34,7 @@ public class GameManager : MonoBehaviour
             em = GetComponentInChildren<EffectManager>();
             im = GetComponentInChildren<InventoryManager>();
             stm = GetComponentInChildren<StageManager>();
+            smm = GetComponentInChildren<SettingsModalManager>();
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else if (gm != this)
@@ -57,6 +59,11 @@ public class GameManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         pm = FindObjectOfType<PlayManager>();
+        if (pm != null && smm != null)
+        {
+            smm.CreateUI();
+        }
+        
         PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
         if (playerMovement != null) {
             pm.playerTransform = playerMovement.transform;
