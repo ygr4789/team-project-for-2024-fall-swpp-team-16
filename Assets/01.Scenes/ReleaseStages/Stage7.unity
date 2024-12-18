@@ -3145,6 +3145,28 @@ PrefabInstance:
       propertyPath: tutorialSignUI
       value: 
       objectReference: {fileID: 678752433}
+    - target: {fileID: 7587659863450247260, guid: 100e4a0246eb76245872cb35eb085362, type: 3}
+      propertyPath: guideImages.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7587659863450247260, guid: 100e4a0246eb76245872cb35eb085362, type: 3}
+      propertyPath: textContents.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7587659863450247260, guid: 100e4a0246eb76245872cb35eb085362, type: 3}
+      propertyPath: guideImages.Array.data[0]
+      value: 
+      objectReference: {fileID: 21300000, guid: 1baf5f2a9dfe2db43b3dd51dc0b8a012, type: 3}
+    - target: {fileID: 7587659863450247260, guid: 100e4a0246eb76245872cb35eb085362, type: 3}
+      propertyPath: textContents.Array.data[0]
+      value: "\uB3D9\uBB3C\uACFC \uACF5\uBA85\uD558\uB294\\n\uC74C\uC744 \uC5F0\uC8FC\uD558\uBA74\\n\uBC14\uB77C\uBCF4\uB294
+        \uBC29\uD5A5\uC73C\uB85C\\n\uB3CC\uC9C4\uD569\uB2C8\uB2E4\\n\\n\uAC70\uC2AC\uB9AC\uB294
+        \uAC83\uB4E4\uC5D0\\n\uB4E4\uC774\uBC15\uC544\uBCF4\uC138\uC694!"
+      objectReference: {fileID: 0}
+    - target: {fileID: 7587659863450247260, guid: 100e4a0246eb76245872cb35eb085362, type: 3}
+      propertyPath: textContents.Array.data[1]
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 100e4a0246eb76245872cb35eb085362, type: 3}
 --- !u!1001 &804885519

@@ -3126,6 +3126,23 @@ PrefabInstance:
       propertyPath: tutorialSignUI
       value: 
       objectReference: {fileID: 2124123096}
+    - target: {fileID: 8352154084669618755, guid: a21081ed8ae2e52418bc6bba84b2c956, type: 3}
+      propertyPath: guideImages.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8352154084669618755, guid: a21081ed8ae2e52418bc6bba84b2c956, type: 3}
+      propertyPath: textContents.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8352154084669618755, guid: a21081ed8ae2e52418bc6bba84b2c956, type: 3}
+      propertyPath: guideImages.Array.data[0]
+      value: 
+      objectReference: {fileID: 21300000, guid: d125ea57a9e47954e882324f282d12db, type: 3}
+    - target: {fileID: 8352154084669618755, guid: a21081ed8ae2e52418bc6bba84b2c956, type: 3}
+      propertyPath: textContents.Array.data[0]
+      value: "\uBC84\uD2BC\uC744 \uB204\uB974\uBA74\\n\uBB54\uAC00 \uB180\uB77C\uC6B4\\n\uC77C\uC774
+        \uC77C\uC5B4\uB09C\uB2F5\uB2C8\uB2E4"
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a21081ed8ae2e52418bc6bba84b2c956, type: 3}
 --- !u!1 &1752674892
