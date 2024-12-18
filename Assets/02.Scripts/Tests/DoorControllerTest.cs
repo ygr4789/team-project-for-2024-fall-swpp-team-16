@@ -1,8 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class DoorControllerTests
+public class DoorControllerCheckNotesTest
 {
     private GameObject doorControllerObject;
     private DoorController doorController;
@@ -10,64 +9,46 @@ public class DoorControllerTests
     [SetUp]
     public void Setup()
     {
-        // Create a GameObject and attach the DoorController component
         doorControllerObject = new GameObject();
         doorController = doorControllerObject.AddComponent<DoorController>();
 
-        // Set up the scoreUIPanel
-        doorController.scoreUIPanel = new GameObject();
-        doorController.scoreUIPanel.AddComponent<Canvas>();
-        doorController.scoreUIPanel.SetActive(false);
-
-        // Initialize answerNotes
-        doorController.answerNotes = new int[] { 1, 2, 3 }; // Example notes
-
-        // Set up GameManager mock
-        GameManagerMock im = new GameManagerMock();
-        GameManager.im = im; // Assign the mock instance
+        // Initialize answerNotes for testing
+        doorController.answerNotes = new int[] { 1, 2, 3 };
     }
 
     [Test]
-    public void Inspect_ActivatesScoreUIPanel_WhenAllScoresCollected()
+    public void CheckNotes_ReturnsTrue_WhenNotesMatch()
     {
         // Arrange
-        GameManager.im.SetAllScoresCollected(true); // Simulate all scores collected
-        GameObject floatingText = new GameObject("FloatingText"); // Mock floating text
+        doorController.playedNotes.Add(1);
+        doorController.playedNotes.Add(2);
+        doorController.playedNotes.Add(3);
 
         // Act
-        doorController.Inspect(floatingText);
+        bool result = doorController.CheckNotes();
 
         // Assert
-        Assert.IsTrue(doorController.scoreUIPanel.activeSelf, "Score UI panel should be active when all scores are collected.");
+        Assert.IsTrue(result, "CheckNotes should return true when played notes match answer notes.");
+    }
+
+    [Test]
+    public void CheckNotes_ReturnsFalse_WhenNotesDoNotMatch()
+    {
+        // Arrange
+        doorController.playedNotes.Add(1);
+        doorController.playedNotes.Add(2);
+        doorController.playedNotes.Add(4); // Incorrect note
+
+        // Act
+        bool result = doorController.CheckNotes();
+
+        // Assert
+        Assert.IsFalse(result, "CheckNotes should return false when played notes do not match answer notes.");
     }
 
     [TearDown]
     public void Teardown()
     {
-        // Clean up
         Object.DestroyImmediate(doorControllerObject);
     }
-}
-
-// Mock GameManager for testing
-public class GameManagerMock
-{
-    public static GameManagerMock im; // Static reference for test assignment
-    private bool allScoresCollected;
-
-    public void SetAllScoresCollected(bool collected)
-    {
-        allScoresCollected = collected;
-    }
-
-    public bool HasAllScores()
-    {
-        return allScoresCollected;
-    }
-}
-
-// GameManager (Static class for global state)
-public static class GameManager
-{
-    public static GameManagerMock im;
 }
