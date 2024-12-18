@@ -557,6 +557,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 0}
+  isSheetOn: 0
 --- !u!114 &1824626969
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -569,7 +570,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce6f7ed6358940459b705922494ff02d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totalStages: 6
+  totalStages: 9
   currentStage: 0
   developmentMode: 1
 --- !u!114 &308768209
@@ -588,6 +589,7 @@ MonoBehaviour:
   closeButtonSprite: {fileID: 21300000, guid: c8949254655d94b0191529632c30b989, type: 3}
   quitButtonSprite: {fileID: 21300000, guid: 29bbc4ce3cd3f4f4b8736b5145fd79fd, type: 3}
   settingsButtonSprite: {fileID: 21300000, guid: 6f455b56705f34e91a807cfb39866781, type: 3}
+  resetButtonSprite: {fileID: 0}
   sliderBackgroundSprite: {fileID: 21300000, guid: 906562603b5644872bcd76eba6641856, type: 3}
   sliderHandleSprite: {fileID: 21300000, guid: 7d7bf197998bf4e40ada6479ede9e77d, type: 3}
 --- !u!1 &1379455276082103364
