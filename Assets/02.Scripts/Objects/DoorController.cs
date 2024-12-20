@@ -40,14 +40,12 @@ public class DoorController : MonoBehaviour
         if (GameManager.gm.isUIOpen){
             return;
         }
-        else
-        {
-            GameManager.gm.isUIOpen = true;
-        }
+        
         // if all scores are collected, the user needs to play music
 		if (GameManager.im.HasAllScores())
         {
             // Activate the Score UI to display it
+            GameManager.gm.isUIOpen = true;
             scoreUIPanel.SetActive(true);
 			Debug.Log("Play the music to open the door");
             floatingText.SendMessage("Hide");

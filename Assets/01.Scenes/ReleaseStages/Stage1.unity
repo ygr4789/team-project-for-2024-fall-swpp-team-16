@@ -992,22 +992,32 @@ PrefabInstance:
       objectReference: {fileID: 1481640667}
     - target: {fileID: 7587659863450247260, guid: 100e4a0246eb76245872cb35eb085362, type: 3}
       propertyPath: guideImages.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7587659863450247260, guid: 100e4a0246eb76245872cb35eb085362, type: 3}
       propertyPath: textContents.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7587659863450247260, guid: 100e4a0246eb76245872cb35eb085362, type: 3}
       propertyPath: guideImages.Array.data[0]
       value: 
       objectReference: {fileID: 21300000, guid: d0966727040a100468b740699958d0fb, type: 3}
     - target: {fileID: 7587659863450247260, guid: 100e4a0246eb76245872cb35eb085362, type: 3}
+      propertyPath: guideImages.Array.data[1]
+      value: 
+      objectReference: {fileID: 21300000, guid: 49a6e2d6cc627bb42bf1752e0aaf8a8c, type: 3}
+    - target: {fileID: 7587659863450247260, guid: 100e4a0246eb76245872cb35eb085362, type: 3}
       propertyPath: textContents.Array.data[0]
       value: "\uBB38\uC740 \uACE0\uC720\uD55C \uC5F4\uC1E0\uC778\\n\uC545\uBCF4\uB97C
         \uC9C0\uB2D9\uB2C8\uB2E4\\n\\n\uC545\uBCF4\uB97C \uCC3E\uC544\\n\uBB38\uC758
         \uC5F4\uC1E0\uAC00 \uB418\uB294\\n\uC74C\uC744 \uC5F0\uC8FC\uD558\uBA74\\n\uBB38\uC774
         \uC5F4\uB9BD\uB2C8\uB2E4"
+      objectReference: {fileID: 0}
+    - target: {fileID: 7587659863450247260, guid: 100e4a0246eb76245872cb35eb085362, type: 3}
+      propertyPath: textContents.Array.data[1]
+      value: "\uD654\uBA74\uC758 \uC624\uB978\uCABD \uC544\uB798\uC5D0\uC11C \uBB38\uC744
+        \uC5F4\uAE30 \uC704\uD574 \uD544\uC694\uD55C \uC545\uBCF4\uC758 \uC218\uC640
+        \uC9C0\uAE08\uAE4C\uC9C0 \uBAA8\uC740 \uC545\uBCF4\uC758 \uC218\uAC00 \uD45C\uC2DC\uB429\uB2C8\uB2E4"
       objectReference: {fileID: 0}
     - target: {fileID: 8093029752366492098, guid: 100e4a0246eb76245872cb35eb085362, type: 3}
       propertyPath: m_IsActive
@@ -3431,7 +3441,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 0}
-  isSheetOn: 0
+  isUIOpen: 0
 --- !u!4 &1105678859
 Transform:
   m_ObjectHideFlags: 0
@@ -6275,9 +6285,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -80, y: 80}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -30, y: 30}
+  m_SizeDelta: {x: 150, y: 150}
+  m_Pivot: {x: 1, y: 0}
 --- !u!114 &1752674894
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7762,8 +7772,8 @@ RectTransform:
   m_GameObject: {fileID: 2101743950}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1752674893}
   m_RootOrder: 0
@@ -8063,7 +8073,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8402353151074897607, guid: af1ae4b7dfb4481408c263a883be79cd, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 12.56
+      value: 10.32
       objectReference: {fileID: 0}
     - target: {fileID: 8402353151074897607, guid: af1ae4b7dfb4481408c263a883be79cd, type: 3}
       propertyPath: m_LocalPosition.y
