@@ -16,6 +16,7 @@ public class StageManagerTests
         GameObject gameObject = new GameObject();
         stageManager = gameObject.AddComponent<StageManager>();
         stageManager.totalStages = 5;
+        stageManager.TurnOffDevelopmentMode();
         testFilePath = Path.Combine(Application.persistentDataPath, "progress.txt");
         if (File.Exists(testFilePath))
         {
