@@ -44,6 +44,8 @@ public class TreeController : Interactable
     {
         _hinge = gameObject.GetComponent<HingeJoint>();
         _capsuleCollider = gameObject.GetComponent<CapsuleCollider>();
+        _capsuleCollider.height = 2 * currentHeight;
+        _capsuleCollider.radius = radius;
         var resonatable = gameObject.AddComponent<ResonatableObject>();
         resonatable.properties = new[] { PitchType.So, PitchType.La };
         resonatable.resonate += TreeResonate;
