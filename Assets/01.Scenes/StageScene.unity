@@ -2022,7 +2022,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Use Letf/Right arrow key to select stage
+  m_text: Use Left/Right arrow key to select stage
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b601bfd30caf0ea428a84d3efa405622, type: 2}
   m_sharedMaterial: {fileID: 6112135245255523, guid: b601bfd30caf0ea428a84d3efa405622, type: 2}
