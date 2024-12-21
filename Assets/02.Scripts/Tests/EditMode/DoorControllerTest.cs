@@ -17,7 +17,7 @@ public class DoorControllerCheckNotesTest
     }
 
     [Test]
-    public void CheckNotes_ReturnsTrue_WhenNotesMatch()
+    public void TestCheckNotes_ReturnsTrue_WhenNotesMatch()
     {
         // Arrange
         doorController.playedNotes.Add(1);
@@ -32,7 +32,7 @@ public class DoorControllerCheckNotesTest
     }
 
     [Test]
-    public void CheckNotes_ReturnsFalse_WhenNotesDoNotMatch()
+    public void TestCheckNotes_ReturnsFalse_WhenNotesDoNotMatch()
     {
         // Arrange
         doorController.playedNotes.Add(1);
