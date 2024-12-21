@@ -66,7 +66,7 @@ public class DoorController : MonoBehaviour
         {
             PlayerInput playerInput = playerMovement.GetPlayerInput();
             if (playerInput != null)
-                playerInput.active = false; // 플레이어 움직임 활성화
+                playerInput.Active = false; // 플레이어 움직임 활성화
         }
     }
 
@@ -77,7 +77,7 @@ public class DoorController : MonoBehaviour
         {
             PlayerInput playerInput = playerMovement.GetPlayerInput();
             if (playerInput != null)
-                playerInput.active = false; // 플레이어 움직임 활성화
+                playerInput.Active = false; // 플레이어 움직임 활성화
         }
     }
 
@@ -218,18 +218,18 @@ public class DoorController : MonoBehaviour
     private IEnumerator OpenDoorAnimation(GameObject door)
     {
         float duration = 1f; // animation duration
-        float startRotation = door.transform.eulerAngles.y;
+        float startRotation = door.transform.localEulerAngles.y;
         float endRotation = startRotation + 90;
         float time = 0;
 
         while (time < duration)
         {
             float yRotation = Mathf.Lerp(startRotation, endRotation, time / duration);
-            door.transform.eulerAngles = new Vector3(door.transform.eulerAngles.x, yRotation, door.transform.eulerAngles.z);
+            door.transform.localEulerAngles = new Vector3(door.transform.localEulerAngles.x, yRotation, door.transform.localEulerAngles.z);
             time += Time.deltaTime;
             yield return null;
         }
 
-        door.transform.eulerAngles = new Vector3(door.transform.eulerAngles.x, endRotation, door.transform.eulerAngles.z);
+        door.transform.localEulerAngles = new Vector3(door.transform.localEulerAngles.x, endRotation, door.transform.localEulerAngles.z);
     }
 }

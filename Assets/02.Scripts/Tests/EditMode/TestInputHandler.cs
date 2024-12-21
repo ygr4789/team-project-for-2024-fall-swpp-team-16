@@ -25,20 +25,20 @@ public class TestInputHandler : MonoBehaviour
     private void GetInputs()
     {
         input.Clear();
-        if(!input.active) return;
+        if(!input.Active) return;
         
         // get the movement input
-        input.moveX = Input.GetAxis("Horizontal");
-        input.moveZ = Input.GetAxis("Vertical");
-        input.jump = Input.GetButton("Jump");
-        input.run = Input.GetKey(KeyCode.LeftShift);
+        input.MoveX = Input.GetAxis("Horizontal");
+        input.MoveZ = Input.GetAxis("Vertical");
+        input.Jump = Input.GetButton("Jump");
+        input.Run = Input.GetKey(KeyCode.LeftShift);
     }
 
     private void ApplyVelocity()
     {
-        Vector3 velocity = transform.right * input.moveX + transform.forward * input.moveZ;
+        Vector3 velocity = transform.right * input.MoveX + transform.forward * input.MoveZ;
         velocity *= speed; 
         body.Velocity = velocity;
-        body.Jump = input.jump;
+        body.Jump = input.Jump;
     }
 }

@@ -11,24 +11,21 @@ public class RockController : Interactable
     
     [Tooltip("The distance at which the object stops approaching the player")]
     [Range(0f, 0.1f)]
-    [SerializeField] 
-    private float approachDistance = 3f;
+    [SerializeField] private float approachDistance = 3f;
     
-    [Range(0f, 10f)]
-    public float moveSpeed = 3f;
+    [Range(0f, 10f)] public float moveSpeed = 3f;
     
-    [SerializeField]
-    private Transform rockModel;
+    [SerializeField] private Transform rockModel;
     
     private const string PlayerTag = "Player"; // Tag of the player to follow
     private GameObject _player; // Reference to the player object
 
-    private float _radius; // Radius of round rock (only used when isRolling=true)
-    private Vector3 _currentVelocity = Vector3.zero;
-    private SurfaceContactController _rockBody;
-    private Vector3 _targetPosition;
     private const float SpeedThreshold = 1.0f; // Speed threshold for playing sound
-    private bool isPlayingSound = false;
+    private float _radius; // Radius of round rock (only used when isRolling=true)
+    private bool _isPlayingSound = false;
+    private Vector3 _currentVelocity = Vector3.zero;
+    private Vector3 _targetPosition;
+    private SurfaceContactController _rockBody;
     private GameObject _movingSound;
     
     private void Awake()
@@ -72,18 +69,7 @@ public class RockController : Interactable
     {
         ApplyVelocity();
         if (isRolling) RollRock(_rockBody.Velocity);
-        
-        // Check speed and play/stop sound
-        if (_rockBody.Velocity.magnitude > SpeedThreshold && !isPlayingSound)
-        {
-            PlayMovingSound();
-            isPlayingSound = true;
-        }
-        else if (_rockBody.Velocity.magnitude <= SpeedThreshold && isPlayingSound)
-        {
-            StopMovingSound();
-            isPlayingSound = false;
-        }
+        HandleSound();
     }
 
     private void ApplyVelocity()
@@ -102,7 +88,7 @@ public class RockController : Interactable
 
     private void MoveToPlayer()
     {
-        if (Vector3.Distance(_player.transform.position, transform.position) < approachDistance) return;
+        // if (Vector3.Distance(_player.transform.position, transform.position) < approachDistance) return;
         var directionToPlayer = (_player.transform.position - transform.position).normalized;
         _currentVelocity = directionToPlayer * moveSpeed;
     }
@@ -113,22 +99,34 @@ public class RockController : Interactable
         _currentVelocity = directionAwayFromPlayer * moveSpeed;
     }
 
+    private void HandleSound()
+    {
+        // Check speed and play/stop sound
+        if (_rockBody.Velocity.magnitude > SpeedThreshold && !_isPlayingSound)
+        {
+            PlayMovingSound();
+            _isPlayingSound = true;
+        }
+        else if (_rockBody.Velocity.magnitude <= SpeedThreshold && _isPlayingSound)
+        {
+            StopMovingSound();
+            _isPlayingSound = false;
+        }
+    }
+
     private void PlayMovingSound()
     {
         // Implement sound playing logic here
         _movingSound = GameManager.sm.PlayLoopSound("stone-moving");
-        AudioSource source = _movingSound.GetComponent<AudioSource>();
-        if (source != null)
+        if (_movingSound.TryGetComponent<AudioSource>(out var source))
         {
             source.volume *= 0.3f; // Reduce volume by half
         }
-        Debug.Log("Playing rolling sound");
     }
 
     private void StopMovingSound()
     {
         // Implement sound stopping logic here
         Destroy(_movingSound);
-        Debug.Log("Stopping rolling sound");
     }
 }

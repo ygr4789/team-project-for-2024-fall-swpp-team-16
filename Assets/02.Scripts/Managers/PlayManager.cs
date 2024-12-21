@@ -12,7 +12,6 @@ public class PlayManager : MonoBehaviour
     public Dictionary<Transform, List<Color>> activeRipplesColors = new Dictionary<Transform, List<Color>>();
     public Transform currentTarget;
 
-    private float defaultSize = 6;
     private float targetScaleMultiplier = 5.0f;
 
     private void Start()

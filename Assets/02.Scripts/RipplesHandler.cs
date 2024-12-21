@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class RipplesHandler : MonoBehaviour
 {
-    [SerializeField] private float ripplesHeightRatio = 0.5f;
     [SerializeField] private Vector3 ripplesPositionOffset = Vector3.zero;
     void Update()
     {

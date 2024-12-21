@@ -2,60 +2,68 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class PlayerInput
 {
-    public float moveX;
-    public float moveZ;
-    public bool jump;
-    public bool run;
-    public bool active = true;
+    public float MoveX;
+    public float MoveZ;
+    public bool Jump;
+    public bool Run;
+    public bool Active = true;
     
     public void Clear()
     {
-        moveX = 0f;
-        moveZ = 0f;
-        jump = false;
-        run = false;
+        MoveX = 0f;
+        MoveZ = 0f;
+        Jump = false;
+        Run = false;
     }
 }
 
 public class PlayerMovement : MonoBehaviour
 {
+    private static readonly int Moving = Animator.StringToHash("Moving");
+    private static readonly int Grounded = Animator.StringToHash("Grounded");
+    private static readonly int Jump = Animator.StringToHash("Jump");
+
+    [FormerlySerializedAs("_movementSpeed")]
     [Range(1f, 20f)]
-    [SerializeField] private float _movementSpeed;
+    [SerializeField] private float movementSpeed;
     
+    [FormerlySerializedAs("_runMultiplier")]
     [Tooltip("additional speed multiplier when running")]
     [Range(1f, 20f)]
-    [SerializeField] private float _runMultiplier;
+    [SerializeField] private float runMultiplier;
 
+    [FormerlySerializedAs("_smoothTime")]
     [Tooltip("time taken to rotate when the direction of movement is changed")]
     [Range(0f, 0.1f)]
-    [SerializeField] private float _smoothTime = 0.1f;
+    [SerializeField] private float smoothTime = 0.1f;
 
-    private Camera controllerCamera;
-    private SurfaceContactController playerController;
-    private Rigidbody playerRigidBody;
-    private Collider playerCollider;
-    private Transform playerTransform;
-    private Animator playerAnimator;
-    private Renderer playerMeshRenderer;
+    private Camera _controllerCamera;
+    private SurfaceContactController _playerController;
+    private Rigidbody _playerRigidBody;
+    private Collider _playerCollider;
+    private Transform _playerTransform;
+    private Animator _playerAnimator;
+    private Renderer _playerMeshRenderer;
     private Vector3 _controllerVelocity;
     private Vector3 _lastStablePosition;
     
-    private PlayerInput input;
+    private PlayerInput _input;
     
-    private bool immune = false;
-    private float respawnDelayTime = 0.5f;
-    private float respawnPositionRestoreTime = 1f;
-    private int respawnBlinkCount = 5;
-    private float respawnBlinkTime = 0.1f;
-    
-    private int runLayer = 1;
-    private float runLayerWeight = 0f;
-    private float runTransitionSpeed = 3f;
+    private const float RespawnDelayTime = 0.5f;
+    private const float RespawnPositionRestoreTime = 1f;
+    private const int RespawnBlinkCount = 5;
+    private const float RespawnBlinkTime = 0.1f;
+    private bool _immune = false;
 
-    private Vector3 directionX, directionZ;
+    private const int RunLayer = 1;
+    private const float RunTransitionSpeed = 3f;
+    private float _runLayerWeight = 0f;
+
+    private Vector3 _directionX, _directionZ;
 
     // Start is called before the first frame update
     private void Awake()
@@ -66,14 +74,14 @@ public class PlayerMovement : MonoBehaviour
         };
         objectDetector.AddComponent<ObjectDetecter>();
         
-        input = new PlayerInput();
-        controllerCamera = Camera.main;
-        playerRigidBody = GetComponent<Rigidbody>();
-        playerController = GetComponent<SurfaceContactController>();
-        playerCollider = GetComponent<Collider>();
-        playerTransform = transform.Find("Player");
-        playerAnimator = playerTransform.GetComponent<Animator>();
-        playerMeshRenderer = playerTransform.GetComponentInChildren<Renderer>();
+        _input = new PlayerInput();
+        _controllerCamera = Camera.main;
+        _playerRigidBody = GetComponent<Rigidbody>();
+        _playerController = GetComponent<SurfaceContactController>();
+        _playerCollider = GetComponent<Collider>();
+        _playerTransform = transform.Find("Player");
+        _playerAnimator = _playerTransform.GetComponent<Animator>();
+        _playerMeshRenderer = _playerTransform.GetComponentInChildren<Renderer>();
         _lastStablePosition = transform.position;
     }
 
@@ -86,95 +94,95 @@ public class PlayerMovement : MonoBehaviour
     
     public PlayerInput GetPlayerInput()
     {
-        return input;
+        return _input;
     }
 
     private void GetInputs()
     {
-        input.Clear();
-        if(!input.active) return;
+        _input.Clear();
+        if(!_input.Active) return;
         
         // get the movement input
-        input.moveX = Input.GetAxis("Horizontal");
-        input.moveZ = Input.GetAxis("Vertical");
-        input.jump = Input.GetButton("Jump");
-        input.run = Input.GetKey(KeyCode.LeftShift);
+        _input.MoveX = Input.GetAxis("Horizontal");
+        _input.MoveZ = Input.GetAxis("Vertical");
+        _input.Jump = Input.GetButton("Jump");
+        _input.Run = Input.GetKey(KeyCode.LeftShift);
     }
 
     private void ControlPlayer()
     {
-        if (immune) return;
+        if (_immune) return;
         
         CheckStable();
+        CalculateDirection();
         
         // moves the controller in the desired direction on the x- and z-axis
-        CalculateDirection();
-        Vector3 movement = directionX * input.moveX + directionZ * input.moveZ;
-        movement *= _movementSpeed;
+        var moveDirection = _directionX * _input.MoveX + _directionZ * _input.MoveZ;
+        var movement = moveDirection * movementSpeed;
 
         HandleRunning(ref movement);
         HandleMovement(movement);
-        HandleGoundJump();
+        HandleGroundJump();
     }
 
     private void HandleRunning(ref Vector3 movement)
     {
         // the controller is able to run
-        if (input.run && playerController.Grounded)
+        if (_input.Run && _playerController.Grounded)
         {
-            movement *= _runMultiplier;
+            movement *= runMultiplier;
 
-            if(playerAnimator.GetBool("Grounded"))
+            if(_playerAnimator.GetBool(Grounded))
             {
-                runLayerWeight = Mathf.MoveTowards(runLayerWeight, 1f, Time.deltaTime * runTransitionSpeed);
+                _runLayerWeight = Mathf.MoveTowards(_runLayerWeight, 1f, Time.deltaTime * RunTransitionSpeed);
             }
         }
         else
         {
-            runLayerWeight = Mathf.MoveTowards(runLayerWeight, 0f, Time.deltaTime * runTransitionSpeed);
+            _runLayerWeight = Mathf.MoveTowards(_runLayerWeight, 0f, Time.deltaTime * RunTransitionSpeed);
         }
-        playerAnimator.SetLayerWeight(runLayer, runLayerWeight);
+        _playerAnimator.SetLayerWeight(RunLayer, _runLayerWeight);
     }
 
     private void HandleMovement(Vector3 movement)
     {
-        playerController.Velocity = movement;
+        _playerController.Velocity = movement;
         var currentVelocity = movement.magnitude;
-        playerAnimator.SetBool("Moving", currentVelocity > 0);
+        _playerAnimator.SetBool(Moving, currentVelocity > 0);
         if (!(currentVelocity > 0)) return;
         // set player's forward same as moving direction
         var targetAngle = Mathf.Atan2(-movement.z, movement.x) * Mathf.Rad2Deg + 90;
-        var angle = Mathf.SmoothDampAngle(playerTransform.eulerAngles.y, targetAngle, ref currentVelocity, _smoothTime);
-        playerTransform.rotation = Quaternion.Euler(0, angle, 0);
+        var angle = Mathf.SmoothDampAngle(_playerTransform.eulerAngles.y, targetAngle, ref currentVelocity, smoothTime);
+        _playerTransform.rotation = Quaternion.Euler(0, angle, 0);
     }
 
-    private void HandleGoundJump()
+    private void HandleGroundJump()
     {
         // the controller is able to jump when on the ground
-        playerAnimator.SetBool("Grounded", playerController.Grounded);
-        if (input.jump && playerController.Grounded)
+        _playerAnimator.SetBool(Grounded, _playerController.Grounded);
+        if (_input.Jump && _playerController.Grounded)
         {
-            playerAnimator.SetBool("Jump", true);
-            playerAnimator.SetBool("Grounded", false);
-            playerController.Jump = true;
+            _playerAnimator.SetBool(Jump, true);
+            _playerAnimator.SetBool(Grounded, false);
+            _playerController.Jump = true;
         }
         else
         {
-            playerAnimator.SetBool("Jump", false);
+            _playerAnimator.SetBool(Jump, false);
         }
     }
 
     private void CalculateDirection()
     {
-        directionX = controllerCamera.transform.right;
-        directionZ = Vector3.Cross(directionX, Vector3.up);
+        _directionX = _controllerCamera.transform.right;
+        _directionZ = Vector3.Cross(_directionX, Vector3.up);
     }
 
     // Convert the direction of movement to avoid entering a impassible area
     private void CheckStable()
     {
         Debug.DrawRay(_lastStablePosition, Vector3.up, Color.blue);
-        if (!playerController.Grounded) return;
+        if (!_playerController.Grounded) return;
         
         // Restricted distance for impassable areas
         const float checkDistance = 2f;
@@ -184,7 +192,7 @@ public class PlayerMovement : MonoBehaviour
         for (var i = 0; i < numStep; i++)
         {
             var checkAngle = 360f * i / numStep;
-            Vector3 checkDirection = Quaternion.AngleAxis(checkAngle, Vector3.up) * Vector3.forward;
+            var checkDirection = Quaternion.AngleAxis(checkAngle, Vector3.up) * Vector3.forward;
             if (!CheckPassable(transform.position + checkDirection * checkDistance)) return;
         }
 
@@ -195,39 +203,39 @@ public class PlayerMovement : MonoBehaviour
     private bool CheckPassable(Vector3 position)
     {
         // Subject to modification based on development
-        Ray ray = new Ray(position + Vector3.up * 1.5f, Vector3.down);
+        var ray = new Ray(position + Vector3.up * 1.5f, Vector3.down);
         Debug.DrawRay(position + Vector3.up * 1.5f, Vector3.down * 1.5f, Color.red);
-        if (!Physics.Raycast(ray, out RaycastHit hit)) return false;
+        if (!Physics.Raycast(ray, out var hit)) return false;
         return !hit.transform.CompareTag("Water");
     }
 
     public void Drown()
     {
         // 플레이어가 물에 빠지는 이펙트 발생 필요
-        if (immune) return;
-        immune = true;
+        if (_immune) return;
+        _immune = true;
         StartCoroutine(RespawnPlayer());
     }
     
     private IEnumerator RespawnPlayer()
     {
-        immune = true;
-        input.active = false;
-        playerMeshRenderer.enabled = false;
-        playerRigidBody.isKinematic = true;
-        playerRigidBody.velocity = Vector3.zero;
-        playerCollider.enabled = false;
-        yield return new WaitForSeconds(respawnDelayTime);
-        playerAnimator.SetBool("Grounded", true);
-        playerAnimator.SetBool("Moving", false);
-        yield return MoveSmooth(transform.position, _lastStablePosition, respawnPositionRestoreTime);
-        yield return BlinkPlayer(respawnBlinkCount, respawnBlinkTime);
+        _immune = true;
+        _input.Active = false;
+        _playerMeshRenderer.enabled = false;
+        _playerRigidBody.isKinematic = true;
+        _playerCollider.enabled = false;
+        _playerRigidBody.velocity = Vector3.zero;
+        yield return new WaitForSeconds(RespawnDelayTime);
+        _playerAnimator.SetBool(Grounded, true);
+        _playerAnimator.SetBool(Moving, false);
+        yield return MoveSmooth(transform.position, _lastStablePosition, RespawnPositionRestoreTime);
+        yield return BlinkPlayer(RespawnBlinkCount, RespawnBlinkTime);
         Input.ResetInputAxes();
-        input.active = true;
-        playerMeshRenderer.enabled = true;
-        playerRigidBody.isKinematic = false;
-        playerCollider.enabled = true;
-        immune = false;
+        _immune = false;
+        _input.Active = true;
+        _playerMeshRenderer.enabled = true;
+        _playerRigidBody.isKinematic = false;
+        _playerCollider.enabled = true;
     }
     
     // Smoothly move from startPos to endPos over finishTime
@@ -246,7 +254,7 @@ public class PlayerMovement : MonoBehaviour
     // Walk from startPos to endPos over finishTime
     public IEnumerator WalkToPoint(Vector3 targetPosition, float duration)
     {
-        input.active = false;
+        _input.Active = false;
         var currentPosition = transform.position;
         var movement = (targetPosition - currentPosition) / duration;
         movement.y = 0f;
@@ -254,11 +262,11 @@ public class PlayerMovement : MonoBehaviour
         while (elapsedTime < duration)
         {
             HandleMovement(movement);
-            if (Vector3.Distance(playerTransform.position, targetPosition) < 0.5f) break;
+            if (Vector3.Distance(_playerTransform.position, targetPosition) < 0.5f) break;
             elapsedTime += Time.deltaTime;
             yield return null;
         }
-        input.active = true;
+        _input.Active = true;
     }
     
     // Repeat blinking for the specified time count times
@@ -266,9 +274,9 @@ public class PlayerMovement : MonoBehaviour
     {
         for (var i=0; i<count; i++)
         {
-            playerMeshRenderer.enabled = false;
+            _playerMeshRenderer.enabled = false;
             yield return new WaitForSeconds(time);
-            playerMeshRenderer.enabled = true;
+            _playerMeshRenderer.enabled = true;
             yield return new WaitForSeconds(time);
         }
     }
