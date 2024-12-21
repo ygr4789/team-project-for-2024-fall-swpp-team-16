@@ -49,9 +49,9 @@ public class SignController : MonoBehaviour
         }
     }
 
-    public void Inspect(GameObject floatingText)
+    private void Update()
     {
-        if (isActive)
+        if (Input.GetKeyDown(KeyCode.E) && isActive)
         {
             // E를 누르면 다음으로 넘어감
             currentIndex++;
@@ -74,7 +74,11 @@ public class SignController : MonoBehaviour
                 GameManager.sm.PlaySound("sign");
             }
         }
-        else
+    }
+
+    public void Inspect(GameObject floatingText)
+    {
+        if (!isActive)
         {
             if (GameManager.gm.isUIOpen){
                 return;
