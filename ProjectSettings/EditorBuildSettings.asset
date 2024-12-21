@@ -29,4 +29,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/01.Scenes/Stages/Tutorial/Stage6.unity
     guid: 278c9aa1ca7861a41ae82bc9bb7100db
+  - enabled: 1
+    path: Assets/01.Scenes/Stages/Tutorial Plate.unity
+    guid: 7b6a2b9ea4c971b4a810622b42cbfff5
   m_configObjects: {}
