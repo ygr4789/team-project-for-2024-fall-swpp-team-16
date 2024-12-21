@@ -10,7 +10,7 @@ public class ResonatableObject : MonoBehaviour
     private int colliderNum = 0;
     public Vector3 ripplesPositionOffset = Vector3.zero;
 
-    [HideInInspector] public delegate void Resonate(PitchType pitch);
+    public delegate void Resonate(PitchType pitch);
     [HideInInspector] public Resonate resonate;
 
     public void OnEnterRadius()

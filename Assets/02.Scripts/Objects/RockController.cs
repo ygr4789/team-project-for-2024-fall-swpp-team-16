@@ -23,12 +23,12 @@ public class RockController : Interactable
     private const string PlayerTag = "Player"; // Tag of the player to follow
     private GameObject _player; // Reference to the player object
 
-    private float _radius; // Radius of round rock (only used when isRolling=true)
-    private Vector3 _currentVelocity = Vector3.zero;
-    private SurfaceContactController _rockBody;
-    private Vector3 _targetPosition;
     private const float SpeedThreshold = 1.0f; // Speed threshold for playing sound
-    private bool isPlayingSound = false;
+    private float _radius; // Radius of round rock (only used when isRolling=true)
+    private bool _isPlayingSound = false;
+    private Vector3 _currentVelocity = Vector3.zero;
+    private Vector3 _targetPosition;
+    private SurfaceContactController _rockBody;
     private GameObject _movingSound;
     
     private void Awake()
@@ -105,15 +105,15 @@ public class RockController : Interactable
     private void HandleSound()
     {
         // Check speed and play/stop sound
-        if (_rockBody.Velocity.magnitude > SpeedThreshold && !isPlayingSound)
+        if (_rockBody.Velocity.magnitude > SpeedThreshold && !_isPlayingSound)
         {
             PlayMovingSound();
-            isPlayingSound = true;
+            _isPlayingSound = true;
         }
-        else if (_rockBody.Velocity.magnitude <= SpeedThreshold && isPlayingSound)
+        else if (_rockBody.Velocity.magnitude <= SpeedThreshold && _isPlayingSound)
         {
             StopMovingSound();
-            isPlayingSound = false;
+            _isPlayingSound = false;
         }
     }
 
