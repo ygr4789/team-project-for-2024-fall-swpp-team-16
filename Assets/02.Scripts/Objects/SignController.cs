@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Collections;
 
 public class SignController : MonoBehaviour
 {
@@ -49,9 +50,9 @@ public class SignController : MonoBehaviour
         }
     }
 
-    public void Inspect(GameObject floatingText)
+    private void Update()
     {
-        if (isActive)
+        if (Input.GetKeyDown(KeyCode.E) && isActive)
         {
             // E를 누르면 다음으로 넘어감
             currentIndex++;
@@ -61,7 +62,8 @@ public class SignController : MonoBehaviour
                 GameManager.gm.isUIOpen = false;
                 tutorialSignUI.SetActive(false);
                 GameManager.sm.PlaySound("sign");
-                isActive = false;
+                // isActive를 지연 비활성화
+                StartCoroutine(DeactivateIsActive());
                 currentIndex = 0;
 
                 if (playerInput != null)
@@ -74,7 +76,17 @@ public class SignController : MonoBehaviour
                 GameManager.sm.PlaySound("sign");
             }
         }
-        else
+    }
+    
+    private IEnumerator DeactivateIsActive()
+    {
+        yield return new WaitForSeconds(0.1f);
+        isActive = false;
+    }
+
+    public void Inspect(GameObject floatingText)
+    {
+        if (!isActive)
         {
             if (GameManager.gm.isUIOpen){
                 return;

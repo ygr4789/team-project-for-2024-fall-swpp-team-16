@@ -11,7 +11,7 @@ public class TitleScreenManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return)) // Detect Enter key press
+        if (Input.anyKeyDown) // Detect any key press
         {
             StartCoroutine(FadeAndStartGame());
         }
