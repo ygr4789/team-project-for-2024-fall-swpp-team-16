@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Collections;
 
 public class SignController : MonoBehaviour
 {
@@ -61,7 +62,8 @@ public class SignController : MonoBehaviour
                 GameManager.gm.isUIOpen = false;
                 tutorialSignUI.SetActive(false);
                 GameManager.sm.PlaySound("sign");
-                isActive = false;
+                // isActive를 지연 비활성화
+                StartCoroutine(DeactivateIsActive());
                 currentIndex = 0;
 
                 if (playerInput != null)
@@ -74,6 +76,12 @@ public class SignController : MonoBehaviour
                 GameManager.sm.PlaySound("sign");
             }
         }
+    }
+    
+    private IEnumerator DeactivateIsActive()
+    {
+        yield return new WaitForSeconds(0.1f);
+        isActive = false;
     }
 
     public void Inspect(GameObject floatingText)
