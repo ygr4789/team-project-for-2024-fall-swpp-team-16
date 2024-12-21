@@ -66,7 +66,7 @@ public class DoorController : MonoBehaviour
         {
             PlayerInput playerInput = playerMovement.GetPlayerInput();
             if (playerInput != null)
-                playerInput.active = false; // 플레이어 움직임 활성화
+                playerInput.Active = false; // 플레이어 움직임 활성화
         }
     }
 
@@ -77,7 +77,7 @@ public class DoorController : MonoBehaviour
         {
             PlayerInput playerInput = playerMovement.GetPlayerInput();
             if (playerInput != null)
-                playerInput.active = false; // 플레이어 움직임 활성화
+                playerInput.Active = false; // 플레이어 움직임 활성화
         }
     }
 

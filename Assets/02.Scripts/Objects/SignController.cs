@@ -65,7 +65,7 @@ public class SignController : MonoBehaviour
                 currentIndex = 0;
 
                 if (playerInput != null)
-                    playerInput.active = true; // 플레이어 움직임 활성화
+                    playerInput.Active = true; // 플레이어 움직임 활성화
             }
             else
             {
@@ -98,7 +98,7 @@ public class SignController : MonoBehaviour
             isActive = true;
 
             if (playerInput != null)
-                playerInput.active = false; // 플레이어 움직임 비활성화
+                playerInput.Active = false; // 플레이어 움직임 비활성화
         }
     }
     

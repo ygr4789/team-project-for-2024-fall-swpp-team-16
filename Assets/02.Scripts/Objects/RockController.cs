@@ -72,18 +72,7 @@ public class RockController : Interactable
     {
         ApplyVelocity();
         if (isRolling) RollRock(_rockBody.Velocity);
-        
-        // Check speed and play/stop sound
-        if (_rockBody.Velocity.magnitude > SpeedThreshold && !isPlayingSound)
-        {
-            PlayMovingSound();
-            isPlayingSound = true;
-        }
-        else if (_rockBody.Velocity.magnitude <= SpeedThreshold && isPlayingSound)
-        {
-            StopMovingSound();
-            isPlayingSound = false;
-        }
+        HandleSound();
     }
 
     private void ApplyVelocity()
@@ -113,22 +102,34 @@ public class RockController : Interactable
         _currentVelocity = directionAwayFromPlayer * moveSpeed;
     }
 
+    private void HandleSound()
+    {
+        // Check speed and play/stop sound
+        if (_rockBody.Velocity.magnitude > SpeedThreshold && !isPlayingSound)
+        {
+            PlayMovingSound();
+            isPlayingSound = true;
+        }
+        else if (_rockBody.Velocity.magnitude <= SpeedThreshold && isPlayingSound)
+        {
+            StopMovingSound();
+            isPlayingSound = false;
+        }
+    }
+
     private void PlayMovingSound()
     {
         // Implement sound playing logic here
         _movingSound = GameManager.sm.PlayLoopSound("stone-moving");
-        AudioSource source = _movingSound.GetComponent<AudioSource>();
-        if (source != null)
+        if (_movingSound.TryGetComponent<AudioSource>(out var source))
         {
             source.volume *= 0.3f; // Reduce volume by half
         }
-        Debug.Log("Playing rolling sound");
     }
 
     private void StopMovingSound()
     {
         // Implement sound stopping logic here
         Destroy(_movingSound);
-        Debug.Log("Stopping rolling sound");
     }
 }
