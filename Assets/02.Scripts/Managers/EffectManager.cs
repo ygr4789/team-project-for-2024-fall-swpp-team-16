@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -7,6 +8,7 @@ using Collections.Shaders.CircleTransition;
 public class EffectManager : MonoBehaviour
 {
     [SerializeField] private ParticleSystem ripplesEffectPrefab;
+    [SerializeField] private Material outLineMaterial;
     [SerializeField] private float colorSwitchInterval = 0.5f;
     private float colorSwitchTimer;
     private float defaultSize = 7;
@@ -55,7 +57,7 @@ public class EffectManager : MonoBehaviour
         }
     }
     
-    public void SetRippleSize(Transform target, float multiplier = 3.0f, float minParticleSize = 0.1f, float maxParticleSize = 10f, Vector3 positionOffset = default)
+    public void SetRippleSize(Transform target, float multiplier = 3.0f, float minParticleSize = 0.1f, float maxParticleSize = 15f, Vector3 positionOffset = default)
     {
         if (!GameManager.pm.activeRipplesEffects.ContainsKey(target)) return;
 
@@ -66,19 +68,8 @@ public class EffectManager : MonoBehaviour
 
             // y축의 중간 위치 계산
             float yMidPosition = bounds.min.y + (bounds.size.y * 0.5f);
-
-            // xz 평면의 크기 계산
-            // 로컬 크기를 글로벌 크기로 변환
-            Vector3 localSize = collider.bounds.size; // 이미 Global Space 크기
-            Vector3 globalSize = new Vector3(
-                localSize.x * target.lossyScale.x,
-                localSize.y * target.lossyScale.y,
-                localSize.z * target.lossyScale.z
-            );
-
             // xz 크기 계산
-            float xzAverage = (globalSize.x + globalSize.z) / 2;
-
+            float xzAverage = (bounds.size.x + bounds.size.z) / 2;
             // 크기 제한 및 설정
             float particleSize = Mathf.Clamp(xzAverage * multiplier, minParticleSize, maxParticleSize);
 
@@ -87,6 +78,7 @@ public class EffectManager : MonoBehaviour
             // 파티클 효과에 크기 적용
             ParticleSystem effect = GameManager.pm.activeRipplesEffects[target];
             var mainModule = effect.main;
+            mainModule.scalingMode = ParticleSystemScalingMode.Hierarchy;
             mainModule.startSize = particleSize; // 파티클 크기 설정
 
             // 파티클의 위치를 y축 중간 위치로 업데이트
@@ -207,6 +199,36 @@ public class EffectManager : MonoBehaviour
         else
         {
             Debug.LogError("CircleTransition not found in the scene.");
+        }
+    }
+
+    public void SetOutLine(Transform target)
+    {
+        var renderers = target.GetComponentsInChildren<Renderer>();
+        foreach (var renderer in renderers)
+        {
+            print(renderer.transform.name);
+            if (!(renderer.GetType() == typeof(SkinnedMeshRenderer) || renderer.GetType() == typeof(MeshRenderer))) return;
+            Material[] mats = new Material[renderer.materials.Length + 1];
+            Array.Copy(renderer.materials, mats, renderer.materials.Length);
+            mats[^1] = outLineMaterial;
+            renderer.materials = mats;
+        }
+    }
+
+    public void RemoveOutLine(Transform target)
+    {
+        var renderers = target.GetComponentsInChildren<Renderer>();
+        foreach (var renderer in renderers)
+        {
+            Mesh mesh = null;
+            if (renderer.TryGetComponent<MeshFilter>(out var meshFilter)) mesh = meshFilter.sharedMesh;
+            if (renderer is SkinnedMeshRenderer skinnedRenderer) mesh = skinnedRenderer.sharedMesh;
+            if (mesh is null) return;
+            
+            Material[] mats = new Material[mesh.subMeshCount];
+            Array.Copy(renderer.materials, mats, mats.Length);
+            renderer.materials = mats;
         }
     }
 }

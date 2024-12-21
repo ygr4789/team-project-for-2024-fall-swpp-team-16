@@ -51,9 +51,6 @@ public class SignController : MonoBehaviour
 
     public void Inspect(GameObject floatingText)
     {
-        if (GameManager.gm.isSheetOn){
-            return;
-        }
         if (isActive)
         {
             // E를 누르면 다음으로 넘어감
@@ -61,6 +58,7 @@ public class SignController : MonoBehaviour
             if (currentIndex >= textContents.Count)
             {
                 // 모든 항목을 다 본 경우 UI 비활성화
+                GameManager.gm.isUIOpen = false;
                 tutorialSignUI.SetActive(false);
                 GameManager.sm.PlaySound("sign");
                 isActive = false;
@@ -78,6 +76,13 @@ public class SignController : MonoBehaviour
         }
         else
         {
+            if (GameManager.gm.isUIOpen){
+                return;
+            }
+            else
+            {
+                GameManager.gm.isUIOpen = true;
+            }
             if (imageRect == null || textComponent == null)
             {
                 Debug.LogError("Image or Text component is not found!");

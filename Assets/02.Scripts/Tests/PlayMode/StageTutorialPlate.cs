@@ -10,7 +10,7 @@ public class StageTutorialPlateTest
     public void Setup()
     {
         // Load the scene
-        string sceneName = "Tutorial Plate";
+        string sceneName = "Stage7";
         SceneManager.LoadScene(sceneName);
     }
 

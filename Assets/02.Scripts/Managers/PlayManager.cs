@@ -60,6 +60,7 @@ public class PlayManager : MonoBehaviour
         {
             Debug.Log($"[Return Size] Target: {currentTarget.name}");
             GameManager.em.SetRippleSize(currentTarget, positionOffset: currentTarget.GetComponent<ResonatableObject>().ripplesPositionOffset);
+            GameManager.em.RemoveOutLine(currentTarget);
         }
 
         currentTarget = newTarget;
@@ -67,6 +68,7 @@ public class PlayManager : MonoBehaviour
         if (currentTarget is not null && activeRipplesEffects.ContainsKey(currentTarget))
         {
             GameManager.em.SetRippleSize(currentTarget, targetScaleMultiplier, positionOffset:currentTarget.GetComponent<ResonatableObject>().ripplesPositionOffset);
+            GameManager.em.SetOutLine(currentTarget);
         }
     }
     
@@ -93,6 +95,7 @@ public class PlayManager : MonoBehaviour
         // 현재 타겟과 동일한 경우 초기화
         if (currentTarget == target)
         {
+            GameManager.em.RemoveOutLine(currentTarget);
             currentTarget = null;
         }
     }

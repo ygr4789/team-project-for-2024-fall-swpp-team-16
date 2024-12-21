@@ -196,6 +196,7 @@ public class PlayerMovement : MonoBehaviour
     {
         // Subject to modification based on development
         Ray ray = new Ray(position + Vector3.up * 1.5f, Vector3.down);
+        Debug.DrawRay(position + Vector3.up * 1.5f, Vector3.down * 1.5f, Color.red);
         if (!Physics.Raycast(ray, out RaycastHit hit)) return false;
         return !hit.transform.CompareTag("Water");
     }
