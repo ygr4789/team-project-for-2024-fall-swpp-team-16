@@ -22,6 +22,11 @@ public class StageManager : MonoBehaviour
         LoadStages();
     }
 
+    public void TurnOffDevelopmentMode()
+    {
+        developmentMode = false;
+    }
+
     private void LoadStages()
     {
         accomplishedStages = new bool[totalStages];

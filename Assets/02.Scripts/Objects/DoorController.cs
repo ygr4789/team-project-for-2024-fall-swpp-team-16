@@ -186,7 +186,7 @@ public class DoorController : MonoBehaviour
         }
     }
 
-    private bool CheckNotes()
+    public bool CheckNotes()
     {
         for (int i = 0; i < playedNotes.Count; i++)
         {

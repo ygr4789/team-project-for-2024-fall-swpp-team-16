@@ -14,7 +14,7 @@ public class TreeController : Interactable
     [SerializeField, Range(3f, 15f)] private float prefabHeight = 13.5f;
     [SerializeField, Range(3f, 15f)] private float minHeight = 3f;
     [SerializeField, Range(3f, 15f)] private float maxHeight = 13f;
-    [SerializeField, Range(3f, 15f)] private float currentHeight = 8f;
+    [SerializeField, Range(3f, 15f)] public float currentHeight = 8f;
     [SerializeField, Range(0f, 1f)] private float radius = 0.7f;
 
     private const float HeightChangeSmoothTime = 0.6f;
