@@ -37,14 +37,18 @@ public class DoorController : MonoBehaviour
 
     public void Inspect(GameObject floatingText)
     {
+        if (GameManager.gm.isUIOpen){
+            return;
+        }
+        
         // if all scores are collected, the user needs to play music
 		if (GameManager.im.HasAllScores())
         {
             // Activate the Score UI to display it
+            GameManager.gm.isUIOpen = true;
             scoreUIPanel.SetActive(true);
 			Debug.Log("Play the music to open the door");
             floatingText.SendMessage("Hide");
-            GameManager.gm.isSheetOn = true;
             
             // Disable player input
             DisableInput();
@@ -99,7 +103,7 @@ public class DoorController : MonoBehaviour
                             Debug.Log("Correct notes played. Door is opening.");
                             GameManager.stm.CompleteCurrentStage();
                             GetComponent<Collider>().enabled = false;
-                            GameManager.gm.isSheetOn = false;
+                            GameManager.gm.isUIOpen = false;
                             StartCoroutine(StageClearDirection());
                             // TODO: change camera view to the back of the player
                         }

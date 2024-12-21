@@ -505,6 +505,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ripplesEffectPrefab: {fileID: 8521541705405835160, guid: a5a7399e50f89504aae34354c26d2f99, type: 3}
+  outLineMaterial: {fileID: 2100000, guid: b8a236e0f3eea8044aa335516628d7da, type: 2}
   colorSwitchInterval: 0.5
 --- !u!1 &1379455275906648398
 GameObject:
@@ -557,6 +558,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 0}
+  isUIOpen: 0
 --- !u!114 &1824626969
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -569,7 +571,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce6f7ed6358940459b705922494ff02d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totalStages: 6
+  totalStages: 9
   currentStage: 0
   developmentMode: 1
 --- !u!114 &308768209
@@ -586,8 +588,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   backgroundSprite: {fileID: 21300000, guid: b500c64f30edd411ebb312a0725ea84b, type: 3}
   closeButtonSprite: {fileID: 21300000, guid: c8949254655d94b0191529632c30b989, type: 3}
-  quitButtonSprite: {fileID: 21300000, guid: 29bbc4ce3cd3f4f4b8736b5145fd79fd, type: 3}
+  quitButtonSprite: {fileID: 21300000, guid: 749cb9af11270294ebf43b3068d62d98, type: 3}
   settingsButtonSprite: {fileID: 21300000, guid: 6f455b56705f34e91a807cfb39866781, type: 3}
+  resetButtonSprite: {fileID: 21300000, guid: 6fc68843d92ed4dee873d444c783163c, type: 3}
   sliderBackgroundSprite: {fileID: 21300000, guid: 906562603b5644872bcd76eba6641856, type: 3}
   sliderHandleSprite: {fileID: 21300000, guid: 7d7bf197998bf4e40ada6479ede9e77d, type: 3}
 --- !u!1 &1379455276082103364

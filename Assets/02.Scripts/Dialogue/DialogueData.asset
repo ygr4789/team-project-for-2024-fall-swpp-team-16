@@ -13,13 +13,9 @@ MonoBehaviour:
   m_Name: DialogueData
   m_EditorClassIdentifier: 
   dialogueEntries:
-  - sceneName: Stage1_Suin
-    action: Trigger1
-    dialogue: "test\uC785\uB2C8\uB2E4"
-    characterImageId: 2
-    isCallable: 1
-  - sceneName: Stage1_Suin
-    action: Trigger1
-    dialogue: "test\uC785\uB2C8\uB2E4\uC544\uC544\uC544\uC544"
-    characterImageId: 1
+  - sceneName: Stage1
+    action: NotEnoughScore
+    dialogue: "\uBB38\uC744 \uC5F4\uAE30 \uC704\uD574\uC120 \uC545\uBCF4\uB97C \uC804\uBD80
+      \uBAA8\uC544\uC57C \uD55C\uB2E4"
+    characterImageId: 0
     isCallable: 1
