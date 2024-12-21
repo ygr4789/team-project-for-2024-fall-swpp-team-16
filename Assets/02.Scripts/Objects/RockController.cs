@@ -11,14 +11,11 @@ public class RockController : Interactable
     
     [Tooltip("The distance at which the object stops approaching the player")]
     [Range(0f, 0.1f)]
-    [SerializeField] 
-    private float approachDistance = 3f;
+    [SerializeField] private float approachDistance = 3f;
     
-    [Range(0f, 10f)]
-    public float moveSpeed = 3f;
+    [Range(0f, 10f)] public float moveSpeed = 3f;
     
-    [SerializeField]
-    private Transform rockModel;
+    [SerializeField] private Transform rockModel;
     
     private const string PlayerTag = "Player"; // Tag of the player to follow
     private GameObject _player; // Reference to the player object
@@ -91,7 +88,7 @@ public class RockController : Interactable
 
     private void MoveToPlayer()
     {
-        if (Vector3.Distance(_player.transform.position, transform.position) < approachDistance) return;
+        // if (Vector3.Distance(_player.transform.position, transform.position) < approachDistance) return;
         var directionToPlayer = (_player.transform.position - transform.position).normalized;
         _currentVelocity = directionToPlayer * moveSpeed;
     }
